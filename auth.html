@@ -292,10 +292,31 @@ async function handleLogin(e) {
           }
         }
       }
+      // 密码错误：本地有该用户记录 → 尝试从本地数据恢复（密码可能因之前的同步 bug 丢失）
+      if (result.error.includes('密码错误')) {
+        var localUsers = JSON.parse(localStorage.getItem('wkust_users') || '{}');
+        var localUser = localUsers[stuId];
+        if (localUser && localUser.name) {
+          var regResult = await CloudSync.register({
+            stuId: stuId, name: localUser.name, password: pwd,
+            campus: localUser.campus, college: localUser.college,
+            major: localUser.major, grade: localUser.grade
+          });
+          if (regResult && regResult.token) {
+            localStorage.setItem('wkust_currentUser', stuId);
+            saveRemember(stuId, pwd);
+            await CloudSync.pushAll();
+            showAuthToast('登录成功，欢迎回来 ' + localUser.name + '！', () => {
+              window.location.href = 'index.html';
+            });
+            return;
+          }
+        }
+      }
       errEl.textContent = result.error;
       return;
     }
-    // result 为 null = 网络错误，回退本地登录
+        // result 为 null = 网络错误，回退本地登录
     console.warn('云端登录失败，回退本地模式');
   }
 

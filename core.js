@@ -138,6 +138,10 @@ var CloudSync = {
       self.syncing = false;
       if (!data || data._error) return false;
 
+      // 先读取本地密码（服务器数据可能不含密码）
+      var localUsers = {};
+      try { localUsers = JSON.parse(localStorage.getItem('wkust_users') || '{}'); } catch(e) {}
+
       // 将服务器数据写入 localStorage
       var keys = ['users','posts','products','activities','career_posts','messages','conversations','purchaseRequests','bargains'];
       keys.forEach(function(k) {
@@ -146,9 +150,7 @@ var CloudSync = {
         }
       });
 
-      // 合并 users：服务器数据可能不含密码，保留本地已有的密码
-      var localUsers = {};
-      try { localUsers = JSON.parse(localStorage.getItem('wkust_users') || '{}'); } catch(e) {}
+      // 合并 users：保留本地已有的密码（上面的 localUsers 在覆盖前已从旧数据中读取）
       if (data.users) {
         Object.keys(data.users).forEach(function(uid) {
           if (localUsers[uid] && localUsers[uid].password && !data.users[uid].password) {

@@ -515,6 +515,26 @@ app.post('/api/auth/register', (req, res) => {
     const users = db.users || {};
 
     if (users[stuId]) {
+      // 如果用户存在但没有密码（数据损坏），允许重新注册修复
+      if (!users[stuId].password) {
+        // 保留原有的头像和加入时间等字段
+        const mergedUser = users[stuId];
+        mergedUser.name = name;
+        mergedUser.password = password;
+        if (campus) mergedUser.campus = campus;
+        if (college) mergedUser.college = college;
+        if (major) mergedUser.major = major;
+        if (grade) mergedUser.grade = grade;
+        users[stuId] = mergedUser;
+        db.users = users;
+        db._updatedAt = new Date().toISOString();
+        writeDB(db);
+        const token = generateToken(stuId);
+        return res.status(201).json({
+          token,
+          user: { ...users[stuId], password: undefined }
+        });
+      }
       return res.status(409).json({ error: '该学号已注册' });
     }
 
