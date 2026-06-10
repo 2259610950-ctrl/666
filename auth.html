@@ -77,6 +77,9 @@
             </button>
           </div>
         </div>
+        <div class="form-options">
+          <label class="remember-me"><input type="checkbox" id="rememberMe" checked> 记住我</label>
+        </div>
         <div id="loginError" class="form-error"></div>
         <button type="submit" class="btn-auth-submit">登录账号</button>
         <p class="auth-tip">还没有账号？<a href="#" onclick="switchAuthTab('register')">立即注册</a></p>
@@ -248,6 +251,7 @@ async function handleLogin(e) {
     // 云端登录成功
     if (result && !result.error && result.token) {
       localStorage.setItem('wkust_currentUser', stuId);
+      saveRemember(stuId, pwd);
       await CloudSync.pullAll();
       var initStatus = await CloudSync.getInitStatus();
       if (initStatus && !initStatus.sampleInited) {
@@ -273,6 +277,7 @@ async function handleLogin(e) {
           });
           if (regResult && regResult.token) {
             localStorage.setItem('wkust_currentUser', stuId);
+            saveRemember(stuId, pwd);
             await CloudSync.pushAll();
             showAuthToast('登录成功，欢迎回来 ' + localUser.name + '！', () => {
               window.location.href = 'index.html';
@@ -302,6 +307,7 @@ async function handleLogin(e) {
   }
 
   localStorage.setItem('wkust_currentUser', stuId);
+  saveRemember(stuId, pwd);
   showAuthToast('登录成功，欢迎回来 ' + user.name + '！', () => {
     window.location.href = 'index.html';
   });
@@ -387,6 +393,30 @@ function showAuthToast(msg, cb) {
   document.body.appendChild(t);
   setTimeout(() => { t.remove(); if(cb) cb(); }, 1800);
 }
+
+// ---- 记住我功能 ----
+function saveRemember(stuId, pwd) {
+  var remember = document.getElementById('rememberMe');
+  if (remember && remember.checked) {
+    localStorage.setItem('wkust_remember', JSON.stringify({ stuId: stuId, pwd: pwd }));
+  } else {
+    localStorage.removeItem('wkust_remember');
+  }
+}
+function loadRemember() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('wkust_remember') || 'null');
+    if (saved && saved.stuId) {
+      document.getElementById('loginId').value = saved.stuId;
+      if (saved.pwd) document.getElementById('loginPwd').value = saved.pwd;
+      var cb = document.getElementById('rememberMe');
+      if (cb) cb.checked = true;
+    }
+  } catch(e) {}
+}
+
+// 页面加载时自动填充
+loadRemember();
 
 // 如果已登录，跳转首页
 (async function() {

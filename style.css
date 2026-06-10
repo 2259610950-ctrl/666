@@ -1391,6 +1391,9 @@ textarea, input { font-family: inherit; }
 .campus-name { font-size: 13px; font-weight: 600; color: #1F2937; }
 .campus-desc { font-size: 11px; color: #6B7280; }
 .form-error { color: #DC2626; font-size: 12px; min-height: 18px; }
+.form-options { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.remember-me { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #6B7280; cursor: pointer; user-select: none; }
+.remember-me input[type="checkbox"] { width: 16px; height: 16px; accent-color: #4F46E5; cursor: pointer; }
 .btn-auth-submit { width: 100%; padding: 13px; background: #4F46E5; color: white; border-radius: 10px; font-size: 15px; font-weight: 600; transition: all .2s; }
 .btn-auth-submit:hover { background: #4338CA; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(79,70,229,.35); }
 .auth-tip { font-size: 13px; color: #6B7280; text-align: center; }
