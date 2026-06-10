@@ -4449,3 +4449,114 @@ a:active {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ===== Bargaining UI ===== */
+.bargain-form { padding: 0; }
+.bargain-header { background: linear-gradient(135deg,#EEF2FF,#E0E7FF); border-radius: 12px 12px 0 0; padding: 20px 24px; margin: -20px -24px 20px; display: flex; align-items: center; gap: 14px; }
+.bargain-header-icon { width: 44px; height: 44px; background: linear-gradient(135deg,#6366F1,#8B5CF6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 2px 8px rgba(99,102,241,.3); }
+.bargain-header-text h3 { margin: 0; font-size: 17px; color: #1F2937; font-weight: 600; }
+.bargain-header-text p { margin: 2px 0 0; font-size: 13px; color: #6B7280; }
+.bargain-price-compare { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 0 0 16px; }
+.bargain-price-item { text-align: center; padding: 12px 20px; border-radius: 12px; min-width: 100px; }
+.bargain-price-item.original { background: #FEF2F2; }
+.bargain-price-item.offer { background: #EEF2FF; }
+.price-label { font-size: 12px; color: #9CA3AF; margin-bottom: 4px; }
+.price-value { font-size: 22px; font-weight: 700; color: #1F2937; }
+.price-value.offer-price { color: #6366F1; }
+.bargain-price-arrow { flex-shrink: 0; }
+.bargain-savings-bar { margin: 0 0 16px; }
+.savings-track { height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+.savings-fill { height: 100%; border-radius: 3px; transition: width .3s ease; }
+.savings-text { font-size: 12px; color: #6B7280; text-align: center; }
+.bargain-input-group { margin-bottom: 16px; }
+.bargain-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px; }
+.bargain-input-wrap { display: flex; align-items: center; background: #F9FAFB; border: 1.5px solid #E5E7EB; border-radius: 10px; overflow: hidden; transition: border-color .2s; }
+.bargain-input-wrap:focus-within { border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,.1); }
+.bargain-input-prefix { padding: 0 4px 0 14px; font-size: 16px; font-weight: 600; color: #9CA3AF; }
+.bargain-price-input { flex: 1; border: none; background: transparent; padding: 12px 14px 12px 4px; font-size: 15px; outline: none; }
+.bargain-message-input { width: 100%; border: 1.5px solid #E5E7EB; border-radius: 10px; padding: 10px 14px; font-size: 13px; resize: vertical; transition: border-color .2s; box-sizing: border-box; }
+.bargain-message-input:focus { border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,.1); outline: none; }
+.bargain-char-count { text-align: right; font-size: 11px; color: #9CA3AF; margin-top: 4px; }
+.bargain-discount-hint { font-size: 12px; margin-top: 6px; padding: 6px 10px; border-radius: 8px; }
+.bargain-discount-hint.good { background: #ECFDF5; color: #065F46; }
+.bargain-discount-hint.warn { background: #FFFBEB; color: #92400E; }
+.bargain-discount-hint.bad { background: #FEF2F2; color: #991B1B; }
+.btn-bargain-submit { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg,#6366F1,#8B5CF6); color: white; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .2s, transform .1s; }
+.btn-bargain-submit:hover { opacity: .9; }
+.btn-bargain-submit:active { transform: scale(.98); }
+.btn-bargain-submit:disabled { opacity: .5; cursor: not-allowed; }
+.bargain-section { margin-top: 16px; }
+.bargain-section-header { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #1F2937; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }
+.bargain-count-badge { background: #EEF2FF; color: #6366F1; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 500; }
+.bargain-list { display: flex; flex-direction: column; gap: 12px; }
+.bargain-card { background: white; border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px; transition: box-shadow .2s; }
+.bargain-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.bargain-card.accepted { border-color: #A7F3D0; background: #F0FDF4; }
+.bargain-card.rejected { border-color: #FECACA; background: #FEF2F2; }
+.bargain-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.bargain-buyer { display: flex; align-items: center; gap: 10px; }
+.bargain-buyer-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+.bargain-buyer-name { display: block; font-size: 14px; font-weight: 500; color: #1F2937; }
+.bargain-status-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 6px; margin-top: 2px; }
+.bargain-status-badge.pending { background: #FEF3C7; color: #92400E; }
+.bargain-status-badge.countered { background: #DBEAFE; color: #1E40AF; }
+.bargain-status-badge.accepted { background: #D1FAE5; color: #065F46; }
+.bargain-status-badge.rejected { background: #FEE2E2; color: #991B1B; }
+.bargain-status-badge.withdrawn { background: #F3F4F6; color: #6B7280; }
+.bargain-price-tag { text-align: right; }
+.bargain-price-amount { display: block; font-size: 18px; font-weight: 700; color: #1F2937; }
+.bargain-original { font-size: 11px; color: #9CA3AF; text-decoration: line-through; }
+.bargain-card-message { background: #F9FAFB; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #6B7280; margin-bottom: 10px; font-style: italic; }
+.bargain-card-message.counter { background: #EFF6FF; color: #1D4ED8; }
+.bargain-timeline { margin: 10px 0; padding: 10px 12px; background: #F9FAFB; border-radius: 8px; }
+.timeline-label { font-size: 11px; color: #9CA3AF; margin-bottom: 6px; font-weight: 500; }
+.timeline-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; }
+.timeline-icon { flex-shrink: 0; }
+.timeline-text { flex: 1; color: #374151; }
+.timeline-time { color: #D1D5DB; font-size: 11px; }
+.bargain-card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.btn-bargain-action { border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: opacity .2s; white-space: nowrap; }
+.btn-bargain-action:hover { opacity: .85; }
+.btn-bargain-action.accept { background: #D1FAE5; color: #065F46; }
+.btn-bargain-action.counter { background: #DBEAFE; color: #1E40AF; }
+.btn-bargain-action.reject { background: #FEE2E2; color: #991B1B; }
+.btn-bargain-action.chat { background: #F3F4F6; color: #374151; }
+.btn-bargain-action.withdraw { background: #F3F4F6; color: #6B7280; }
+.counter-form { margin-top: 12px; padding: 14px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; }
+.counter-form-title { font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 10px; }
+.counter-input-row { display: flex; align-items: center; background: white; border: 1.5px solid #E5E7EB; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+.counter-prefix { padding: 0 4px 0 10px; font-size: 14px; font-weight: 600; color: #9CA3AF; }
+.counter-input { flex: 1; border: none; padding: 10px 10px 10px 4px; font-size: 14px; outline: none; }
+.counter-msg { width: 100%; border: 1.5px solid #E5E7EB; border-radius: 8px; padding: 8px 10px; font-size: 13px; resize: vertical; margin-bottom: 8px; box-sizing: border-box; }
+.counter-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.counter-btn { border: none; padding: 7px 16px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 500; }
+.counter-btn.cancel { background: #F3F4F6; color: #6B7280; }
+.counter-btn.submit { background: #3B82F6; color: white; }
+
+/* ===== File Upload ===== */
+.file-upload-section { padding: 4px 0; }
+.file-upload-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 8px; }
+.file-upload-zone { border: 2px dashed #D1D5DB; border-radius: 12px; padding: 24px 16px; text-align: center; cursor: pointer; transition: all .2s; background: #F9FAFB; }
+.file-upload-zone:hover { border-color: #6366F1; background: #EEF2FF; }
+.file-upload-zone svg { color: #9CA3AF; margin-bottom: 8px; }
+.file-upload-zone:hover svg { color: #6366F1; }
+.file-upload-zone p { margin: 0; font-size: 13px; color: #6B7280; }
+.file-upload-hint { display: block; font-size: 11px; color: #9CA3AF; margin-top: 4px; }
+.file-preview-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.file-preview-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #F3F4F6; border-radius: 8px; font-size: 13px; }
+.file-icon { flex-shrink: 0; font-size: 16px; }
+.file-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #374151; }
+.file-size { color: #9CA3AF; font-size: 11px; white-space: nowrap; }
+.file-remove-btn { border: none; background: none; color: #EF4444; cursor: pointer; font-size: 14px; padding: 2px 4px; line-height: 1; }
+
+/* ===== Post File Display ===== */
+.post-files-section { margin: 12px 0; padding: 14px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; }
+.post-files-title { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 10px; }
+.post-files-list { display: flex; flex-direction: column; gap: 8px; }
+.post-file-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: white; border: 1px solid #E5E7EB; border-radius: 8px; text-decoration: none; transition: box-shadow .2s; }
+.post-file-item:hover { box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.post-file-icon { font-size: 20px; flex-shrink: 0; }
+.post-file-info { flex: 1; min-width: 0; }
+.post-file-name { display: block; font-size: 13px; font-weight: 500; color: #1F2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.post-file-size { font-size: 11px; color: #9CA3AF; }
+.post-file-download { font-size: 12px; color: #6366F1; font-weight: 500; white-space: nowrap; }
