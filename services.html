@@ -235,7 +235,7 @@
       var posterColor = p.isAnonymous ? (p.category === 'confess' ? '#EC4899' : '#7C3AED') : p.authorAvatarColor;
       var tagLabel = (p.isAnonymous ? '匿名 ' : '') + (SERVICE_TYPES[p.category] ? SERVICE_TYPES[p.category].name : p.category);
       var campusLabel = p.campus || '';
-      return '<div class="svc-post-item stagger-item hover-lift tap-active" onclick="openPostDetail(\'' + p.id + '\')" style="animation-delay:' + (i * 30) + 'ms;cursor:pointer">'
+      return '<div class="svc-post-item hover-lift tap-active" onclick="openPostDetail(\'' + p.id + '\')" style="cursor:pointer">'
         + '<div class="svc-post-left" style="background:' + posterBg + ';color:' + posterColor + '">' + posterAvatar + '</div>'
         + '<div class="svc-post-main">'
         + '<div class="svc-post-title">' + escHtml(p.title) + '</div>'
@@ -277,7 +277,7 @@
     }
     renderSvcPosts();
     var postList = document.getElementById('svcPostList');
-    if (postList) postList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (postList) postList.scrollIntoView({ behavior: 'auto', block: 'nearest' });
   }
 
   // 暴露到全局供HTML onclick使用
