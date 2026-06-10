@@ -4560,3 +4560,8 @@ a:active {
 .post-file-name { display: block; font-size: 13px; font-weight: 500; color: #1F2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .post-file-size { font-size: 11px; color: #9CA3AF; }
 .post-file-download { font-size: 12px; color: #6366F1; font-weight: 500; white-space: nowrap; }
+
+/* ---- Aside Cards Polish ---- */
+.aside-card + .aside-card { margin-top: 16px; }.aside-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }.aside-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }.aside-btn { width:100%; padding:12px; background:var(--brand); color:white; border:none; border-radius:10px; font-size:14px; font-weight:600; margin-bottom:8px; cursor:pointer; transition:all 0.2s ease; }.aside-btn:hover { background:#4338CA; transform:translateY(-1px); box-shadow:0 4px 12px rgba(79,70,229,0.3); }.aside-btn:active { transform:translateY(0); }.aside-hint { font-size:12px; color:var(--text-muted); text-align:center; }.topic-tag { padding:5px 12px; border-radius:20px; font-size:12px; cursor:pointer; transition:all 0.2s ease; display:inline-block; }.topic-tag:hover { transform:translateY(-1px); filter:brightness(0.95); box-shadow:0 2px 8px rgba(0,0,0,0.08); }.load-more-btn { transition: all 0.2s ease; }.load-more-btn:hover { background: var(--bg); color: var(--brand); border-color: var(--brand); transform: translateY(-1px); }
+
+.topic-tags { display: flex; flex-wrap: wrap; gap: 8px; }
