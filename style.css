@@ -4456,6 +4456,36 @@ a:active {
 }
 
 
+
+/* ---- 私信页面优化 ---- */
+.conv-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--border-light);
+  position: relative;
+}
+.conv-item:hover { background: var(--bg); transform: translateX(2px); }
+.conv-item.active { background: var(--brand-light); border-left: 3px solid var(--brand); }
+.conv-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 600;
+  flex-shrink: 0;
+}
+.conv-info { flex: 1; min-width: 0; }
+.conv-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.conv-preview { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv-time { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+.conv-unread { background: #EF4444; color: white; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; min-width: 18px; text-align: center; }
+.msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; position: relative; transition: all 0.15s ease; }
+.msg-bubble.left { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; align-self: flex-start; }
+.msg-bubble.right { background: var(--brand); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+
 /* ---- 天气区域入场动画 ---- */
 .weather-card .mi-weather-hero {
   animation: miHeroIn 0.5s cubic-bezier(.4,0,.2,1) forwards;
