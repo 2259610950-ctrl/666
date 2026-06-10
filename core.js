@@ -2208,14 +2208,19 @@ async function refreshWeather(campus) {
 async function renderNavWeather(campus) {
   var el = document.getElementById('navWeather');
   if (!el) return;
-
+  el.innerHTML = '<span class="nav-weather-loading">…</span>';
   var data = await fetchCampusWeather(campus);
   if (!data) { el.textContent = ''; return; }
-
   var wi = getWeatherInfo(data.current.weather_code);
-  el.innerHTML = '<span class="nav-weather-icon">' + wi.icon + '</span><span class="nav-weather-temp">' + Math.round(data.current.temperature_2m) + '°</span>';
+  var temp = Math.round(data.current.temperature_2m);
+  var feels = Math.round(data.current.apparent_temperature);
+  var humidity = data.current.relative_humidity_2m;
+  var desc = wi ? wi.text : '';
+  el.innerHTML = '<span class="nav-weather-icon">' + wi.icon + '</span>'
+    + '<span class="nav-weather-temp">' + temp + '°</span>'
+    + '<span class="nav-weather-desc">' + desc + '</span>'
+    + '<span class="nav-weather-feels">体感' + feels + '°</span>';
 }
-
 // ---- 校区切换 → 天气联动 ----
 window.addEventListener('campusChanged', function(e) {
   var campus = e.detail;

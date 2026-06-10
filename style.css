@@ -4412,13 +4412,47 @@ a:active {
 
 /* 导航栏迷你天气 */
 .nav-weather {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 2px;
-  font-size: 13px;
-  color: #64748b;
-  margin-right: 4px;
+  gap: 3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--brand-light);
   cursor: default;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+.nav-weather:hover {
+  background: #E0E7FF;
+}
+.nav-weather-loading {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.nav-weather-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+.nav-weather-temp {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: -0.5px;
+}
+.nav-weather-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: none;
+}
+.nav-weather-feels {
+  font-size: 10px;
+  color: var(--text-muted);
+  display: none;
+}
+@media (min-width: 640px) {
+  .nav-weather-desc { display: inline; }
+  .nav-weather-feels { display: inline; }
 }
 .nav-weather-icon {
   font-size: 15px;
