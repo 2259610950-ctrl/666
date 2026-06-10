@@ -520,7 +520,7 @@ function renderNav(activeLink) {
   if (navAvatar) {
     navAvatar.style.background = user.avatarBg;
     navAvatar.style.color = user.avatarColor;
-    navAvatar.textContent = user.avatarText;
+    navAvatar.textContent = user.avatarText || (user.name ? user.name.charAt(0) : '用');
   }
   const navName = document.getElementById('navUserName');
   if (navName) navName.textContent = user.name;
