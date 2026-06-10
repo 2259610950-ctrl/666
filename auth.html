@@ -245,14 +245,12 @@ async function handleLogin(e) {
   // 先尝试云端登录
   if (CloudSync.enabled) {
     var result = await CloudSync.login(stuId, pwd);
-    if (result && !result.error) {
-      // 云端登录成功，拉取数据到本地
+    // 云端登录成功
+    if (result && !result.error && result.token) {
       localStorage.setItem('wkust_currentUser', stuId);
       await CloudSync.pullAll();
-      // 如果服务器没数据（新部署），将本地样本数据推上去
       var initStatus = await CloudSync.getInitStatus();
       if (initStatus && !initStatus.sampleInited) {
-        // 本地初始化样本数据，然后推送
         initSampleData();
         await CloudSync.pushAll();
       }
@@ -261,34 +259,32 @@ async function handleLogin(e) {
       });
       return;
     }
-    // 云端登录失败，显示错误
+    // 云端返回明确错误（学号未注册/密码错误等）
     if (result && result.error) {
-      // 如果是"学号未注册"，可能是服务器新部署，尝试本地
-      if (result.error === '该学号未注册') {
-        // 尝试本地登录
+      // 服务器说"未注册"，但本地有该用户 → 服务器重启丢数据了，自动恢复注册
+      if (result.error.includes('未注册')) {
         var localUsers = JSON.parse(localStorage.getItem('wkust_users') || '{}');
         var localUser = localUsers[stuId];
-        if (localUser) {
-          if (localUser.password !== pwd) {
-            errEl.textContent = '密码错误，请重试';
+        if (localUser && localUser.password === pwd) {
+          var regResult = await CloudSync.register({
+            stuId: stuId, name: localUser.name, password: pwd,
+            campus: localUser.campus, college: localUser.college,
+            major: localUser.major, grade: localUser.grade
+          });
+          if (regResult && regResult.token) {
+            localStorage.setItem('wkust_currentUser', stuId);
+            await CloudSync.pushAll();
+            showAuthToast('登录成功，欢迎回来 ' + localUser.name + '！', () => {
+              window.location.href = 'index.html';
+            });
             return;
           }
-          // 本地登录成功，注册到云端并同步
-          localStorage.setItem('wkust_currentUser', stuId);
-          // 把本地用户推到云端
-          await CloudSync.pushAll();
-          showAuthToast('登录成功，欢迎回来 ' + localUser.name + '！', () => {
-            window.location.href = 'index.html';
-          });
-          return;
         }
-        errEl.textContent = '学号不存在，请先注册';
-        return;
       }
       errEl.textContent = result.error;
       return;
     }
-    // 网络错误，回退本地登录
+    // result 为 null = 网络错误，回退本地登录
     console.warn('云端登录失败，回退本地模式');
   }
 
@@ -336,11 +332,10 @@ async function handleRegister(e) {
       stuId: stuId, name: name, password: pwd,
       campus: campus, college: college, major: major, grade: grade
     });
-    if (result && !result.error) {
-      // 云端注册成功
+    // 云端注册成功
+    if (result && !result.error && result.token) {
       localStorage.setItem('wkust_currentUser', stuId);
       await CloudSync.pullAll();
-      // 如果服务器还没样本数据，初始化并推送
       var initStatus = await CloudSync.getInitStatus();
       if (initStatus && !initStatus.sampleInited) {
         initSampleData();
@@ -351,11 +346,12 @@ async function handleRegister(e) {
       });
       return;
     }
-    if (result && result.error === '该学号已注册') {
-      errEl.textContent = '该学号已注册，请直接登录';
+    // 云端返回明确错误（学号已注册等）
+    if (result && result.error) {
+      errEl.textContent = result.error;
       return;
     }
-    // 其他错误，回退本地注册
+    // result 为 null = 网络错误，回退本地注册
     console.warn('云端注册失败，回退本地模式');
   }
 

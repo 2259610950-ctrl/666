@@ -585,7 +585,7 @@ app.post('/api/auth/login', (req, res) => {
     }
 
     if (user.password !== password) {
-      return res.status(401).json({ error: '密码错误' });
+      return res.status(400).json({ error: '密码错误' });
     }
 
     const token = generateToken(stuId);

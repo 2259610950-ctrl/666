@@ -80,14 +80,15 @@ var CloudSync = {
         if (body !== undefined) opts.body = JSON.stringify(body);
 
         fetch(self.baseURL + path, opts).then(function(resp) {
+          // Token 过期，清除本地 token，但原样返回服务器错误信息
           if (resp.status === 401) {
-            // Token 过期，清除
             self.setToken('');
-            resolve({ _error: 'unauthorized' });
-            return;
           }
           return resp.json().then(function(data) {
             resolve(data);
+          }).catch(function() {
+            // 响应体不是合法 JSON，构造通用错误
+            resolve({ error: '服务器响应格式错误，请稍后重试' });
           });
         }).catch(function(e) {
           console.warn('[CloudSync] 请求失败:', path, e.message);
