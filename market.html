@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二手集市 - 武汉科技大学社区</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
+<script>
+(function(){
+  try{
+    var beacon=new BeaconAction({
+      appkey:'0WEB06U85YBSLJNL',
+      versionCode:'1.0.0',
+      channelID:'share',
+      delay:1000,
+      sessionDuration:30*60*1000,
+      isOversea:false,
+      needReportRqdEvent:false
+    });
+    beacon.onDirectUserAction('preview_page_view',{
+      'url':location.href,
+      'referrer':document.referrer,
+      'title':document.title,
+      'sandbox_id':'86e8fde96b8f4b9ba775ba6d51502ffc'
+    });
+  }catch(e){}
+})();
+</script></head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <div class="nav-brand"><div class="brand-icon">武</div><span class="brand-name">武科大社区</span><span class="brand-tag" id="navCampusBadge">校区</span></div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">首页</a><a href="academic.html" class="nav-link">学术广场</a>
+      <a href="market.html" class="nav-link active">二手集市</a>
+      <a href="services.html" class="nav-link">帮帮</a><a href="social.html" class="nav-link">社交动态</a>
+      <a href="career.html" class="nav-link">职业内推</a><a href="activity.html" class="nav-link">活动约伴</a>
+    </div>
+    <div class="nav-actions">
+      <div class="nav-weather" id="navWeather"></div>
+      <button class="btn-icon" id="searchBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+      <div class="user-menu-wrap"><div class="avatar-wrap" id="navAvatarWrap"><div class="avatar" id="navAvatar" style="cursor:pointer">用</div></div>
+        <div class="user-menu" id="userMenu"><div class="user-info-mini"><div class="user-info-name" id="navUserName">加载中</div><div class="user-info-sub" id="navUserSub">武汉科技大学</div></div>
+          <div class="user-menu-item" onclick="window.location='profile.html'">个人主页</div><div class="user-menu-divider"></div><div class="user-menu-item danger" onclick="logout()">退出登录</div></div></div>
+    </div>
+  </div>
+</nav>
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="搜索二手商品..." id="searchInput" autofocus><button onclick="closeSearch()">取消</button></div>
+</div>
+
+<section class="page-hero" style="background:linear-gradient(135deg,#059669 0%,#047857 100%)">
+  <div class="page-hero-inner">
+    <h1>🛍️ 二手集市</h1>
+    <p>校内安全交易 · 教材书籍 · 数码设备 · 生活物品置换 · 拍照上传真实可靠</p>
+    <div class="page-hero-actions">
+      <button class="btn-primary" onclick="openSellModal()">📸 我要出售</button>
+      <button class="btn-outline" onclick="openWantModal()">📥 我要求购</button>
+    </div>
+  </div>
+</section>
+
+<div class="page-container">
+  <div class="two-col">
+    <div>
+      <div class="filter-bar">
+        <span class="filter-label">分类：</span>
+        <span class="filter-tag active" onclick="filterMarket('all',this)">全部</span>
+        <span class="filter-tag" onclick="filterMarket('book',this)">📚 教材书籍</span>
+        <span class="filter-tag" onclick="filterMarket('digital',this)">💻 数码设备</span>
+        <span class="filter-tag" onclick="filterMarket('sport',this)">⚽ 运动器材</span>
+        <span class="filter-tag" onclick="filterMarket('life',this)">🏠 生活用品</span>
+        <span class="filter-tag" onclick="filterMarket('other',this)">📦 其他</span>
+        <div class="market-sort">
+          <select id="sortSelect" onchange="sortMarket(this.value)">
+            <option value="newest">最新发布</option>
+            <option value="cheapest">价格从低</option>
+            <option value="priciest">价格从高</option>
+          </select>
+        </div>
+      </div>
+      <div class="market-grid" id="marketGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:60px;color:#9CA3AF">加载中...</div>
+      </div>
+      <button class="load-more-btn" id="loadMoreMkt" onclick="loadMoreMarket()">浏览更多商品 ↓</button>
+    </div>
+    <aside>
+      <!-- 校区天气 -->
+      <div class="aside-card weather-card" id="weatherCard" style="margin-bottom:16px">
+        <div class="mi-weather-loading"><div class="mi-weather-spinner"></div><span>正在获取天气…</span></div>
+      </div>
+      <div class="aside-card" style="margin-bottom:16px">
+        <p class="aside-title">🔒 安全交易提示</p>
+        <div style="font-size:13px;color:#6B7280;line-height:2">
+          ✅ 建议在校内公共区域面交<br>
+          ✅ 当面验货确认后付款<br>
+          ✅ 查看实物照片确认成色<br>
+          ✅ 保留聊天记录备查<br>
+          ⚠️ 遇到可疑行为请举报
+        </div>
+      </div>
+      <div class="aside-card" style="margin-bottom:16px">
+        <p class="aside-title">📊 今日统计</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="text-align:center;padding:16px 12px;background:#F0FDF4;border-radius:12px">
+            <div style="font-size:28px;font-weight:800;color:#059669" id="totalSell">—</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px">在售商品</div>
+          </div>
+          <div style="text-align:center;padding:16px 12px;background:#EEF2FF;border-radius:12px">
+            <div style="font-size:28px;font-weight:800;color:#4F46E5" id="todaySell">—</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px">今日发布</div>
+          </div>
+        </div>
+      </div>
+      <div class="aside-card" style="margin-bottom:16px;cursor:pointer" onclick="openMyBargains()">
+        <p class="aside-title">🤝 我的砍价</p>
+        <div style="font-size:13px;color:#6B7280;line-height:1.8" id="bargainSummaryCard">
+          加载中...
+        </div>
+      </div>
+      <div class="aside-card" style="margin-bottom:16px;cursor:pointer" onclick="openMyPurchaseRequests()">
+        <p class="aside-title">💰 购买申请</p>
+        <div style="font-size:13px;color:#6B7280;line-height:1.8" id="purchaseSummaryCard">
+          加载中...
+        </div>
+      </div>
+      <div class="aside-card">
+        <p class="aside-title">🔥 热卖分类</p>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid #F3F4F6">
+            <span>📚 教材书籍</span><span style="color:#059669;font-weight:600">均价 ¥25</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid #F3F4F6">
+            <span>💻 数码设备</span><span style="color:#059669;font-weight:600">均价 ¥680</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid #F3F4F6">
+            <span>⚽ 运动器材</span><span style="color:#059669;font-weight:600">均价 ¥120</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:8px 0">
+            <span>🏠 生活用品</span><span style="color:#059669;font-weight:600">均价 ¥45</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-brand"><div class="brand-icon sm">武</div><span>武汉科技大学校园社区</span></div>
+    <p class="footer-copy">仅限武汉科技大学在校师生使用</p>
+  </div>
+</footer>
+<button class="fab" onclick="openSellModal()" title="发布出售">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<script src="core.js"></script>
+<script>
+const currentUser = requireAuth();
+renderNav('market.html');
+renderNavWeather(DB.getCurrentUser()?.campus || '青山校区');
+document.getElementById('navAvatarWrap').addEventListener('click', () => document.getElementById('userMenu').classList.toggle('open'));
+document.addEventListener('click', e => { if (!document.getElementById('navAvatarWrap').contains(e.target)) document.getElementById('userMenu').classList.remove('open'); });
+
+let mktCount = 9;
+let currentFilter = 'all';
+let currentSort = 'newest';
+let uploadedImages = []; // base64 images array
+
+// ===== 渲染商品卡片 =====
+function renderMarket(filter) {
+  let posts = DB.getPosts().filter(p => p.type === 'market');
+  const grid = document.getElementById('marketGrid');
+
+  // Stats - 使用新的统计函数
+  const mStats = getMarketStats();
+  document.getElementById('totalSell').textContent = mStats.active;
+  const today = new Date().toDateString();
+  document.getElementById('todaySell').textContent = posts.filter(p => new Date(p.time).toDateString() === today).length;
+
+  if (!posts.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:80px 20px;color:#9CA3AF"><div style="font-size:56px;margin-bottom:12px">🛍️</div><div style="font-size:16px;font-weight:500;margin-bottom:4px">还没有商品</div><div style="font-size:13px">点击"我要出售"发布第一个商品吧！</div></div>';
+    document.getElementById('loadMoreMkt').style.display = 'none';
+    return;
+  }
+
+  // Filter by category
+  if (filter && filter !== 'all') {
+    const cats = { book: ['教材','书籍','书','笔记'], digital: ['数码','电脑','手机','平板','耳机'], sport: ['运动','篮球','足球','羽毛球','健身','器材'], life: ['生活','衣物','日用品','用品'] };
+    const kws = cats[filter] || [filter];
+    posts = posts.filter(p => {
+      if (p.category === filter) return true;
+      const txt = (p.title + ' ' + p.content + ' ' + (p.category||'')).toLowerCase();
+      return kws.some(k => txt.includes(k.toLowerCase()));
+    });
+  }
+
+  // Sort - 活跃商品优先，然后按当前排序
+  const activePosts = posts.filter(p => !p.status || p.status === null);
+  const inactivePosts = posts.filter(p => p.status === 'sold' || p.status === 'delisted');
+  if (currentSort === 'newest') {
+    activePosts.sort((a,b) => new Date(b.time) - new Date(a.time));
+    inactivePosts.sort((a,b) => new Date(b.time) - new Date(a.time));
+  } else if (currentSort === 'cheapest') {
+    activePosts.sort((a,b) => (parseFloat(a.price)||99999) - (parseFloat(b.price)||99999));
+    inactivePosts.sort((a,b) => (parseFloat(a.price)||99999) - (parseFloat(b.price)||99999));
+  } else if (currentSort === 'priciest') {
+    activePosts.sort((a,b) => (parseFloat(b.price)||0) - (parseFloat(a.price)||0));
+    inactivePosts.sort((a,b) => (parseFloat(b.price)||0) - (parseFloat(a.price)||0));
+  }
+  const sortedPosts = [...activePosts, ...inactivePosts];
+
+  const toShow = sortedPosts.slice(0, mktCount);
+  const categoryEmojis = { book: '📚', digital: '💻', sport: '⚽', life: '🏠', other: '📦' };
+
+  grid.innerHTML = toShow.map((p, i) => {
+    const hasImage = p.images && p.images.length > 0;
+    const catEmoji = p.category ? (categoryEmojis[p.category] || '🛍️') : '🛍️';
+    const isSold = p.status === 'sold';
+    const isDelisted = p.status === 'delisted';
+    const isInactive = isSold || isDelisted;
+    const isMyItem = currentUser && p.authorId === currentUser.stuId;
+    const pBargains = getBargainsForPost(p.id);
+    const pendingBargainCount = pBargains.filter(b => b.status === 'pending' || b.status === 'countered').length;
+    const pPurchaseReqs = getPurchaseRequestsForPost(p.id);
+    const pendingPurchaseCount = pPurchaseReqs.filter(r => r.status === 'pending').length;
+
+    return `
+    <div class="market-item${isSold ? ' sold' : isDelisted ? ' delisted' : ''}" onclick="${isInactive ? (isMyItem ? `openPostDetail('${p.id}')` : `showToast('该商品${isSold ? '已售出' : '已下架'}','warn')`) : `openPostDetail('${p.id}')`}">
+      <div class="market-img">
+        ${hasImage
+          ? `<img src="${p.images[0]}" alt="${escHtml(p.title)}" loading="lazy">`
+          : `<div class="market-img-placeholder">${catEmoji}</div>`}
+        ${p.images && p.images.length > 1 ? `<span class="market-img-tag">📷 ${p.images.length}张</span>` : ''}
+        ${!isInactive ? `<span class="market-condition">${p.condition || '面交'}</span>` : ''}
+        ${isMyItem && pendingBargainCount > 0 ? `<span class="bargain-card-tag">🤝 ${pendingBargainCount}条砍价</span>` : ''}
+        ${isMyItem && pendingPurchaseCount > 0 ? `<span class="purchase-card-tag">💰 ${pendingPurchaseCount}人想买</span>` : ''}
+        ${isSold ? `<div class="market-status-badge sold">已售出</div>` : ''}
+        ${isDelisted ? `<div class="market-status-badge delisted">已下架</div>` : ''}
+        ${isMyItem && isDelisted ? `<div class="market-status-actions">
+          <button class="btn-mkt-action btn-mkt-relist" onclick="event.stopPropagation(); quickRelist('${p.id}')">🔄 重新上架</button>
+        </div>` : ''}
+        ${isMyItem && isSold ? `<div class="market-status-actions">
+          <button class="btn-mkt-action btn-mkt-relist" onclick="event.stopPropagation(); quickRelist('${p.id}')">🔄 重新上架</button>
+        </div>` : ''}
+      </div>
+      ${isMyItem && !isInactive ? `
+      <div class="mkt-owner-actions">
+        <button class="mkt-owner-btn mkt-owner-sold" onclick="event.stopPropagation(); quickMarkSold('${p.id}')">已售出</button>
+        <button class="mkt-owner-btn mkt-owner-delist" onclick="event.stopPropagation(); quickDelist('${p.id}')">下架</button>
+      </div>` : ''}
+      <div class="market-body">
+        <p class="market-name">${escHtml(p.title || p.content.slice(0, 40))}</p>
+        <div class="market-price-row">
+          <span class="market-price">${isInactive ? (isSold ? '已售出' : '已下架') : ('¥' + (p.price || '面议'))}</span>
+          ${p.originalPrice && !isInactive ? `<span class="market-orig">¥${p.originalPrice}</span>` : ''}
+        </div>
+        <div class="market-seller">
+          <div class="market-seller-avatar" style="background:${p.authorAvatarBg};color:${p.authorAvatarColor}">${p.authorAvatar}</div>
+          <div class="market-seller-info">
+            <span class="market-seller-name">${p.authorName}</span>
+            <span>·</span>
+            <span>${timeAgo(p.time)}</span>
+          </div>
+          <span style="color:#6B7280;font-size:11px">🏫 ${p.campus === '青山校区' ? '青山' : '黄家湖'}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const moreBtn = document.getElementById('loadMoreMkt');
+  moreBtn.style.display = sortedPosts.length > mktCount ? 'block' : 'none';
+  if (sortedPosts.length > mktCount) {
+    moreBtn.textContent = `浏览更多商品 ↓（还有 ${sortedPosts.length - mktCount} 件）`;
+  }
+}
+
+// ===== 卡片级别快捷操作（从卡片按钮直接调用） =====
+function quickMarkSold(postId) {
+  if (!confirm('确定将该商品标记为"已售出"吗？')) return;
+  markItemSold(postId);
+  showToast('已标记为"已售出"', 'success');
+  renderMarket(currentFilter);
+}
+
+function quickDelist(postId) {
+  const post = getPostById(postId);
+  const action = post && post.status === 'delisted' ? '上架' : '下架';
+  if (!confirm(`确定${action}该商品吗？`)) return;
+  toggleDelist(postId);
+  showToast(`商品已${action}`, 'success');
+  renderMarket(currentFilter);
+}
+
+function quickRelist(postId) {
+  if (!confirm('确定重新上架该商品吗？')) return;
+  const posts = DB.getPosts();
+  const idx = posts.findIndex(p => p.id === postId);
+  if (idx !== -1) { posts[idx].status = null; delete posts[idx].soldAt; delete posts[idx].delistedAt; DB.set('posts', posts); }
+  showToast('商品已重新上架', 'success');
+  renderMarket(currentFilter);
+}
+
+function filterMarket(type, el) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-bar .filter-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  mktCount = 9;
+  renderMarket(type);
+}
+
+function sortMarket(val) {
+  currentSort = val;
+  mktCount = 9;
+  renderMarket(currentFilter);
+}
+
+function loadMoreMarket() { mktCount += 9; renderMarket(currentFilter); }
+
+// ===== 图片上传逻辑 =====
+function initImageUpload() {
+  uploadedImages = [];
+  const zone = document.getElementById('uploadZone');
+  const input = document.getElementById('imageInput');
+  const previews = document.getElementById('imagePreviews');
+
+  zone.addEventListener('click', () => input.click());
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = '#4F46E5'; zone.style.background = '#EEF2FF'; });
+  zone.addEventListener('dragleave', () => { zone.style.borderColor = '#D1D5DB'; zone.style.background = '#FAFBFC'; });
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.style.borderColor = '#D1D5DB';
+    zone.style.background = '#FAFBFC';
+    handleFiles(e.dataTransfer.files);
+  });
+
+  input.addEventListener('change', () => handleFiles(input.files));
+
+  renderPreviews();
+}
+
+function handleFiles(files) {
+  if (uploadedImages.length >= 6) { showToast('最多上传6张图片', 'warn'); return; }
+  Array.from(files).slice(0, 6 - uploadedImages.length).forEach(file => {
+    if (!file.type.startsWith('image/')) { showToast('请选择图片文件', 'warn'); return; }
+    if (file.size > 8 * 1024 * 1024) { showToast('单张图片不超过8MB', 'warn'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadedImages.push(e.target.result);
+      renderPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('imageInput').value = '';
+}
+
+function renderPreviews() {
+  const previews = document.getElementById('imagePreviews');
+  if (!previews) return;
+  const uploadZone = document.getElementById('uploadZone');
+  previews.innerHTML = uploadedImages.map((img, i) => `
+    <div class="image-preview-item">
+      <img src="${img}" alt="预览图${i+1}">
+      <span class="image-preview-remove" onclick="event.stopPropagation(); removeImage(${i})">✕</span>
+    </div>`).join('');
+  if (uploadedImages.length < 6) {
+    previews.innerHTML += '<div class="image-preview-add" onclick="document.getElementById(\'imageInput\').click()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>添加</div>';
+  }
+  uploadZone.style.display = uploadedImages.length >= 6 ? 'none' : 'block';
+  document.getElementById('uploadHint').textContent = uploadedImages.length > 0
+    ? `已选择 ${uploadedImages.length}/6 张图片`
+    : '支持 JPG/PNG/WebP，单张不超过 8MB，最多 6 张';
+}
+
+function removeImage(i) {
+  uploadedImages.splice(i, 1);
+  renderPreviews();
+}
+
+// ===== 发布出售模态框 =====
+function openSellModal() {
+  uploadedImages = [];
+  openModal(`
+    <div class="create-post-form">
+      <h3>📸 发布二手出售</h3>
+      <p class="post-sub-info">发布者：${currentUser?.name} · ${currentUser?.campus}</p>
+      <input class="post-form-input" id="mTitle" placeholder="商品名称（如：高等数学同济版第七版）" maxlength="60">
+      <div class="extra-fields">
+        <div>
+          <label>商品分类</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+            <span class="post-type-btn active" onclick="selectMktCat('book',this)">📚 教材书籍</span>
+            <span class="post-type-btn" onclick="selectMktCat('digital',this)">💻 数码设备</span>
+            <span class="post-type-btn" onclick="selectMktCat('sport',this)">⚽ 运动器材</span>
+            <span class="post-type-btn" onclick="selectMktCat('life',this)">🏠 生活用品</span>
+            <span class="post-type-btn" onclick="selectMktCat('other',this)">📦 其他</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 图片上传 -->
+      <div class="image-previews" id="imagePreviews"></div>
+      <div class="image-upload-zone" id="uploadZone">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div class="image-upload-hint">点击或拖拽上传商品图片<br><span id="uploadHint">支持 JPG/PNG/WebP，单张不超过 8MB，最多 6 张</span></div>
+      </div>
+      <input type="file" id="imageInput" accept="image/*" multiple hidden>
+
+      <textarea class="post-form-textarea" id="mContent" placeholder="详细描述：成色、使用情况、交易方式..." rows="4" maxlength="500"></textarea>
+      <div class="post-form-row">
+        <input class="post-form-input" id="mPrice" placeholder="出售价格（¥）" type="number" min="0" step="0.01">
+        <input class="post-form-input" id="mOrig" placeholder="原价（¥）" type="number" min="0" step="0.01">
+        <input class="post-form-input" id="mCond" placeholder="成色（如：9成新）" maxlength="10">
+      </div>
+      <button class="btn-submit-post" onclick="doSell()">📤 发布出售</button>
+    </div>`);
+
+  initImageUpload();
+  // auto-focus title
+  setTimeout(() => document.getElementById('mTitle')?.focus(), 300);
+}
+
+let selectedMktCat = 'book';
+function selectMktCat(cat, el) {
+  selectedMktCat = cat;
+  document.querySelectorAll('.post-type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function doSell() {
+  const title = document.getElementById('mTitle').value.trim();
+  const content = document.getElementById('mContent').value.trim();
+  if (!title || !content) { showToast('请填写商品名称和描述', 'warn'); return; }
+
+  const post = createPost({
+    type: 'market',
+    category: selectedMktCat,
+    title,
+    content,
+    price: document.getElementById('mPrice').value || '',
+    originalPrice: document.getElementById('mOrig').value || '',
+    condition: document.getElementById('mCond').value || '',
+    images: uploadedImages
+  });
+
+  if (post) {
+    closeModal();
+    mktCount = 9;
+    renderMarket(currentFilter);
+    showToast('发布成功！', 'success');
+  }
+}
+
+// ===== 求购模态框 =====
+function openWantModal() {
+  openModal(`
+    <div class="create-post-form">
+      <h3>📥 发布求购信息</h3>
+      <p class="post-sub-info">发布者：${currentUser?.name} · ${currentUser?.campus}</p>
+      <input class="post-form-input" id="wTitle" placeholder="求购物品名称" maxlength="60">
+      <textarea class="post-form-textarea" id="wContent" placeholder="详细说明需求、可接受价格范围..." rows="4" maxlength="500"></textarea>
+      <button class="btn-submit-post" style="background:#F59E0B" onclick="doWant()">📥 发布求购</button>
+    </div>`);
+  setTimeout(() => document.getElementById('wTitle')?.focus(), 300);
+}
+
+function doWant() {
+  const title = document.getElementById('wTitle').value.trim();
+  const content = document.getElementById('wContent').value.trim();
+  if (!content) { showToast('请填写需求描述', 'warn'); return; }
+  const post = createPost({
+    type: 'market', category: 'other',
+    title: '【求购】' + (title || '物品'),
+    content,
+    images: []
+  });
+  if (post) {
+    closeModal();
+    mktCount = 9;
+    renderMarket(currentFilter);
+    showToast('发布成功！', 'success');
+  }
+}
+
+// ===== 砍价摘要卡片渲染 =====
+function renderBargainSummary() {
+  if (!currentUser) return;
+  const card = document.getElementById('bargainSummaryCard');
+  if (!card) return;
+
+  const sellerBargains = getBargainsForSeller(currentUser.stuId);
+  const buyerBargains = getBargainsForBuyer(currentUser.stuId);
+  const pendingSeller = sellerBargains.filter(b => b.status === 'pending' || b.status === 'countered').length;
+  const pendingBuyer = buyerBargains.filter(b => b.status === 'pending' || b.status === 'countered').length;
+
+  let html = '';
+  if (pendingSeller > 0) {
+    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">${pendingSeller}条待处理</span> 收到的砍价</div>`;
+  }
+  if (pendingBuyer > 0) {
+    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="background:#DBEAFE;color:#1E40AF;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">${pendingBuyer}条进行中</span> 我发起的砍价</div>`;
+  }
+  if (!pendingSeller && !pendingBuyer) {
+    html = '暂无砍价记录<br><span style="font-size:11px;color:#9CA3AF">点击商品详情可以发起砍价</span>';
+  }
+  card.innerHTML = html;
+}
+
+// ===== 我的砍价模态框 =====
+function openMyBargains() {
+  if (!currentUser) return;
+  const sellerBargains = getBargainsForSeller(currentUser.stuId);
+  const buyerBargains = getBargainsForBuyer(currentUser.stuId);
+
+  const statusLabels = { pending: '⏳ 待回复', accepted: '✅ 已接受', rejected: '❌ 已拒绝', countered: '🔄 已还价', withdrawn: '↩️ 已撤回' };
+
+  function renderBargainList(bargains, role) {
+    if (!bargains.length) return '<div class="bargain-list-empty"><div class="empty-icon">' + (role === 'seller' ? '📦' : '🤝') + '</div><div>暂无' + (role === 'seller' ? '收到的砍价' : '发起的砍价') + '</div></div>';
+    return bargains.map(b => {
+      const isBuyer = role !== 'seller';
+      const otherName = isBuyer ? (getPostById(b.postId)?.authorName || '卖家') : b.fromUserName;
+      return '<div class="bargain-item" onclick="closeModal();setTimeout(function(){openPostDetail(\'' + b.postId + '\')},350)" style="cursor:pointer">' +
+        '<div class="bargain-item-header">' +
+          (b.postImage ? '<img src="' + b.postImage + '" style="width:32px;height:32px;border-radius:6px;object-fit:cover">' : '<div class="bargain-item-avatar" style="background:#F3F4F6;color:#6B7280">🛍️</div>') +
+          '<span class="bargain-item-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(b.postTitle) + '</span>' +
+          '<span class="bargain-status-badge ' + b.status + '">' + (statusLabels[b.status] || b.status) + '</span>' +
+        '</div>' +
+        '<div class="bargain-item-body" style="padding-left:40px">' +
+          '<div class="bargain-item-prices">' +
+            '<span class="bargain-item-offer">¥' + b.offerPrice + '</span>' +
+            (b.counterPrice ? '<span class="bargain-item-arrow">→</span><span class="bargain-item-counter">¥' + b.counterPrice + '</span>' : '') +
+            '<span style="color:#9CA3AF;font-size:11px;margin-left:auto">' + timeAgo(b.time) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  const html = '<div style="max-height:70vh;overflow-y:auto">' +
+    '<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:#1F2937">🤝 我的砍价</h3>' +
+    '<div class="bargain-tab-bar">' +
+      '<button class="bargain-tab active" id="tabReceived" onclick="switchBargainTab(\'received\')">收到的砍价 (' + sellerBargains.length + ')</button>' +
+      '<button class="bargain-tab" id="tabSent" onclick="switchBargainTab(\'sent\')">我发起的 (' + buyerBargains.length + ')</button>' +
+    '</div>' +
+    '<div id="bargainTabContent">' +
+      renderBargainList(sellerBargains, 'seller') +
+    '</div>' +
+  '</div>';
+
+  window._sellerBargainsHtml = renderBargainList(sellerBargains, 'seller');
+  window._buyerBargainsHtml = renderBargainList(buyerBargains, 'buyer');
+  openModal(html);
+}
+
+function switchBargainTab(tab) {
+  document.getElementById('tabReceived').classList.toggle('active', tab === 'received');
+  document.getElementById('tabSent').classList.toggle('active', tab === 'sent');
+  document.getElementById('bargainTabContent').innerHTML = tab === 'received' ? window._sellerBargainsHtml : window._buyerBargainsHtml;
+}
+
+// ===== 购买请求摘要卡片渲染 =====
+function renderPurchaseSummary() {
+  if (!currentUser) return;
+  const card = document.getElementById('purchaseSummaryCard');
+  if (!card) return;
+
+  const sellerReqs = getPurchaseRequestsForSeller(currentUser.stuId);
+  const buyerReqs = getPurchaseRequestsForBuyer(currentUser.stuId);
+  const pendingSeller = sellerReqs.filter(r => r.status === 'pending').length;
+  const acceptedBuyer = buyerReqs.filter(r => r.status === 'accepted').length;
+  const pendingBuyer = buyerReqs.filter(r => r.status === 'pending').length;
+
+  let html = '';
+  if (pendingSeller > 0) {
+    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="background:#D1FAE5;color:#065F46;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">${pendingSeller}条待确认</span> 购买申请</div>`;
+  }
+  if (acceptedBuyer > 0) {
+    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">${acceptedBuyer}条已同意</span> 我的申请</div>`;
+  }
+  if (pendingBuyer > 0 && acceptedBuyer === 0) {
+    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="background:#DBEAFE;color:#1E40AF;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">${pendingBuyer}条待确认</span> 我的申请</div>`;
+  }
+  if (!pendingSeller && !acceptedBuyer && !pendingBuyer) {
+    html = '暂无购买申请<br><span style="font-size:11px;color:#9CA3AF">点击商品"我要购买"提交申请</span>';
+  }
+  card.innerHTML = html;
+}
+
+// ===== 我的购买申请模态框 =====
+function openMyPurchaseRequests() {
+  if (!currentUser) return;
+  const sellerReqs = getPurchaseRequestsForSeller(currentUser.stuId);
+  const buyerReqs = getPurchaseRequestsForBuyer(currentUser.stuId);
+
+  const statusLabels = { pending: '⏳ 待确认', accepted: '✅ 已同意', rejected: '❌ 已拒绝', cancelled: '↩️ 已取消' };
+
+  function renderReqList(reqs, role) {
+    if (!reqs.length) return '<div class="bargain-list-empty"><div class="empty-icon">' + (role === 'seller' ? '📦' : '💰') + '</div><div>暂无' + (role === 'seller' ? '收到的购买申请' : '提交的购买申请') + '</div></div>';
+    return reqs.map(r => {
+      return '<div class="purchase-request-item" onclick="closeModal();setTimeout(function(){openPostDetail(\'' + r.postId + '\')},350)" style="cursor:pointer">' +
+        '<div class="purchase-request-header">' +
+          (r.postImage ? '<img src="' + r.postImage + '" style="width:32px;height:32px;border-radius:6px;object-fit:cover">' : '<div class="purchase-request-avatar" style="background:#F3F4F6;color:#6B7280">🛍️</div>') +
+          '<span class="purchase-request-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(r.postTitle) + '</span>' +
+          '<span class="purchase-status-badge ' + r.status + '">' + (statusLabels[r.status] || r.status) + '</span>' +
+        '</div>' +
+        '<div style="padding-left:40px;display:flex;align-items:center;gap:8px;margin-top:6px">' +
+          '<span style="font-size:14px;font-weight:800;color:#059669">¥' + r.postPrice + '</span>' +
+          (role === 'seller' ? '<span style="font-size:12px;color:#6B7280">— ' + r.buyerName + '</span>' : '') +
+          '<span style="color:#9CA3AF;font-size:11px;margin-left:auto">' + timeAgo(r.time) + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  const html = '<div style="max-height:70vh;overflow-y:auto">' +
+    '<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:#1F2937">💰 购买申请</h3>' +
+    '<div class="bargain-tab-bar">' +
+      '<button class="bargain-tab active" id="tabPurchaseReceived" onclick="switchPurchaseTab(\'received\')">收到的申请 (' + sellerReqs.length + ')</button>' +
+      '<button class="bargain-tab" id="tabPurchaseSent" onclick="switchPurchaseTab(\'sent\')">我发起的 (' + buyerReqs.length + ')</button>' +
+    '</div>' +
+    '<div id="purchaseTabContent">' +
+      renderReqList(sellerReqs, 'seller') +
+    '</div>' +
+  '</div>';
+
+  window._sellerPurchaseHtml = renderReqList(sellerReqs, 'seller');
+  window._buyerPurchaseHtml = renderReqList(buyerReqs, 'buyer');
+  openModal(html);
+}
+
+function switchPurchaseTab(tab) {
+  document.getElementById('tabPurchaseReceived').classList.toggle('active', tab === 'received');
+  document.getElementById('tabPurchaseSent').classList.toggle('active', tab === 'sent');
+  document.getElementById('purchaseTabContent').innerHTML = tab === 'received' ? window._sellerPurchaseHtml : window._buyerPurchaseHtml;
+}
+
+// 初始渲染
+renderMarket('all');
+renderBargainSummary();
+renderPurchaseSummary();
+renderWeatherCard(DB.getCurrentUser()?.campus || '青山校区');
+</script>
+</body>
+</html>

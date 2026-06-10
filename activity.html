@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>活动约伴 - 武汉科技大学社区</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
+<script>
+(function(){
+  try{
+    var beacon=new BeaconAction({
+      appkey:'0WEB06U85YBSLJNL',
+      versionCode:'1.0.0',
+      channelID:'share',
+      delay:1000,
+      sessionDuration:30*60*1000,
+      isOversea:false,
+      needReportRqdEvent:false
+    });
+    beacon.onDirectUserAction('preview_page_view',{
+      'url':location.href,
+      'referrer':document.referrer,
+      'title':document.title,
+      'sandbox_id':'86e8fde96b8f4b9ba775ba6d51502ffc'
+    });
+  }catch(e){}
+})();
+</script></head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <div class="nav-brand"><div class="brand-icon">武</div><span class="brand-name">武科大社区</span><span class="brand-tag" id="navCampusBadge">校区</span></div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">首页</a><a href="academic.html" class="nav-link">学术广场</a>
+      <a href="market.html" class="nav-link">二手集市</a>
+      <a href="services.html" class="nav-link">帮帮</a><a href="social.html" class="nav-link">社交动态</a>
+      <a href="career.html" class="nav-link">职业内推</a><a href="activity.html" class="nav-link active">活动约伴</a>
+    </div>
+    <div class="nav-actions">
+      <div class="nav-weather" id="navWeather"></div>
+      <button class="btn-icon" id="searchBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+      <div class="user-menu-wrap"><div class="avatar-wrap" id="navAvatarWrap"><div class="avatar" id="navAvatar" style="cursor:pointer">用</div></div>
+        <div class="user-menu" id="userMenu"><div class="user-info-mini"><div class="user-info-name" id="navUserName">加载中</div><div class="user-info-sub" id="navUserSub">武汉科技大学</div></div>
+          <div class="user-menu-item" onclick="window.location='profile.html'">个人主页</div><div class="user-menu-divider"></div><div class="user-menu-item danger" onclick="logout()">退出登录</div></div></div>
+    </div>
+  </div>
+</nav>
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="搜索活动..." id="searchInput" autofocus><button onclick="closeSearch()">取消</button></div>
+</div>
+
+<section class="page-hero" style="background:linear-gradient(135deg,#8B5CF6 0%,#6366F1 100%)">
+  <div class="page-hero-inner">
+    <h1>🎯 活动约伴</h1>
+    <p>约拍 · 打球 · 桌游 · 旅行 · 学习打卡 · 两校区组队</p>
+    <div class="page-hero-actions">
+      <button class="btn-primary" onclick="openActivityModal()">📅 发起活动</button>
+    </div>
+  </div>
+</section>
+
+<div class="page-container">
+  <div class="two-col">
+    <div>
+      <div class="feed-tabs" style="margin-bottom:16px">
+        <button class="tab-btn active" onclick="switchActTab(this,'all')">全部</button>
+        <button class="tab-btn" onclick="switchActTab(this,'photo')">📷 约拍</button>
+        <button class="tab-btn" onclick="switchActTab(this,'sport')">⚽ 运动</button>
+        <button class="tab-btn" onclick="switchActTab(this,'study')">📚 学习</button>
+        <button class="tab-btn" onclick="switchActTab(this,'game')">🎮 娱乐</button>
+      </div>
+
+      <!-- 校区筛选 -->
+      <div class="filter-bar" style="margin-bottom:16px">
+        <span class="filter-label">校区：</span>
+        <span class="filter-tag active" onclick="filterCampus('all',this)">全部</span>
+        <span class="filter-tag" onclick="filterCampus('qs',this)">青山校区</span>
+        <span class="filter-tag" onclick="filterCampus('hjh',this)">黄家湖校区</span>
+      </div>
+
+      <div id="activityGrid" class="activity-grid"></div>
+      <button class="load-more-btn" id="loadMoreAct" onclick="loadMoreAct()" style="margin-top:16px">加载更多</button>
+    </div>
+    <aside>
+      <!-- 校区天气 -->
+      <div class="aside-card weather-card" id="weatherCard" style="margin-bottom:16px">
+        <div class="mi-weather-loading"><div class="mi-weather-spinner"></div><span>正在获取天气…</span></div>
+      </div>
+      <div class="aside-card" style="margin-bottom:16px">
+        <p class="aside-title">活动数据</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="text-align:center;padding:12px;background:#F5F3FF;border-radius:10px">
+            <div style="font-size:24px;font-weight:700;color:#8B5CF6" id="totalAct">—</div>
+            <div style="font-size:12px;color:#6B7280">活动总数</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:#F0FDF4;border-radius:10px">
+            <div style="font-size:24px;font-weight:700;color:#059669" id="openAct">—</div>
+            <div style="font-size:12px;color:#6B7280">招募中</div>
+          </div>
+        </div>
+      </div>
+      <div class="aside-card" style="margin-bottom:16px">
+        <p class="aside-title">活动类型</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="padding:6px 14px;background:#FDF2F8;color:#EC4899;border-radius:20px;font-size:12px">📷 约拍</span>
+          <span style="padding:6px 14px;background:#ECFDF5;color:#10B981;border-radius:20px;font-size:12px">⚽ 踢球</span>
+          <span style="padding:6px 14px;background:#EFF6FF;color:#3B82F6;border-radius:20px;font-size:12px">🏀 篮球</span>
+          <span style="padding:6px 14px;background:#F5F3FF;color:#8B5CF6;border-radius:20px;font-size:12px">🎮 游戏</span>
+          <span style="padding:6px 14px;background:#FFFBEB;color:#F59E0B;border-radius:20px;font-size:12px">✈️ 旅行</span>
+          <span style="padding:6px 14px;background:#EFF6FF;color:#3B82F6;border-radius:20px;font-size:12px">📚 学习</span>
+          <span style="padding:6px 14px;background:#FEF2F2;color:#EF4444;border-radius:20px;font-size:12px">🎭 剧本杀</span>
+        </div>
+      </div>
+      <div class="aside-card">
+        <p class="aside-title">校区场地</p>
+        <div style="font-size:13px;color:#6B7280;line-height:1.9">
+          <div style="font-weight:600;color:#4F46E5;margin-bottom:4px">青山校区</div>
+          🏀 篮球场 · 足球场<br>🏸 羽毛球馆 · 乒乓桌<br>📷 未名广场 · 操场<br>
+          <div style="font-weight:600;color:#059669;margin-top:8px;margin-bottom:4px">黄家湖校区</div>
+          ⚽ 运动中心 · 足球场<br>🌿 湖边广场 · 校园步道
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<footer class="footer"><div class="footer-container"><div class="footer-brand"><div class="brand-icon sm">武</div><span>武汉科技大学校园社区</span></div><p class="footer-copy">仅限武汉科技大学在校师生使用</p></div></footer>
+<button class="fab" onclick="openActivityModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+
+<script src="core.js"></script>
+<script>
+const currentUser = requireAuth();
+renderNav('activity.html');
+renderNavWeather(DB.getCurrentUser()?.campus || '青山校区');
+document.getElementById('navAvatarWrap').addEventListener('click', () => document.getElementById('userMenu').classList.toggle('open'));
+document.addEventListener('click', e => { if (!document.getElementById('navAvatarWrap').contains(e.target)) document.getElementById('userMenu').classList.remove('open'); });
+
+let actCount = 9;
+let actCampus = 'all';
+const typeColors = { photo: 'type-photo', sport: 'type-sport', study: 'type-study', game: 'type-game', travel: 'type-travel', activity: 'type-sport' };
+const typeLabels = { photo: '📷 约拍', sport: '⚽ 运动', study: '📚 学习', game: '🎮 娱乐', travel: '✈️ 旅行', activity: '🎯 活动' };
+
+function switchActTab(btn, tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active'); actCount = 9; renderActivityGrid();
+}
+function filterCampus(campus, el) {
+  document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active'); actCampus = campus; renderActivityGrid();
+}
+
+function renderActivityGrid() {
+  let posts = DB.getPosts().filter(p => p.type === 'activity');
+  if (actCampus === 'qs') posts = posts.filter(p => p.campus === '青山校区');
+  else if (actCampus === 'hjh') posts = posts.filter(p => p.campus === '黄家湖校区');
+  document.getElementById('totalAct').textContent = posts.length;
+  document.getElementById('openAct').textContent = posts.filter(p => (parseInt(p.currentPeople) || 1) < (parseInt(p.maxPeople) || 10)).length;
+  const grid = document.getElementById('activityGrid');
+  if (!posts.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#9CA3AF">暂无活动，来发起第一个！</div>'; return; }
+  const toShow = posts.slice(0, actCount);
+  grid.innerHTML = toShow.map(p => {
+    const cur = parseInt(p.currentPeople) || 1;
+    const max = parseInt(p.maxPeople) || 10;
+    const full = cur >= max;
+    const tc = typeColors[p.activitySubtype] || 'type-sport';
+    const tl = typeLabels[p.activitySubtype] || '🎯 活动';
+    return `<div class="activity-item" onclick="openPostDetail('${p.id}')">
+      <div class="ai-header">
+        <span class="ai-type-badge ${tc}">${tl}</span>
+        <p class="ai-title">${escHtml(p.title || p.content.slice(0, 30))}</p>
+        <div class="ai-details">
+          ${p.location ? `<div class="ai-detail">📍 ${escHtml(p.location)}</div>` : ''}
+          ${p.activityTime ? `<div class="ai-detail">🕐 ${escHtml(p.activityTime)}</div>` : ''}
+          <div class="ai-detail">🏫 ${p.campus}</div>
+        </div>
+      </div>
+      <div class="ai-footer">
+        <div class="ai-people">
+          <div style="font-size:12px;color:${full ? '#EF4444' : '#059669'}">${full ? '已满员' : `${cur}/${max}人 · 招募中`}</div>
+        </div>
+        <button class="ai-join" onclick="event.stopPropagation();joinActivity(this,'${p.id}')" style="${full ? 'cursor:not-allowed;opacity:.5' : ''}">${full ? '已满员' : '报名参加'}</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('loadMoreAct').style.display = posts.length > actCount ? 'block' : 'none';
+}
+
+function loadMoreAct() { actCount += 9; renderActivityGrid(); }
+
+function joinActivity(btn, postId) {
+  if (btn.textContent === '已报名' || btn.textContent === '已满员') return;
+  btn.textContent = '已报名'; btn.style.background = '#D1FAE5'; btn.style.color = '#065F46'; btn.style.borderColor = '#6EE7B7';
+  showToast('报名成功！活动前一天会收到提醒 🎉', 'success');
+}
+
+function openActivityModal() {
+  openModal(`<div class="create-post-form">
+    <h3>发起活动</h3>
+    <p class="post-sub-info">发起人：${currentUser?.name} · ${currentUser?.campus}</p>
+    <div class="post-type-selector" style="margin-bottom:12px">
+      <button class="post-type-btn active" data-sub="sport" onclick="selectActType(this)">⚽ 运动</button>
+      <button class="post-type-btn" data-sub="photo" onclick="selectActType(this)">📷 约拍</button>
+      <button class="post-type-btn" data-sub="study" onclick="selectActType(this)">📚 学习</button>
+      <button class="post-type-btn" data-sub="game" onclick="selectActType(this)">🎮 娱乐</button>
+      <button class="post-type-btn" data-sub="travel" onclick="selectActType(this)">✈️ 旅行</button>
+    </div>
+    <input class="post-form-input" id="aTitle" placeholder="活动标题">
+    <textarea class="post-form-textarea" id="aContent" placeholder="活动详情描述..." rows="4"></textarea>
+    <div class="post-form-row">
+      <input class="post-form-input" id="aLoc" placeholder="活动地点">
+      <input class="post-form-input" id="aTime" placeholder="活动时间（如：周六14:00）">
+    </div>
+    <div class="post-form-row">
+      <input class="post-form-input" id="aCur" placeholder="已有人数" type="number" value="1">
+      <input class="post-form-input" id="aMax" placeholder="最多人数" type="number" value="10">
+    </div>
+    <button class="btn-submit-post" onclick="doActivity()">发起活动</button>
+  </div>`);
+}
+
+function selectActType(btn) {
+  document.querySelectorAll('.post-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function doActivity() {
+  const t = document.getElementById('aTitle').value.trim();
+  const c = document.getElementById('aContent').value.trim();
+  if (!t && !c) { showToast('请填写活动信息', 'warn'); return; }
+  const activeBtn = document.querySelector('.post-type-btn.active');
+  createPost({ type: 'activity', category: '活动', activitySubtype: activeBtn?.dataset.sub || 'sport', title: t, content: c || t, location: document.getElementById('aLoc').value, activityTime: document.getElementById('aTime').value, currentPeople: document.getElementById('aCur').value, maxPeople: document.getElementById('aMax').value });
+  closeModal(); renderActivityGrid(); showToast('活动发布成功！', 'success');
+}
+
+renderActivityGrid();
+renderWeatherCard(DB.getCurrentUser()?.campus || '青山校区');
+</script>
+</body>
+</html>

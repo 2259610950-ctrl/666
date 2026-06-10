@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人主页 - 武汉科技大学社区</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .profile-page-wrap { min-height: calc(100vh - 60px); display: flex; flex-direction: column; }
+  .profile-page-inner { flex: 1; }
+  @media (max-width: 640px) {
+    .profile-cover { height: 140px; }
+    .profile-info-wrap { padding: 0 16px; }
+    #profileAvatarBigWrap { width: 68px; height: 68px; top: -34px; left: 16px; border-width: 3px; }
+    #profileAvatarBigText { font-size: 24px; }
+    .profile-info-body { padding-left: 92px !important; }
+  }
+</style>
+<script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
+<script>
+(function(){
+  try{
+    var beacon=new BeaconAction({
+      appkey:'0WEB06U85YBSLJNL',
+      versionCode:'1.0.0',
+      channelID:'share',
+      delay:1000,
+      sessionDuration:30*60*1000,
+      isOversea:false,
+      needReportRqdEvent:false
+    });
+    beacon.onDirectUserAction('preview_page_view',{
+      'url':location.href,
+      'referrer':document.referrer,
+      'title':document.title,
+      'sandbox_id':'86e8fde96b8f4b9ba775ba6d51502ffc'
+    });
+  }catch(e){}
+})();
+</script></head>
+<body class="page-enter">
+
+<!-- 导航栏（统一结构） -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-brand">
+      <span class="brand-icon">U</span>
+      <span class="brand-name">UniCampus</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">首页</a>
+      <a href="academic.html" class="nav-link">学术</a>
+      <a href="market.html" class="nav-link">集市</a>
+      <a href="services.html" class="nav-link">帮帮</a>
+      <a href="career.html" class="nav-link">内推</a>
+      <a href="activity.html" class="nav-link">约伴</a>
+      <a href="social.html" class="nav-link">社交</a>
+    </div>
+    <div style="flex:1"></div>
+    <span id="navCampusBadge" class="brand-tag"></span>
+    <button id="searchBtn" style="color:var(--text-muted);padding:6px;cursor:pointer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <div class="user-menu-wrap">
+      <div id="navAvatar" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;cursor:pointer" onclick="toggleUserMenu()"></div>
+      <div class="user-menu" id="userMenu">
+        <div class="user-info-mini"><div class="user-info-name" id="menuName"></div><div class="user-info-sub" id="menuSub"></div></div>
+        <a href="profile.html" class="user-menu-item" style="color:var(--brand);font-weight:500">👤 个人主页</a>
+        <div class="user-menu-divider"></div>
+        <div class="user-menu-item danger" onclick="logout()">🚪 退出登录</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="profile-page-wrap">
+<div class="profile-page-inner">
+
+<!-- 保存状态提示条 -->
+<div class="save-status" id="saveStatus"></div>
+
+<!-- 搜索覆盖层 -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="搜索..." id="searchInput" autofocus><button onclick="closeSearch()">取消</button></div>
+</div>
+
+<!-- 个人封面 -->
+<div class="profile-cover" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+  <div style="position:absolute;top:16px;right:24px;display:flex;gap:8px">
+    <button style="padding:6px 16px;background:rgba(255,255,255,.2);color:white;border-radius:20px;font-size:12px;border:1px solid rgba(255,255,255,.4)" onclick="logout()">退出登录</button>
+  </div>
+</div>
+
+<!-- 个人信息头部 -->
+<div class="profile-info-wrap" style="max-width:900px;margin:0 auto;padding:0 24px">
+  <div style="width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;border:4px solid white;position:absolute;top:-44px;left:24px;box-shadow:0 4px 16px rgba(0,0,0,.1);overflow:hidden" id="profileAvatarBigWrap">
+    <img id="profileAvatarBigImg" style="width:100%;height:100%;object-fit:cover;display:none" alt="">
+    <div id="profileAvatarBigText" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"></div>
+  </div>
+  <div class="profile-info-body" style="padding-top:12px;padding-left:120px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:20px">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <h2 style="font-size:22px;font-weight:700" id="profileName">加载中</h2>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px" id="profileCampusBadge">校区</span>
+      </div>
+      <div style="font-size:14px;color:#6B7280;margin-bottom:6px" id="profileSub">—</div>
+      <div style="font-size:13px;color:#9CA3AF" id="profileBio">还没有填写简介...</div>
+    </div>
+    <div style="display:flex;gap:24px;text-align:center">
+      <div><div style="font-size:20px;font-weight:700;color:#1F2937" id="myPostCount">—</div><div style="font-size:12px;color:#6B7280">帖子</div></div>
+      <div><div style="font-size:20px;font-weight:700;color:#1F2937" id="myCommentCount">—</div><div style="font-size:12px;color:#6B7280">评论</div></div>
+      <div><div style="font-size:20px;font-weight:700;color:#1F2937" id="myLikesCount">—</div><div style="font-size:12px;color:#6B7280">获赞</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 主体：编辑模式 + 预览面板 -->
+<div class="page-container" style="padding-top:0">
+  <div class="edit-mode-bar" style="max-width:900px;margin:0 auto">
+    <h1 class="edit-mode-title">编辑资料</h1>
+    <span class="edit-dirty-indicator" id="dirtyIndicator" style="display:none">● 有未保存的修改</span>
+  </div>
+
+  <div class="edit-layout">
+    <!-- 左侧：编辑表单 -->
+    <div class="edit-panel" id="editPanel">
+      <div class="edit-panel-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        基本信息
+      </div>
+
+      <!-- 头像编辑 -->
+      <div class="avatar-edit-section">
+        <div class="avatar-edit-wrap" id="avatarEditWrap" onclick="openAvatarCrop()">
+          <img class="avatar-edit-img" id="avatarEditImg" style="display:none" alt="">
+          <div class="avatar-edit-placeholder" id="avatarEditPlaceholder"></div>
+          <div class="avatar-edit-overlay">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span style="margin-left:4px">更换</span>
+          </div>
+        </div>
+        <span class="avatar-edit-hint">点击头像更换，支持裁剪预览</span>
+      </div>
+
+      <!-- 表单字段 -->
+      <div class="edit-form" id="editForm">
+        <!-- 昵称 -->
+        <div class="edit-field">
+          <label class="edit-field-label">
+            昵称
+            <span class="edit-field-hint" id="nameCharCount">0/12</span>
+          </label>
+          <input class="edit-input" id="editName" placeholder="输入你的昵称（2-12字）" maxlength="12">
+          <div class="edit-error-msg" id="nameError"></div>
+        </div>
+
+        <!-- 个人简介 -->
+        <div class="edit-field">
+          <label class="edit-field-label">
+            个人简介
+            <span class="edit-field-hint" id="bioCharCount">0/200</span>
+          </label>
+          <textarea class="edit-textarea" id="editBio" placeholder="介绍一下自己，让更多人认识你..." maxlength="200" rows="3"></textarea>
+          <div class="edit-error-msg" id="bioError"></div>
+        </div>
+
+        <!-- 手机号 -->
+        <div class="edit-field">
+          <label class="edit-field-label">手机号</label>
+          <input class="edit-input" id="editPhone" placeholder="输入手机号（选填）" maxlength="11" type="tel">
+          <div class="edit-error-msg" id="phoneError"></div>
+        </div>
+
+        <!-- 邮箱 -->
+        <div class="edit-field">
+          <label class="edit-field-label">邮箱</label>
+          <input class="edit-input" id="editEmail" placeholder="输入邮箱地址（选填）" type="email">
+          <div class="edit-error-msg" id="emailError"></div>
+        </div>
+
+        <!-- QQ -->
+        <div class="edit-field">
+          <label class="edit-field-label">QQ号</label>
+          <input class="edit-input" id="editQQ" placeholder="输入QQ号（选填）" maxlength="11">
+          <div class="edit-error-msg" id="qqError"></div>
+        </div>
+
+        <!-- 微信 -->
+        <div class="edit-field">
+          <label class="edit-field-label">微信号</label>
+          <input class="edit-input" id="editWechat" placeholder="输入微信号（选填）" maxlength="20">
+          <div class="edit-error-msg" id="wechatError"></div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="edit-actions">
+          <button class="btn-cancel-edit tap-active" id="btnCancel" onclick="handleCancel()">取消修改</button>
+          <button class="btn-save-profile tap-active" id="btnSave" onclick="handleSave()">保存修改</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧：实时预览 -->
+    <div class="preview-panel" id="previewPanel">
+      <div class="preview-panel-header">
+        <div class="live-dot"></div>
+        实时预览
+      </div>
+      <div class="preview-card">
+        <div class="preview-profile-header">
+          <img class="preview-avatar" id="previewAvatarImg" style="display:none" alt="">
+          <div class="preview-avatar-placeholder" id="previewAvatarPlaceholder"></div>
+          <div>
+            <div class="preview-name-row">
+              <span class="preview-name" id="previewName">—</span>
+              <span class="preview-campus-badge" id="previewCampusBadge">—</span>
+            </div>
+            <div class="preview-sub" id="previewSub">—</div>
+          </div>
+        </div>
+        <div class="preview-bio" id="previewBio">—</div>
+        <div class="preview-contact" id="previewContact"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 帖子/评论/点赞 Tab 区域 -->
+<div class="page-container" style="padding-top:0">
+  <div class="two-col" style="max-width:900px;margin:0 auto">
+    <div>
+      <div class="feed-tabs" style="margin-bottom:16px">
+        <button class="tab-btn active" onclick="switchProfileTab(this,'posts')">我发布的</button>
+        <button class="tab-btn" onclick="switchProfileTab(this,'comments')">我的评论</button>
+        <button class="tab-btn" onclick="switchProfileTab(this,'liked')">我点赞的</button>
+      </div>
+      <div id="profileContent"></div>
+    </div>
+    <aside>
+      <div class="aside-card" style="margin-bottom:16px">
+        <p class="aside-title">账号信息</p>
+        <div style="display:flex;flex-direction:column;gap:12px" id="accountInfo"></div>
+      </div>
+      <div class="aside-card" style="margin-bottom:16px">
+        <p class="aside-title">我的勋章</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px" id="badgeList"></div>
+      </div>
+      <div class="aside-card">
+        <p class="aside-title">我的好友</p>
+        <div id="friendList"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+</div><!-- .profile-page-inner -->
+
+<footer class="footer"><div class="footer-container"><div class="footer-brand"><div class="brand-icon sm">武</div><span>武汉科技大学校园社区</span></div><p class="footer-copy">仅限武汉科技大学在校师生使用</p></div></footer>
+</div><!-- .profile-page-wrap -->
+
+<!-- 隐藏的文件输入 -->
+<input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="handleAvatarFileSelect(event)">
+
+<script src="core.js"></script>
+<script>
+// ============================================================
+// 认证 & 导航初始化
+// ============================================================
+var currentUser = requireAuth();
+renderNav('profile.html');
+
+// 用户菜单交互
+function toggleUserMenu() {
+  var menu = document.getElementById('userMenu');
+  if (menu) menu.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('userMenu');
+  var avatar = document.getElementById('navAvatar');
+  if (menu && avatar && !avatar.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+
+// 更新菜单用户信息
+var menuName = document.getElementById('menuName');
+var menuSub = document.getElementById('menuSub');
+if (menuName) menuName.textContent = currentUser.name;
+if (menuSub) menuSub.textContent = (currentUser.college || '') + ' · ' + (currentUser.grade || '');
+
+// ============================================================
+// 状态管理
+// ============================================================
+var originalData = {};   // 加载时的原始数据（用于对比是否修改）
+var formData = {};       // 当前表单数据
+var isDirty = false;     // 是否有未保存修改
+var avatarDataUrl = null; // 裁剪后的头像 dataURL
+var avatarBgColor = '';
+var avatarFgColor = '';
+
+// ============================================================
+// 加载表单数据
+// ============================================================
+function loadFormData() {
+  var users = DB.getUsers();
+  var u = users[currentUser.stuId] || currentUser;
+
+  formData = {
+    name: u.name || '',
+    bio: u.bio || '',
+    phone: u.phone || '',
+    email: u.email || '',
+    qq: u.qq || '',
+    wechat: u.wechat || ''
+  };
+
+  avatarDataUrl = u.avatarDataUrl || null;
+  avatarBgColor = u.avatarBg || '#4F46E5';
+  avatarFgColor = u.avatarColor || '#FFFFFF';
+
+  // 保存原始副本
+  originalData = JSON.parse(JSON.stringify(formData));
+  originalData.avatarDataUrl = avatarDataUrl;
+
+  // 填充表单
+  document.getElementById('editName').value = formData.name;
+  document.getElementById('editBio').value = formData.bio;
+  document.getElementById('editPhone').value = formData.phone;
+  document.getElementById('editEmail').value = formData.email;
+  document.getElementById('editQQ').value = formData.qq;
+  document.getElementById('editWechat').value = formData.wechat;
+
+  updateCharCounts();
+  updateAvatarPreview();
+  updateLivePreview();
+  clearAllErrors();
+  isDirty = false;
+  updateDirtyIndicator();
+}
+
+// ============================================================
+// 实时校验
+// ============================================================
+var validators = {
+  name: function(val) {
+    if (!val.trim()) return '昵称不能为空';
+    if (val.trim().length < 2) return '昵称至少需要2个字符';
+    if (val.trim().length > 12) return '昵称最长12个字符';
+    return '';
+  },
+  bio: function(val) {
+    if (val.length > 200) return '简介最长200字';
+    return '';
+  },
+  phone: function(val) {
+    if (!val) return '';
+    if (!/^1[3-9]\d{9}$/.test(val)) return '手机号格式不正确（11位数字）';
+    return '';
+  },
+  email: function(val) {
+    if (!val) return '';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return '邮箱格式不正确';
+    return '';
+  },
+  qq: function(val) {
+    if (!val) return '';
+    if (!/^\d{5,11}$/.test(val)) return 'QQ号格式不正确（5-11位数字）';
+    return '';
+  },
+  wechat: function(val) {
+    if (!val) return '';
+    if (!/^[a-zA-Z][a-zA-Z0-9_-]{5,19}$/.test(val)) return '微信号格式不正确（字母开头，6-20位）';
+    return '';
+  }
+};
+
+function validateField(fieldId) {
+  var val = document.getElementById(fieldId).value;
+  var key = fieldId.replace('edit', '').toLowerCase();
+  var fn = validators[key];
+  if (!fn) return '';
+  return fn(val);
+}
+
+function showFieldError(fieldId, msg) {
+  var input = document.getElementById(fieldId);
+  var key = fieldId.replace('edit', '').toLowerCase();
+  var errorEl = document.getElementById(key + 'Error');
+  if (input) {
+    input.classList.toggle('error', !!msg);
+    input.classList.toggle('success', !msg && input.value.trim() !== '');
+  }
+  if (errorEl) {
+    errorEl.textContent = msg || '';
+    errorEl.style.opacity = msg ? '1' : '0';
+  }
+}
+
+function clearAllErrors() {
+  ['editName','editBio','editPhone','editEmail','editQQ','editWechat'].forEach(function(id) {
+    showFieldError(id, '');
+  });
+}
+
+function checkDirty() {
+  var nameVal = document.getElementById('editName').value.trim();
+  var bioVal = document.getElementById('editBio').value.trim();
+  var phoneVal = document.getElementById('editPhone').value.trim();
+  var emailVal = document.getElementById('editEmail').value.trim();
+  var qqVal = document.getElementById('editQQ').value.trim();
+  var wechatVal = document.getElementById('editWechat').value.trim();
+
+  isDirty = (
+    nameVal !== originalData.name ||
+    bioVal !== originalData.bio ||
+    phoneVal !== originalData.phone ||
+    emailVal !== originalData.email ||
+    qqVal !== originalData.qq ||
+    wechatVal !== originalData.wechat ||
+    avatarDataUrl !== originalData.avatarDataUrl
+  );
+  updateDirtyIndicator();
+}
+
+function updateDirtyIndicator() {
+  var el = document.getElementById('dirtyIndicator');
+  el.style.display = isDirty ? 'inline-flex' : 'none';
+  // 更新保存按钮状态
+  var saveBtn = document.getElementById('btnSave');
+  if (saveBtn) {
+    saveBtn.disabled = !isDirty;
+    saveBtn.style.opacity = isDirty ? '1' : '0.6';
+  }
+}
+
+function updateCharCounts() {
+  var nameLen = document.getElementById('editName').value.trim().length;
+  var bioLen = document.getElementById('editBio').value.length;
+  var nameEl = document.getElementById('nameCharCount');
+  var bioEl = document.getElementById('bioCharCount');
+  nameEl.textContent = nameLen + '/12';
+  bioEl.textContent = bioLen + '/200';
+  nameEl.classList.toggle('warn', nameLen > 12 || (nameLen > 0 && nameLen < 2));
+  bioEl.classList.toggle('warn', bioLen > 180);
+}
+
+// ============================================================
+// 头像系统
+// ============================================================
+function openAvatarCrop() {
+  document.getElementById('avatarFileInput').click();
+}
+
+function handleAvatarFileSelect(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+
+  if (!file.type.match(/^image\//)) {
+    showToast('请选择图片文件', 'error');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    showToast('图片不能超过10MB', 'error');
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    showCropModal(ev.target.result);
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function showCropModal(imageSrc) {
+  var img = new Image();
+  img.onload = function() {
+    var cropSize = 240;
+    var canvasW = 300;
+    var canvasH = 360;
+    var outputSize = 200;
+
+    var minScale = Math.max(cropSize / img.naturalWidth, cropSize / img.naturalHeight);
+    var scale = minScale;
+    var maxScale = minScale * 4;
+
+    var offsetX = (canvasW - img.naturalWidth * scale) / 2;
+    var offsetY = (canvasH - img.naturalHeight * scale) / 2;
+
+    var dragging = false;
+    var dragStartX = 0, dragStartY = 0;
+    var startOffsetX = 0, startOffsetY = 0;
+
+    var circleCX = canvasW / 2;
+    var circleCY = canvasH / 2;
+
+    function drawCanvas() {
+      var canvas = document.getElementById('cropCanvas');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvasW, canvasH);
+
+      // 深色背景
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, canvasW, canvasH);
+
+      // 裁剪圆内绘制图片
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(circleCX, circleCY, cropSize / 2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, offsetX, offsetY, img.naturalWidth * scale, img.naturalHeight * scale);
+      ctx.restore();
+
+      // 圆形虚线边框
+      ctx.beginPath();
+      ctx.arc(circleCX, circleCY, cropSize / 2, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 十字参考线
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(circleCX, circleCY - cropSize / 2);
+      ctx.lineTo(circleCX, circleCY + cropSize / 2);
+      ctx.moveTo(circleCX - cropSize / 2, circleCY);
+      ctx.lineTo(circleCX + cropSize / 2, circleCY);
+      ctx.stroke();
+    }
+
+    var cropHTML = '<div class="crop-modal-content">' +
+      '<div class="crop-header">' +
+        '<h3>裁剪头像</h3>' +
+        '<button style="width:28px;height:28px;border-radius:50%;background:#F3F4F6;display:flex;align-items:center;justify-content:center;font-size:14px" onclick="closeModal()">✕</button>' +
+      '</div>' +
+      '<div class="crop-area-wrap" id="cropArea">' +
+        '<canvas class="crop-canvas" id="cropCanvas" width="' + canvasW + '" height="' + canvasH + '"></canvas>' +
+      '</div>' +
+      '<div class="crop-controls">' +
+        '<span class="crop-zoom-label">缩放</span>' +
+        '<input type="range" class="crop-zoom-slider" id="cropZoom" min="' + Math.round(minScale * 100) / 100 + '" max="' + Math.round(maxScale * 100) / 100 + '" step="0.01" value="' + scale + '">' +
+      '</div>' +
+      '<div class="crop-actions">' +
+        '<button class="btn-crop-cancel" onclick="closeModal()">取消</button>' +
+        '<button class="btn-crop-confirm tap-active" onclick="confirmCrop()">确认裁剪</button>' +
+      '</div>' +
+    '</div>';
+
+    openModal(cropHTML);
+
+    // 绑定事件
+    setTimeout(function() {
+      var canvas = document.getElementById('cropCanvas');
+      var zoomSlider = document.getElementById('cropZoom');
+      if (!canvas) return;
+      drawCanvas();
+
+      // 鼠标拖拽
+      canvas.addEventListener('mousedown', function(e) {
+        dragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        startOffsetX = offsetX;
+        startOffsetY = offsetY;
+        canvas.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+
+      var moveHandler = function(e) {
+        if (!dragging) return;
+        var dx = e.clientX - dragStartX;
+        var dy = e.clientY - dragStartY;
+        offsetX = startOffsetX + dx;
+        offsetY = startOffsetY + dy;
+        drawCanvas();
+      };
+
+      var upHandler = function() {
+        if (dragging) {
+          dragging = false;
+          var c = document.getElementById('cropCanvas');
+          if (c) c.style.cursor = 'grab';
+        }
+      };
+
+      document.addEventListener('mousemove', moveHandler);
+      document.addEventListener('mouseup', upHandler);
+
+      // 触摸事件
+      canvas.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 1) {
+          dragging = true;
+          dragStartX = e.touches[0].clientX;
+          dragStartY = e.touches[0].clientY;
+          startOffsetX = offsetX;
+          startOffsetY = offsetY;
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', function(e) {
+        if (!dragging) return;
+        var dx = e.touches[0].clientX - dragStartX;
+        var dy = e.touches[0].clientY - dragStartY;
+        offsetX = startOffsetX + dx;
+        offsetY = startOffsetY + dy;
+        drawCanvas();
+        e.preventDefault();
+      }, { passive: false });
+
+      canvas.addEventListener('touchend', function() { dragging = false; });
+
+      // 缩放滑块
+      zoomSlider.addEventListener('input', function() {
+        scale = parseFloat(this.value);
+        offsetX = circleCX - img.naturalWidth * scale / 2;
+        offsetY = circleCY - img.naturalHeight * scale / 2;
+        drawCanvas();
+      });
+
+      // 滚轮缩放
+      canvas.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        var oldScale = scale;
+        var delta = e.deltaY > 0 ? -0.05 : 0.05;
+        var newScale = Math.max(minScale, Math.min(maxScale, scale + delta));
+        if (newScale !== oldScale) {
+          // 以鼠标位置为缩放中心
+          var rect = canvas.getBoundingClientRect();
+          var mx = e.clientX - rect.left;
+          var my = e.clientY - rect.top;
+          var ratio = newScale / oldScale;
+          offsetX = mx - (mx - offsetX) * ratio;
+          offsetY = my - (my - offsetY) * ratio;
+          scale = newScale;
+          zoomSlider.value = scale;
+          drawCanvas();
+        }
+      }, { passive: false });
+
+      // 存储 crop 参数到闭包外
+      window._cropParams = {
+        img: img,
+        getScale: function() { return scale; },
+        getOffsetX: function() { return offsetX; },
+        getOffsetY: function() { return offsetY; },
+        getCircleCX: function() { return circleCX; },
+        getCircleCY: function() { return circleCY; },
+        getCropSize: function() { return cropSize; },
+        getOutputSize: function() { return outputSize; }
+      };
+    }, 100);
+  };
+  img.src = imageSrc;
+}
+
+function confirmCrop() {
+  var params = window._cropParams;
+  if (!params) return;
+
+  var scale = params.getScale();
+  var offsetX = params.getOffsetX();
+  var offsetY = params.getOffsetY();
+  var circleCX = params.getCircleCX();
+  var circleCY = params.getCircleCY();
+  var cropSize = params.getCropSize();
+  var outputSize = params.getOutputSize();
+  var img = params.img;
+
+  var cropX = circleCX - cropSize / 2;
+  var cropY = circleCY - cropSize / 2;
+
+  var scaleFactorX = img.naturalWidth / (img.naturalWidth * scale);
+  var scaleFactorY = img.naturalHeight / (img.naturalHeight * scale);
+  var srcCropX = (cropX - offsetX) * scaleFactorX;
+  var srcCropY = (cropY - offsetY) * scaleFactorY;
+  var srcCropW = cropSize * scaleFactorX;
+  var srcCropH = cropSize * scaleFactorY;
+
+  var cvs = document.createElement('canvas');
+  cvs.width = outputSize;
+  cvs.height = outputSize;
+  var ctx = cvs.getContext('2d');
+
+  ctx.beginPath();
+  ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(img, srcCropX, srcCropY, srcCropW, srcCropH, 0, 0, outputSize, outputSize);
+
+  avatarDataUrl = cvs.toDataURL('image/jpeg', 0.85);
+
+  closeModal();
+  updateAvatarPreview();
+  updateLivePreview();
+  checkDirty();
+  showToast('头像已更新，点击保存生效', 'info');
+  delete window._cropParams;
+}
+
+function updateAvatarPreview() {
+  var editImg = document.getElementById('avatarEditImg');
+  var editPh = document.getElementById('avatarEditPlaceholder');
+  var profileImg = document.getElementById('profileAvatarBigImg');
+  var profileText = document.getElementById('profileAvatarBigText');
+  var nameVal = document.getElementById('editName').value.trim() || currentUser.name;
+
+  if (avatarDataUrl) {
+    editImg.style.display = 'block';
+    editImg.src = avatarDataUrl;
+    editPh.style.display = 'none';
+    if (profileImg) {
+      profileImg.style.display = 'block';
+      profileImg.src = avatarDataUrl;
+      profileText.style.display = 'none';
+    }
+  } else {
+    editImg.style.display = 'none';
+    editPh.style.display = 'flex';
+    editPh.style.background = avatarBgColor;
+    editPh.style.color = avatarFgColor;
+    editPh.textContent = nameVal.charAt(0);
+    if (profileImg) {
+      profileImg.style.display = 'none';
+      profileText.style.display = 'flex';
+      profileText.style.background = avatarBgColor;
+      profileText.style.color = avatarFgColor;
+      profileText.textContent = nameVal.charAt(0);
+    }
+  }
+
+  // 更新导航头像
+  var navAvatar = document.getElementById('navAvatar');
+  if (navAvatar) {
+    if (avatarDataUrl && navAvatar.tagName === 'DIV') {
+      var imgEl = document.createElement('img');
+      imgEl.id = 'navAvatar';
+      imgEl.src = avatarDataUrl;
+      imgEl.style.cssText = 'width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer';
+      imgEl.setAttribute('onclick', 'toggleUserMenu()');
+      navAvatar.parentNode.replaceChild(imgEl, navAvatar);
+    }
+    if (!avatarDataUrl && navAvatar.tagName === 'IMG') {
+      var divEl = document.createElement('div');
+      divEl.id = 'navAvatar';
+      divEl.style.cssText = 'width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;cursor:pointer';
+      divEl.setAttribute('onclick', 'toggleUserMenu()');
+      divEl.style.background = avatarBgColor;
+      divEl.style.color = avatarFgColor;
+      divEl.textContent = nameVal.charAt(0);
+      navAvatar.parentNode.replaceChild(divEl, navAvatar);
+    }
+  }
+}
+
+// ============================================================
+// 实时预览
+// ============================================================
+function updateLivePreview() {
+  var nameVal = document.getElementById('editName').value.trim() || currentUser.name;
+  var bioVal = document.getElementById('editBio').value.trim();
+  var phoneVal = document.getElementById('editPhone').value.trim();
+  var emailVal = document.getElementById('editEmail').value.trim();
+  var qqVal = document.getElementById('editQQ').value.trim();
+  var wechatVal = document.getElementById('editWechat').value.trim();
+
+  document.getElementById('previewName').textContent = nameVal || '未设置';
+
+  var badge = document.getElementById('previewCampusBadge');
+  badge.textContent = currentUser.campus;
+  badge.style.background = currentUser.campus === '青山校区' ? '#EEF2FF' : '#F0FDF4';
+  badge.style.color = currentUser.campus === '青山校区' ? '#4F46E5' : '#059669';
+
+  document.getElementById('previewSub').textContent = currentUser.college + ' · ' + currentUser.major + ' · ' + currentUser.grade;
+
+  document.getElementById('previewBio').textContent = bioVal || '这个人很懒，还没有填写简介...';
+
+  // 头像预览
+  var previewImg = document.getElementById('previewAvatarImg');
+  var previewPh = document.getElementById('previewAvatarPlaceholder');
+  if (avatarDataUrl) {
+    previewImg.style.display = 'block';
+    previewImg.src = avatarDataUrl;
+    previewPh.style.display = 'none';
+  } else {
+    previewImg.style.display = 'none';
+    previewPh.style.display = 'flex';
+    previewPh.style.background = avatarBgColor;
+    previewPh.style.color = avatarFgColor;
+    previewPh.textContent = nameVal.charAt(0);
+  }
+
+  // 联系方式
+  var contactItems = [];
+  if (phoneVal) contactItems.push({ icon: '📱', cls: 'phone', label: '手机', val: phoneVal.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') });
+  if (emailVal) contactItems.push({ icon: '📧', cls: 'email', label: '邮箱', val: emailVal });
+  if (qqVal) contactItems.push({ icon: '💬', cls: 'qq', label: 'QQ', val: qqVal });
+  if (wechatVal) contactItems.push({ icon: '💚', cls: 'wechat', label: '微信', val: wechatVal });
+
+  var contactEl = document.getElementById('previewContact');
+  if (contactItems.length === 0) {
+    contactEl.innerHTML = '<div class="preview-contact-empty">暂无联系方式，填写后即刻显示</div>';
+  } else {
+    contactEl.innerHTML = contactItems.map(function(c) {
+      return '<div class="preview-contact-item">' +
+        '<span class="preview-contact-icon ' + c.cls + '">' + c.icon + '</span>' +
+        '<span style="color:#9CA3AF;width:36px;flex-shrink:0">' + c.label + '</span>' +
+        '<span style="font-weight:500">' + c.val + '</span>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+// ============================================================
+// 样式化确认对话框
+// ============================================================
+function showConfirmDialog(title, message, confirmText, cancelText, onConfirm) {
+  window._confirmAction = onConfirm;
+  var html = '<div style="padding:28px 24px;text-align:center">' +
+    '<div style="font-size:40px;margin-bottom:12px">⚠️</div>' +
+    '<h3 style="font-size:17px;font-weight:700;margin-bottom:8px;color:#1F2937">' + title + '</h3>' +
+    '<p style="font-size:14px;color:#6B7280;margin-bottom:24px;line-height:1.6">' + message + '</p>' +
+    '<div style="display:flex;gap:10px;justify-content:center">' +
+      '<button class="tap-active" style="padding:10px 28px;border-radius:10px;background:#F3F4F6;color:#6B7280;font-size:14px;font-weight:500;border:1px solid #E5E7EB;cursor:pointer" onclick="delete window._confirmAction;closeModal()">' + (cancelText || '取消') + '</button>' +
+      '<button class="tap-active" style="padding:10px 28px;border-radius:10px;background:#EF4444;color:white;font-size:14px;font-weight:600;border:none;cursor:pointer" onclick="if(window._confirmAction){window._confirmAction();}delete window._confirmAction;closeModal();">' + (confirmText || '确认') + '</button>' +
+    '</div>' +
+  '</div>';
+  openModal(html);
+}
+
+// ============================================================
+// 保存
+// ============================================================
+function handleSave() {
+  // 校验所有字段
+  var errors = {};
+  var hasError = false;
+  ['editName','editBio','editPhone','editEmail','editQQ','editWechat'].forEach(function(id) {
+    var err = validateField(id);
+    showFieldError(id, err);
+    if (err) hasError = true;
+  });
+
+  if (hasError) {
+    showSaveStatus('error', '请修正表单中的错误后重试');
+    var firstErr = document.querySelector('.edit-input.error, .edit-textarea.error');
+    if (firstErr) firstErr.focus();
+    // 滚动到错误处
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // 构建更新数据
+  var updates = {
+    name: document.getElementById('editName').value.trim(),
+    bio: document.getElementById('editBio').value.trim(),
+    phone: document.getElementById('editPhone').value.trim(),
+    email: document.getElementById('editEmail').value.trim(),
+    qq: document.getElementById('editQQ').value.trim(),
+    wechat: document.getElementById('editWechat').value.trim()
+  };
+
+  if (avatarDataUrl) {
+    updates.avatarDataUrl = avatarDataUrl;
+    updates.avatarBg = 'transparent';
+  }
+
+  showSaveStatus('saving', '正在保存...');
+
+  // 模拟短暂延迟让用户看到保存状态
+  setTimeout(function() {
+    var result = updateUserProfile(currentUser.stuId, updates);
+
+    if (result.success) {
+      currentUser = result.user;
+      localStorage.setItem('wkust_currentUser', currentUser.stuId);
+
+      originalData = {
+        name: currentUser.name || '',
+        bio: currentUser.bio || '',
+        phone: currentUser.phone || '',
+        email: currentUser.email || '',
+        qq: currentUser.qq || '',
+        wechat: currentUser.wechat || ''
+      };
+      originalData.avatarDataUrl = avatarDataUrl;
+
+      isDirty = false;
+      updateDirtyIndicator();
+
+      showSaveStatus('success', '✅ 保存成功！');
+
+      // 刷新页面信息
+      renderProfileInfo();
+      renderNav('profile.html');
+
+      // 更新菜单
+      var mn = document.getElementById('menuName');
+      var ms = document.getElementById('menuSub');
+      if (mn) mn.textContent = currentUser.name;
+      if (ms) ms.textContent = (currentUser.college || '') + ' · ' + (currentUser.grade || '');
+
+      setTimeout(function() { clearSaveStatus(); }, 2500);
+    } else {
+      showSaveStatus('error', result.error || '保存失败，请重试');
+      setTimeout(function() { clearSaveStatus(); }, 3500);
+    }
+  }, 400);
+}
+
+function handleCancel() {
+  if (!isDirty) {
+    loadFormData();
+    showToast('已恢复原始数据', 'info');
+    return;
+  }
+  showConfirmDialog(
+    '放弃修改？',
+    '你有未保存的修改，离开后数据将丢失。',
+    '放弃修改',
+    '继续编辑',
+    function() {
+      loadFormData();
+      showToast('已取消修改', 'info');
+    }
+  );
+}
+
+// ============================================================
+// 保存状态提示条
+// ============================================================
+function showSaveStatus(type, msg) {
+  var el = document.getElementById('saveStatus');
+  el.className = 'save-status ' + type;
+  el.textContent = msg;
+  requestAnimationFrame(function() {
+    el.classList.add('show');
+  });
+}
+
+function clearSaveStatus() {
+  var el = document.getElementById('saveStatus');
+  el.classList.remove('show');
+}
+
+// ============================================================
+// 离开页面确认
+// ============================================================
+window.addEventListener('beforeunload', function(e) {
+  if (isDirty) {
+    e.preventDefault();
+    e.returnValue = '你有未保存的修改，确定要离开吗？';
+    return e.returnValue;
+  }
+});
+
+// 拦截站内导航链接
+document.addEventListener('click', function(e) {
+  if (!isDirty) return;
+  var link = e.target.closest('a[href]');
+  if (!link) return;
+  var href = link.getAttribute('href');
+  if (!href || href.startsWith('javascript') || href.startsWith('#')) return;
+  if (link.target === '_blank') return;
+
+  e.preventDefault();
+  showConfirmDialog(
+    '离开此页面？',
+    '你有未保存的修改，离开后数据将丢失。',
+    '离开',
+    '留下',
+    function() {
+      isDirty = false; // 防止 beforeunload 再次触发
+      window.location.href = href;
+    }
+  );
+});
+
+// ============================================================
+// 表单实时监听
+// ============================================================
+['editName', 'editBio', 'editPhone', 'editEmail', 'editQQ', 'editWechat'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+
+  el.addEventListener('input', function() {
+    var err = validateField(id);
+    showFieldError(id, err);
+    updateCharCounts();
+    updateLivePreview();
+    checkDirty();
+
+    if (id === 'editName') updateAvatarPreview();
+  });
+
+  el.addEventListener('blur', function() {
+    var err = validateField(id);
+    showFieldError(id, err);
+  });
+});
+
+// ============================================================
+// 个人主页信息渲染
+// ============================================================
+function renderProfileInfo() {
+  var u = currentUser;
+  if (!u) return;
+
+  var profileImg = document.getElementById('profileAvatarBigImg');
+  var profileText = document.getElementById('profileAvatarBigText');
+  if (u.avatarDataUrl) {
+    profileImg.style.display = 'block';
+    profileImg.src = u.avatarDataUrl;
+    profileText.style.display = 'none';
+  } else {
+    profileImg.style.display = 'none';
+    profileText.style.display = 'flex';
+    profileText.style.background = u.avatarBg;
+    profileText.style.color = u.avatarColor;
+    profileText.textContent = u.avatarText;
+  }
+
+  document.getElementById('profileName').textContent = u.name;
+  document.getElementById('profileSub').textContent = (u.college || '') + ' · ' + (u.major || '') + ' · ' + (u.grade || '') + (u.joinTime ? ' · 加入于' + u.joinTime : '');
+  document.getElementById('profileBio').textContent = u.bio || '这个人很懒，还没有填写简介...';
+
+  var badge = document.getElementById('profileCampusBadge');
+  badge.textContent = u.campus;
+  badge.style.background = u.campus === '青山校区' ? '#EEF2FF' : '#F0FDF4';
+  badge.style.color = u.campus === '青山校区' ? '#4F46E5' : '#059669';
+
+  var posts = DB.getPosts();
+  var myPosts = posts.filter(function(p) { return p.authorId === u.stuId; });
+  var totalComments = 0;
+  posts.forEach(function(p) {
+    totalComments += (p.comments || []).filter(function(c) { return c.authorId === u.stuId; }).length;
+  });
+  var myLikes = myPosts.reduce(function(s, p) { return s + (p.likes || 0); }, 0);
+  document.getElementById('myPostCount').textContent = myPosts.length;
+  document.getElementById('myCommentCount').textContent = totalComments;
+  document.getElementById('myLikesCount').textContent = myLikes;
+
+  // 账号信息
+  var contactsExtra = [];
+  if (u.phone) contactsExtra.push('<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">手机</span><span style="font-weight:500">' + u.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') + '</span></div>');
+  if (u.email) contactsExtra.push('<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">邮箱</span><span style="font-weight:500">' + u.email + '</span></div>');
+  if (u.qq) contactsExtra.push('<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">QQ</span><span style="font-weight:500">' + u.qq + '</span></div>');
+  if (u.wechat) contactsExtra.push('<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">微信</span><span style="font-weight:500">' + u.wechat + '</span></div>');
+
+  document.getElementById('accountInfo').innerHTML =
+    '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">学号</span><span style="font-weight:500">' + u.stuId + '</span></div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">学院</span><span>' + (u.college || '—') + '</span></div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">专业</span><span>' + (u.major || '—') + '</span></div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">年级</span><span>' + (u.grade || '—') + '</span></div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:#9CA3AF">校区</span><span>' + u.campus + '</span></div>' +
+    contactsExtra.join('');
+
+  // 勋章
+  var badges = [];
+  if (myPosts.length >= 1) badges.push({ icon: '✍️', name: '初出茅庐' });
+  if (myPosts.length >= 5) badges.push({ icon: '🔥', name: '活跃用户' });
+  if (myLikes >= 10) badges.push({ icon: '❤️', name: '受欢迎的' });
+  if (myPosts.filter(function(p) { return p.type === 'academic'; }).length >= 1) badges.push({ icon: '📚', name: '学术达人' });
+  if (myPosts.filter(function(p) { return p.type === 'market'; }).length >= 1) badges.push({ icon: '🛍️', name: '集市摊主' });
+  if (myPosts.filter(function(p) { return p.type === 'activity'; }).length >= 1) badges.push({ icon: '🎯', name: '活动发起者' });
+  if (!badges.length) badges.push({ icon: '🌱', name: '新鲜人' });
+  document.getElementById('badgeList').innerHTML = badges.map(function(b) {
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 12px;background:#F9FAFB;border-radius:10px"><span style="font-size:22px">' + b.icon + '</span><span style="font-size:11px;color:#6B7280;white-space:nowrap">' + b.name + '</span></div>';
+  }).join('');
+
+  // 好友
+  var users = DB.getUsers();
+  var others = Object.values(users).filter(function(ou) { return ou.stuId !== u.stuId; }).slice(0, 3);
+  document.getElementById('friendList').innerHTML = others.length ? others.map(function(ou) {
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F3F4F6">' +
+      '<div style="width:32px;height:32px;border-radius:50%;background:' + ou.avatarBg + ';color:' + ou.avatarColor + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">' + ou.avatarText + '</div>' +
+      '<div style="flex:1"><div style="font-size:13px;font-weight:500">' + ou.name + '</div><div style="font-size:11px;color:#9CA3AF">' + ou.campus + '</div></div>' +
+      '<button style="font-size:12px;color:#4F46E5;border:1px solid #4F46E5;padding:3px 10px;border-radius:20px" onclick="this.textContent=\'已申请\';showToast(\'好友申请已发送\',\'success\')">申请</button></div>';
+  }).join('') : '<p style="font-size:13px;color:#9CA3AF">暂无好友数据</p>';
+}
+
+// ============================================================
+// Tab 切换：帖子 / 评论 / 点赞
+// ============================================================
+var profileTab = 'posts';
+function switchProfileTab(btn, tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  profileTab = tab;
+  renderProfileContent();
+}
+
+function renderProfileContent() {
+  var posts = DB.getPosts();
+  var items;
+  if (profileTab === 'posts') {
+    items = posts.filter(function(p) { return p.authorId === currentUser.stuId; });
+  } else if (profileTab === 'comments') {
+    items = [];
+    posts.forEach(function(p) {
+      (p.comments || []).filter(function(c) { return c.authorId === currentUser.stuId; }).forEach(function(c) {
+        items.push({ postTitle: p.title || p.content.slice(0, 30), postId: p.id, content: c.content, time: c.time });
+      });
+    });
+  } else {
+    items = posts.filter(function(p) { return (p.likedBy || []).includes(currentUser.stuId); });
+  }
+
+  var listEl = document.getElementById('profileContent');
+  if (!items.length) {
+    listEl.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF"><div style="font-size:48px;margin-bottom:12px">📭</div><p style="font-size:15px;margin-bottom:8px">暂无内容</p><p style="font-size:13px">快去发布你的第一条动态吧！</p></div>';
+    return;
+  }
+
+  if (profileTab === 'comments') {
+    listEl.innerHTML = items.map(function(c) {
+      return '<div style="background:white;border-radius:12px;padding:16px;border:1px solid #E5E7EB;margin-bottom:10px;cursor:pointer" onclick="openPostDetail(\'' + c.postId + '\')">' +
+        '<div style="font-size:12px;color:#9CA3AF;margin-bottom:6px">评论于：' + escHtml(c.postTitle) + '</div>' +
+        '<p style="font-size:14px;color:#374151">' + escHtml(c.content) + '</p>' +
+        '<div style="font-size:12px;color:#9CA3AF;margin-top:6px">' + timeAgo(c.time) + '</div></div>';
+    }).join('');
+  } else {
+    listEl.innerHTML = items.map(function(post) {
+      var isLiked = (post.likedBy || []).includes(currentUser.stuId);
+      return '<div class="post-card">' +
+        '<div class="post-header">' +
+          '<div class="post-avatar" style="background:' + post.authorAvatarBg + ';color:' + post.authorAvatarColor + '">' + post.authorAvatar + '</div>' +
+          '<div class="post-meta"><span class="post-author">' + post.authorName + '</span><span class="post-badge ' + post.type + '">' + post.category + '</span><span class="post-time">' + timeAgo(post.time) + '</span></div>' +
+        '</div>' +
+        '<div class="post-body" onclick="openPostDetail(\'' + post.id + '\')" style="cursor:pointer">' +
+          (post.title ? '<p class="post-title">' + escHtml(post.title) + '</p>' : '') +
+          '<p>' + escHtml(post.content.slice(0, 100)) + (post.content.length > 100 ? '...' : '') + '</p>' +
+        '</div>' +
+        '<div class="post-actions">' +
+          '<button class="action-btn ' + (isLiked ? 'liked' : '') + '" onclick="profileLike(this,\'' + post.id + '\')">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (isLiked ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+            '<span>' + (post.likes || 0) + '</span></button>' +
+          '<button class="action-btn" onclick="openPostDetail(\'' + post.id + '\')">💬 ' + ((post.comments || []).length) + '</button>' +
+          (profileTab === 'posts' ? '<button class="action-btn" style="margin-left:auto;color:#EF4444" onclick="handleDeletePost(\'' + post.id + '\')">🗑️ 删除</button>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+}
+
+function profileLike(btn, postId) {
+  var r = togglePostLike(postId);
+  if (!r) return;
+  btn.classList.toggle('liked', r.liked);
+  btn.querySelector('path').setAttribute('fill', r.liked ? 'currentColor' : 'none');
+  btn.querySelector('span').textContent = r.count;
+  showToast(r.liked ? '已点赞' : '取消点赞', 'info');
+}
+
+function handleDeletePost(postId) {
+  showConfirmDialog(
+    '删除帖子？',
+    '删除后不可恢复，确定要继续吗？',
+    '删除',
+    '取消',
+    function() {
+      var filtered = DB.getPosts().filter(function(p) { return p.id !== postId; });
+      DB.set('posts', filtered);
+      renderProfileContent();
+      renderProfileInfo();
+      showToast('帖子已删除', 'info');
+    }
+  );
+}
+
+// ============================================================
+// 启动
+// ============================================================
+loadFormData();
+renderProfileInfo();
+renderProfileContent();
+updateLivePreview();
+</script>
+</body>
+</html>

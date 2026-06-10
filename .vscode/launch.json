@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "启动 Node.js 服务器",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}\\server.js",
+            "env": {
+                "PORT": "3000"
+            }
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "启动 Chrome 浏览器",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "完整启动（服务器 + 浏览器）",
+            "configurations": ["启动 Node.js 服务器", "启动 Chrome 浏览器"]
+        }
+    ]
+}

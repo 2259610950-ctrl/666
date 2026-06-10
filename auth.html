@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 / 注册 - 武汉科技大学社区</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
+<script>
+(function(){
+  try{
+    var beacon=new BeaconAction({
+      appkey:'0WEB06U85YBSLJNL',
+      versionCode:'1.0.0',
+      channelID:'share',
+      delay:1000,
+      sessionDuration:30*60*1000,
+      isOversea:false,
+      needReportRqdEvent:false
+    });
+    beacon.onDirectUserAction('preview_page_view',{
+      'url':location.href,
+      'referrer':document.referrer,
+      'title':document.title,
+      'sandbox_id':'86e8fde96b8f4b9ba775ba6d51502ffc'
+    });
+  }catch(e){}
+})();
+</script></head>
+<body class="auth-body">
+
+<div class="auth-page">
+  <!-- 左侧装饰 -->
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="brand-icon-lg">武</div>
+      <h1>武汉科技大学<br>校园社区</h1>
+      <p>连接每一位科大人，共建活力校园</p>
+    </div>
+    <div class="auth-features">
+      <div class="auth-feat"><span>📚</span> 学术广场 · 知识共享</div>
+      <div class="auth-feat"><span>🛍️</span> 二手集市 · 安全交易</div>
+      <div class="auth-feat"><span>💼</span> 职业内推 · 校友资源</div>
+      <div class="auth-feat"><span>⚽</span> 活动约伴 · 精彩生活</div>
+    </div>
+    <div class="auth-campus-tags">
+      <span class="campus-tag qs">青山校区</span>
+      <span class="campus-tag hjh">黄家湖校区</span>
+    </div>
+  </div>
+
+  <!-- 右侧表单 -->
+  <div class="auth-right">
+    <div class="auth-card">
+      <!-- Tab切换 -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">登录</button>
+        <button class="auth-tab" id="registerTab" onclick="switchAuthTab('register')">注册</button>
+      </div>
+
+      <!-- 登录表单 -->
+      <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>学号</label>
+          <div class="input-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            <input type="text" id="loginId" placeholder="请输入学号" maxlength="12" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>密码</label>
+          <div class="input-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="loginPwd" placeholder="请输入密码" required>
+            <button type="button" class="pwd-toggle" onclick="togglePwd('loginPwd', this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="loginError" class="form-error"></div>
+        <button type="submit" class="btn-auth-submit">登录账号</button>
+        <p class="auth-tip">还没有账号？<a href="#" onclick="switchAuthTab('register')">立即注册</a></p>
+      </form>
+
+      <!-- 注册表单 -->
+      <form id="registerForm" class="auth-form hidden" onsubmit="handleRegister(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>真实姓名</label>
+            <div class="input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="regName" placeholder="真实姓名" required maxlength="10">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>学号</label>
+            <div class="input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              <input type="text" id="regStuId" placeholder="10位学号" maxlength="12" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>所属校区</label>
+          <div class="campus-selector">
+            <label class="campus-option" id="opt-qs">
+              <input type="radio" name="campus" value="青山校区" required>
+              <div class="campus-card">
+                <span class="campus-icon">🏫</span>
+                <span class="campus-name">青山校区</span>
+                <span class="campus-desc">理工科·主校区</span>
+              </div>
+            </label>
+            <label class="campus-option" id="opt-hjh">
+              <input type="radio" name="campus" value="黄家湖校区">
+              <div class="campus-card">
+                <span class="campus-icon">🌿</span>
+                <span class="campus-name">黄家湖校区</span>
+                <span class="campus-desc">新校区·医学部</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>所在学院</label>
+          <div class="input-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <select id="regCollege" required>
+              <option value="">请选择学院</option>
+              <optgroup label="青山校区（工科本部）">
+                <option>材料科学与工程学院</option>
+                <option>冶金与能源学院</option>
+                <option>机械工程学院</option>
+                <option>化学与化工学院</option>
+                <option>资源与环境工程学院</option>
+                <option>汽车与交通工程学院</option>
+                <option>国际教育学院</option>
+              </optgroup>
+              <optgroup label="黄家湖校区（综合性主校区）">
+                <option>计算机科学与技术学院</option>
+                <option>电子信息学院</option>
+                <option>人工智能与自动化学院</option>
+                <option>法学与经济学院</option>
+                <option>管理学院</option>
+                <option>理学院</option>
+                <option>外国语学院</option>
+                <option>艺术与设计学院</option>
+                <option>马克思主义学院</option>
+                <option>体育学院</option>
+                <option>医学部</option>
+                <option>生命科学与健康学院</option>
+                <option>城市建设学院</option>
+              </optgroup>
+              <optgroup label="中外合作">
+                <option>马德里康普顿斯学院</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>专业与年级</label>
+          <div class="form-row">
+            <div class="input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <input type="text" id="regMajor" placeholder="如：计算机科学与技术" required>
+            </div>
+            <div class="input-wrap" style="max-width:110px">
+              <select id="regGrade" required>
+                <option value="">年级</option>
+                <option>大一</option>
+                <option>大二</option>
+                <option>大三</option>
+                <option>大四</option>
+                <option>研一</option>
+                <option>研二</option>
+                <option>研三</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>密码</label>
+            <div class="input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="regPwd" placeholder="至少6位" required minlength="6">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>确认密码</label>
+            <div class="input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="regPwd2" placeholder="再输一次" required minlength="6">
+            </div>
+          </div>
+        </div>
+
+        <div id="registerError" class="form-error"></div>
+        <button type="submit" class="btn-auth-submit">创建账号</button>
+        <p class="auth-tip">已有账号？<a href="#" onclick="switchAuthTab('login')">直接登录</a></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="core.js"></script>
+<script>
+// 切换登录/注册
+function switchAuthTab(tab) {
+  document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+  document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('loginError').textContent = '';
+  document.getElementById('registerError').textContent = '';
+}
+
+// 密码显示切换
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const isText = inp.type === 'text';
+  inp.type = isText ? 'password' : 'text';
+  btn.style.opacity = isText ? '0.5' : '1';
+}
+
+// 校区选中高亮
+document.querySelectorAll('.campus-option input').forEach(radio => {
+  radio.addEventListener('change', function() {
+    document.querySelectorAll('.campus-option .campus-card').forEach(c => c.classList.remove('selected'));
+    this.closest('.campus-option').querySelector('.campus-card').classList.add('selected');
+  });
+});
+
+// 登录处理
+async function handleLogin(e) {
+  e.preventDefault();
+  const stuId = document.getElementById('loginId').value.trim();
+  const pwd = document.getElementById('loginPwd').value;
+  const errEl = document.getElementById('loginError');
+
+  // 先尝试云端登录
+  if (CloudSync.enabled) {
+    var result = await CloudSync.login(stuId, pwd);
+    if (result && !result.error) {
+      // 云端登录成功，拉取数据到本地
+      localStorage.setItem('wkust_currentUser', stuId);
+      await CloudSync.pullAll();
+      // 如果服务器没数据（新部署），将本地样本数据推上去
+      var initStatus = await CloudSync.getInitStatus();
+      if (initStatus && !initStatus.sampleInited) {
+        // 本地初始化样本数据，然后推送
+        initSampleData();
+        await CloudSync.pushAll();
+      }
+      showAuthToast('登录成功，欢迎回来 ' + (result.user?.name || '') + '！', () => {
+        window.location.href = 'index.html';
+      });
+      return;
+    }
+    // 云端登录失败，显示错误
+    if (result && result.error) {
+      // 如果是"学号未注册"，可能是服务器新部署，尝试本地
+      if (result.error === '该学号未注册') {
+        // 尝试本地登录
+        var localUsers = JSON.parse(localStorage.getItem('wkust_users') || '{}');
+        var localUser = localUsers[stuId];
+        if (localUser) {
+          if (localUser.password !== pwd) {
+            errEl.textContent = '密码错误，请重试';
+            return;
+          }
+          // 本地登录成功，注册到云端并同步
+          localStorage.setItem('wkust_currentUser', stuId);
+          // 把本地用户推到云端
+          await CloudSync.pushAll();
+          showAuthToast('登录成功，欢迎回来 ' + localUser.name + '！', () => {
+            window.location.href = 'index.html';
+          });
+          return;
+        }
+        errEl.textContent = '学号不存在，请先注册';
+        return;
+      }
+      errEl.textContent = result.error;
+      return;
+    }
+    // 网络错误，回退本地登录
+    console.warn('云端登录失败，回退本地模式');
+  }
+
+  // 纯本地登录（离线或 file:// 模式）
+  const users = JSON.parse(localStorage.getItem('wkust_users') || '{}');
+  const user = users[stuId];
+
+  if (!user) {
+    errEl.textContent = '学号不存在，请先注册';
+    return;
+  }
+  if (user.password !== pwd) {
+    errEl.textContent = '密码错误，请重试';
+    return;
+  }
+
+  localStorage.setItem('wkust_currentUser', stuId);
+  showAuthToast('登录成功，欢迎回来 ' + user.name + '！', () => {
+    window.location.href = 'index.html';
+  });
+}
+
+// 注册处理
+async function handleRegister(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('registerError');
+
+  const name = document.getElementById('regName').value.trim();
+  const stuId = document.getElementById('regStuId').value.trim();
+  const campus = document.querySelector('input[name="campus"]:checked')?.value;
+  const college = document.getElementById('regCollege').value;
+  const major = document.getElementById('regMajor').value.trim();
+  const grade = document.getElementById('regGrade').value;
+  const pwd = document.getElementById('regPwd').value;
+  const pwd2 = document.getElementById('regPwd2').value;
+
+  if (!campus) { errEl.textContent = '请选择所属校区'; return; }
+  if (!/^\d{6,12}$/.test(stuId)) { errEl.textContent = '学号格式不正确（6-12位数字）'; return; }
+  if (pwd !== pwd2) { errEl.textContent = '两次密码输入不一致'; return; }
+  if (pwd.length < 6) { errEl.textContent = '密码至少6位'; return; }
+
+  // 先尝试云端注册
+  if (CloudSync.enabled) {
+    var result = await CloudSync.register({
+      stuId: stuId, name: name, password: pwd,
+      campus: campus, college: college, major: major, grade: grade
+    });
+    if (result && !result.error) {
+      // 云端注册成功
+      localStorage.setItem('wkust_currentUser', stuId);
+      await CloudSync.pullAll();
+      // 如果服务器还没样本数据，初始化并推送
+      var initStatus = await CloudSync.getInitStatus();
+      if (initStatus && !initStatus.sampleInited) {
+        initSampleData();
+        await CloudSync.pushAll();
+      }
+      showAuthToast('注册成功！欢迎加入武汉科技大学社区 🎉', () => {
+        window.location.href = 'index.html';
+      });
+      return;
+    }
+    if (result && result.error === '该学号已注册') {
+      errEl.textContent = '该学号已注册，请直接登录';
+      return;
+    }
+    // 其他错误，回退本地注册
+    console.warn('云端注册失败，回退本地模式');
+  }
+
+  // 纯本地注册（离线或 file:// 模式）
+  const users = JSON.parse(localStorage.getItem('wkust_users') || '{}');
+  if (users[stuId]) { errEl.textContent = '该学号已注册，请直接登录'; return; }
+
+  const avatarColors = ['#E6F1FB:#185FA5','#EAF3DE:#3B6D11','#FBEAF0:#993556','#FAEEDA:#854F0B','#EEEDFE:#534AB7','#E6F9F5:#0D6B56'];
+  const colorPair = avatarColors[Math.floor(Math.random() * avatarColors.length)].split(':');
+
+  users[stuId] = {
+    stuId, name, campus, college, major, grade, password: pwd,
+    avatarBg: colorPair[0], avatarColor: colorPair[1],
+    avatarText: name.charAt(0),
+    joinTime: new Date().toLocaleDateString('zh-CN'),
+    bio: '',
+    followers: 0, following: 0,
+    friends: [],
+    pendingFriends: []
+  };
+  localStorage.setItem('wkust_users', JSON.stringify(users));
+  localStorage.setItem('wkust_currentUser', stuId);
+
+  showAuthToast('注册成功！欢迎加入武汉科技大学社区 🎉', () => {
+    window.location.href = 'index.html';
+  });
+}
+
+function showAuthToast(msg, cb) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:#4F46E5;color:#fff;padding:12px 28px;border-radius:30px;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(79,70,229,.4)';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.remove(); if(cb) cb(); }, 1800);
+}
+
+// 如果已登录，跳转首页
+(async function() {
+  const cu = localStorage.getItem('wkust_currentUser');
+  if (cu) {
+    const users = JSON.parse(localStorage.getItem('wkust_users') || '{}');
+    if (users[cu]) {
+      // 已登录，尝试从服务器同步最新数据
+      if (CloudSync.enabled && CloudSync.getToken()) {
+        await CloudSync.pullAll();
+      }
+      window.location.href = 'index.html';
+    }
+  }
+})();
+</script>
+</body>
+</html>
