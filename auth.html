@@ -252,6 +252,12 @@ async function handleLogin(e) {
     if (result && !result.error && result.token) {
       localStorage.setItem('wkust_currentUser', stuId);
       saveRemember(stuId, pwd);
+      // 同时更新本地（服务器重启丢数据后可恢复）
+      if (result.user) {
+        var users = JSON.parse(localStorage.getItem('wkust_users') || '{}');
+        users[stuId] = Object.assign({}, result.user, { password: pwd });
+        localStorage.setItem('wkust_users', JSON.stringify(users));
+      }
       await CloudSync.pullAll();
       var initStatus = await CloudSync.getInitStatus();
       if (initStatus && !initStatus.sampleInited) {
@@ -341,6 +347,17 @@ async function handleRegister(e) {
     // 云端注册成功
     if (result && !result.error && result.token) {
       localStorage.setItem('wkust_currentUser', stuId);
+      // 同时保存到本地（服务器重启丢数据后可恢复）
+      var users = JSON.parse(localStorage.getItem('wkust_users') || '{}');
+      var avatarColors = ['#E6F1FB:#185FA5','#EAF3DE:#3B6D11','#FBEAF0:#993556','#FAEEDA:#854F0B','#EEEDFE:#534AB7','#E6F9F5:#0D6B56'];
+      var colorPair = avatarColors[Math.floor(Math.random() * avatarColors.length)].split(':');
+      users[stuId] = {
+        stuId: stuId, name: name, campus: campus, college: college, major: major, grade: grade,
+        password: pwd, avatarBg: colorPair[0], avatarColor: colorPair[1], avatarText: name.charAt(0),
+        joinTime: new Date().toLocaleDateString('zh-CN'), bio: '', followers: 0, following: 0,
+        friends: [], pendingFriends: []
+      };
+      localStorage.setItem('wkust_users', JSON.stringify(users));
       await CloudSync.pullAll();
       var initStatus = await CloudSync.getInitStatus();
       if (initStatus && !initStatus.sampleInited) {
