@@ -4454,13 +4454,7 @@ a:active {
   .nav-weather-desc { display: inline; }
   .nav-weather-feels { display: inline; }
 }
-.nav-weather-icon {
-  font-size: 15px;
-}
-.nav-weather-temp {
-  font-weight: 600;
-  color: #334155;
-}
+
 
 /* ---- 天气区域入场动画 ---- */
 .weather-card .mi-weather-hero {
