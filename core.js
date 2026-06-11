@@ -2527,7 +2527,7 @@ async function renderNavWeather(campus) {
   var temp = Math.round(data.current.temperature_2m);
   var feels = Math.round(data.current.apparent_temperature);
   var humidity = data.current.relative_humidity_2m;
-  var desc = wi ? wi.text : '';
+  var desc = wi ? (wi.text || wi.desc || '') : '';
   el.innerHTML = '<span class="nav-weather-icon">' + wi.icon + '</span>'
     + '<span class="nav-weather-temp">' + temp + '°</span>'
     + '<span class="nav-weather-desc">' + desc + '</span>'
