@@ -805,10 +805,16 @@
 
     // ===== 初始化 =====
     (async function init() {
-      if (adminToken && await checkSession()) {
-        showApp();
-      } else {
-        document.getElementById('loginScreen').style.display = 'flex';
+      // 默认先显示登录屏，避免白屏
+      document.getElementById('loginScreen').style.display = 'flex';
+      if (adminToken) {
+        try {
+          const valid = await checkSession();
+          if (valid) showApp();
+        } catch(e) {
+          // 会话验证失败，保持在登录屏
+          console.warn('会话验证失败:', e);
+        }
       }
     })();
 
