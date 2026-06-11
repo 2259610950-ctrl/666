@@ -1365,6 +1365,13 @@ function renderProfileInfo() {
   var u = currentUser;
   if (!u) return;
 
+  // 防御性处理用户数据字段
+  var avatarBg = u.avatarBg || '#E6F1FB';
+  var avatarColor = u.avatarColor || '#185FA5';
+  var avatarText = u.avatarText || (u.name ? u.name.charAt(0) : '用');
+  var userName = u.name || '未设置昵称';
+  var userCampus = u.campus || '';
+
   var profileImg = document.getElementById('profileAvatarBigImg');
   var profileText = document.getElementById('profileAvatarBigText');
   if (u.avatarDataUrl) {
@@ -1374,19 +1381,24 @@ function renderProfileInfo() {
   } else {
     profileImg.style.display = 'none';
     profileText.style.display = 'flex';
-    profileText.style.background = u.avatarBg;
-    profileText.style.color = u.avatarColor;
-    profileText.textContent = u.avatarText;
+    profileText.style.background = avatarBg;
+    profileText.style.color = avatarColor;
+    profileText.textContent = avatarText;
   }
 
-  document.getElementById('profileName').textContent = u.name;
+  document.getElementById('profileName').textContent = userName;
   document.getElementById('profileSub').textContent = (u.college || '') + ' · ' + (u.major || '') + ' · ' + (u.grade || '') + (u.joinTime ? ' · 加入于' + u.joinTime : '');
   document.getElementById('profileBio').textContent = u.bio || '这个人很懒，还没有填写简介...';
 
   var badge = document.getElementById('profileCampusBadge');
-  badge.textContent = u.campus;
-  badge.style.background = u.campus === '青山校区' ? '#EEF2FF' : '#F0FDF4';
-  badge.style.color = u.campus === '青山校区' ? '#4F46E5' : '#059669';
+  if (badge && userCampus) {
+    badge.textContent = userCampus;
+    badge.style.background = userCampus === '青山校区' ? '#EEF2FF' : '#F0FDF4';
+    badge.style.color = userCampus === '青山校区' ? '#4F46E5' : '#059669';
+    badge.style.display = '';
+  } else if (badge) {
+    badge.style.display = 'none';
+  }
 
   var posts = DB.getPosts();
   var myPosts = posts.filter(function(p) { return p.authorId === u.stuId; });

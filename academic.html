@@ -97,6 +97,13 @@ function getSubjectColor(college) {
   return '#EEF2FF';
 }
 
+// 根据学院名称返回学科简称图标
+function getSubjectLabel(college) {
+  var m = {'计算机科学与技术学院':'计科','计算机学院':'计科','材料科学与工程学院':'材料','材料学院':'材料','机械自动化学院':'机械','机械工程学院':'机械','信息科学与工程学院':'电信','电子信息学院':'电信','化学工程与技术学院':'化工','化工学院':'化工','医学院':'医学','医学部':'医学','管理学院':'经管','外国语学院':'外语','理学院':'理学','城市建设学院':'城建'};
+  for (var k in m) { if ((college||'').indexOf(k) !== -1) return m[k]; }
+  return '学';
+}
+
 function getFilteredPosts() {
   var posts = DB.getPosts().filter(function(p) { return p.type === 'academic'; });
   if (currentFilter !== 'all') {
@@ -124,7 +131,7 @@ function renderAcademicList() {
     var displayContent = contentText || '该帖子暂无详细内容';
     var tagsHtml = (p.tags||[]).map(function(t) { return '<span class="ac-tag">#' + escHtml(t) + '</span>'; }).join('');
     return '<div class="academic-card">' +
-      '<div class="ac-header"><div class="ac-subject" style="background:' + getSubjectColor(p.college) + '">?</div><div class="ac-meta">' +
+      '<div class="ac-header"><div class="ac-subject" style="background:' + getSubjectColor(p.college) + '">' + getSubjectLabel(p.college) + '</div><div class="ac-meta">' +
         '<p class="ac-title" onclick="openPostDetail(\'' + p.id + '\')">' + escHtml(displayTitle) + '</p>' +
         '<div class="ac-info"><span class="ac-course">' + (p.college||'综合') + '</span><span class="ac-poster">' + (p.authorName||'匿名') + ' · ' + (p.grade||'') + ' · ' + (p.campus||'') + ' · ' + timeAgo(p.time||p.createdAt) + '</span></div></div></div>' +
       (hasImg ? '<div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding:4px 0">' + p.images.map(function(i){return '<img src="' + i + '" style="width:120px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0" alt="">';}).join('') + '</div>' : '') +
