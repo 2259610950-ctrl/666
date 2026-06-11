@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>二手集市 - 武汉科技大学社区</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={corePlugins:{preflight:false}}</script>
 <script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
 <script>
 (function(){
@@ -30,7 +32,7 @@
 <body>
 <nav class="navbar" id="navbar">
   <div class="nav-container">
-    <div class="nav-brand"><div class="brand-icon">武</div><span class="brand-name">武科大社区</span><span class="brand-tag" id="navCampusBadge">校区</span></div>
+    <div class="nav-brand"><div class="brand-icon">武</div><span class="brand-name">武科大社区</span><span class="brand-tag qs" id="navCampusBadge">青山校区</span></div>
     <div class="nav-links">
       <a href="index.html" class="nav-link">首页</a><a href="academic.html" class="nav-link">学术广场</a>
       <a href="market.html" class="nav-link active">二手集市</a>
@@ -504,43 +506,53 @@ function renderBargainSummary() {
   card.innerHTML = html;
 }
 
-// ===== 我的砍价模态框 =====
+// ===== 我的砍价模态框（V3 重构）=====
 function openMyBargains() {
   if (!currentUser) return;
   const sellerBargains = getBargainsForSeller(currentUser.stuId);
   const buyerBargains = getBargainsForBuyer(currentUser.stuId);
 
-  const statusLabels = { pending: '⏳ 待回复', accepted: '✅ 已接受', rejected: '❌ 已拒绝', countered: '🔄 已还价', withdrawn: '↩️ 已撤回' };
+  const statusCfg = {
+    pending:   { label: '待回复',   icon: '⏳', cls: 'mybrv3-badge--pending' },
+    countered: { label: '已还价',   icon: '🔄', cls: 'mybrv3-badge--countered' },
+    accepted:  { label: '已接受',   icon: '✅', cls: 'mybrv3-badge--accepted' },
+    rejected:  { label: '已拒绝',   icon: '❌', cls: 'mybrv3-badge--rejected' },
+    withdrawn: { label: '已撤回',   icon: '↩️', cls: 'mybrv3-badge--withdrawn' }
+  };
 
   function renderBargainList(bargains, role) {
-    if (!bargains.length) return '<div class="bargain-list-empty"><div class="empty-icon">' + (role === 'seller' ? '📦' : '🤝') + '</div><div>暂无' + (role === 'seller' ? '收到的砍价' : '发起的砍价') + '</div></div>';
+    if (!bargains.length) return '<div class="mybrv3-empty"><div class="mybrv3-empty-icon">' + (role === 'seller' ? '📦' : '🤝') + '</div><p>暂无' + (role === 'seller' ? '收到的砍价' : '发起的砍价') + '</p></div>';
     return bargains.map(b => {
-      const isBuyer = role !== 'seller';
-      const otherName = isBuyer ? (getPostById(b.postId)?.authorName || '卖家') : b.fromUserName;
-      return '<div class="bargain-item" onclick="closeModal();setTimeout(function(){openPostDetail(\'' + b.postId + '\')},350)" style="cursor:pointer">' +
-        '<div class="bargain-item-header">' +
-          (b.postImage ? '<img src="' + b.postImage + '" style="width:32px;height:32px;border-radius:6px;object-fit:cover">' : '<div class="bargain-item-avatar" style="background:#F3F4F6;color:#6B7280">🛍️</div>') +
-          '<span class="bargain-item-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(b.postTitle) + '</span>' +
-          '<span class="bargain-status-badge ' + b.status + '">' + (statusLabels[b.status] || b.status) + '</span>' +
+      var cfg = statusCfg[b.status] || statusCfg.pending;
+      var post = getPostById(b.postId);
+      var isBuyer = role !== 'seller';
+      var otherName = isBuyer ? (post?.authorName || '卖家') : b.fromUserName;
+      return '<div class="mybrv3-item" onclick="closeModal();setTimeout(function(){openPostDetail(\'' + b.postId + '\')},350)">' +
+        '<div class="mybrv3-item-left">' +
+          (b.postImage ? '<img src="' + b.postImage + '" class="mybrv3-item-img" alt="">' : '<div class="mybrv3-item-img mybrv3-item-img--empty">🛍️</div>') +
+          '<div class="mybrv3-item-info">' +
+            '<div class="mybrv3-item-title">' + escHtml(b.postTitle) + '</div>' +
+            '<div class="mybrv3-item-sub">' + otherName + ' · ' + timeAgo(b.time) + '</div>' +
+          '</div>' +
         '</div>' +
-        '<div class="bargain-item-body" style="padding-left:40px">' +
-          '<div class="bargain-item-prices">' +
-            '<span class="bargain-item-offer">¥' + b.offerPrice + '</span>' +
-            (b.counterPrice ? '<span class="bargain-item-arrow">→</span><span class="bargain-item-counter">¥' + b.counterPrice + '</span>' : '') +
-            '<span style="color:#9CA3AF;font-size:11px;margin-left:auto">' + timeAgo(b.time) + '</span>' +
+        '<div class="mybrv3-item-right">' +
+          '<span class="mybrv3-badge ' + cfg.cls + '">' + cfg.icon + ' ' + cfg.label + '</span>' +
+          '<div class="mybrv3-item-prices">' +
+            '<span class="mybrv3-item-offer">¥' + b.offerPrice + '</span>' +
+            (b.counterPrice ? '<span class="mybrv3-item-arrow">→</span><span class="mybrv3-item-counter">¥' + b.counterPrice + '</span>' : '') +
           '</div>' +
         '</div>' +
       '</div>';
     }).join('');
   }
 
-  const html = '<div style="max-height:70vh;overflow-y:auto;padding:8px 4px 0">' +
-    '<h3 style="font-size:20px;font-weight:700;margin-bottom:20px;color:#1F2937">🤝 我的砍价</h3>' +
-    '<div class="bargain-tab-bar">' +
-      '<button class="bargain-tab active" id="tabReceived" onclick="switchBargainTab(\'received\')">收到的砍价 (' + sellerBargains.length + ')</button>' +
-      '<button class="bargain-tab" id="tabSent" onclick="switchBargainTab(\'sent\')">我发起的 (' + buyerBargains.length + ')</button>' +
+  var html = '<div class="mybrv3-wrap">' +
+    '<h3 class="mybrv3-title">🤝 我的砍价</h3>' +
+    '<div class="mybrv3-tabs">' +
+      '<button class="mybrv3-tab active" id="tabReceived" onclick="switchBargainTabV3(\'received\')">收到的<span class="mybrv3-tab-count">' + sellerBargains.length + '</span></button>' +
+      '<button class="mybrv3-tab" id="tabSent" onclick="switchBargainTabV3(\'sent\')">发起的<span class="mybrv3-tab-count">' + buyerBargains.length + '</span></button>' +
     '</div>' +
-    '<div id="bargainTabContent">' +
+    '<div class="mybrv3-list" id="bargainTabContent">' +
       renderBargainList(sellerBargains, 'seller') +
     '</div>' +
   '</div>';
@@ -548,9 +560,19 @@ function openMyBargains() {
   window._sellerBargainsHtml = renderBargainList(sellerBargains, 'seller');
   window._buyerBargainsHtml = renderBargainList(buyerBargains, 'buyer');
   openModal(html);
+
+  setTimeout(function() {
+    var box = document.querySelector('#globalModal .modal-box');
+    if (box) {
+      box.style.maxWidth = '560px';
+      box.style.padding = '0';
+      box.style.borderRadius = '20px';
+      box.style.overflow = 'hidden';
+    }
+  }, 10);
 }
 
-function switchBargainTab(tab) {
+function switchBargainTabV3(tab) {
   document.getElementById('tabReceived').classList.toggle('active', tab === 'received');
   document.getElementById('tabSent').classList.toggle('active', tab === 'sent');
   document.getElementById('bargainTabContent').innerHTML = tab === 'received' ? window._sellerBargainsHtml : window._buyerBargainsHtml;

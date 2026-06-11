@@ -17,6 +17,23 @@
       "friends": [],
       "pendingFriends": []
     },
+    "1111111111": {
+      "stuId": "1111111111",
+      "name": "11",
+      "campus": "青山校区",
+      "college": "材料科学与工程学院",
+      "major": "1",
+      "grade": "大三",
+      "avatarBg": "#E6F1FB",
+      "avatarColor": "#185FA5",
+      "avatarText": "1",
+      "joinTime": "2026-06-11",
+      "bio": "",
+      "followers": 0,
+      "following": 0,
+      "friends": [],
+      "pendingFriends": []
+    },
     "2019040004": {
       "stuId": "2019040004",
       "name": "赵明远",
@@ -32,7 +49,8 @@
       "followers": 210,
       "following": 78,
       "friends": [],
-      "pendingFriends": []
+      "pendingFriends": [],
+      "password": "123456"
     },
     "2020030003": {
       "stuId": "2020030003",
@@ -49,7 +67,8 @@
       "followers": 89,
       "following": 45,
       "friends": [],
-      "pendingFriends": []
+      "pendingFriends": [],
+      "password": "123456"
     },
     "2021010001": {
       "stuId": "2021010001",
@@ -66,7 +85,8 @@
       "followers": 128,
       "following": 64,
       "friends": [],
-      "pendingFriends": []
+      "pendingFriends": [],
+      "password": "123456"
     },
     "2021050005": {
       "stuId": "2021050005",
@@ -83,7 +103,8 @@
       "followers": 95,
       "following": 50,
       "friends": [],
-      "pendingFriends": []
+      "pendingFriends": [],
+      "password": "123456"
     },
     "2022020002": {
       "stuId": "2022020002",
@@ -100,7 +121,8 @@
       "followers": 56,
       "following": 38,
       "friends": [],
-      "pendingFriends": []
+      "pendingFriends": [],
+      "password": "123456"
     },
     "2023060006": {
       "stuId": "2023060006",
@@ -117,7 +139,8 @@
       "followers": 34,
       "following": 55,
       "friends": [],
-      "pendingFriends": []
+      "pendingFriends": [],
+      "password": "123456"
     },
     "202527704188": {
       "stuId": "202527704188",
@@ -1373,7 +1396,7 @@
   "career_posts": [],
   "purchaseRequests": [],
   "bargains": [],
-  "_updatedAt": "2026-06-10T10:58:29.485Z",
+  "_updatedAt": "2026-06-11T03:19:01.885Z",
   "products": [],
   "messages": {},
   "conversations": []

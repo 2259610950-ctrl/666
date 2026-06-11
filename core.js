@@ -1830,63 +1830,107 @@ function renderBargainSection(post, user) {
   var bargains = getBargainsForPost(post.id);
   if (!bargains.length) return '';
   var isOwner = user.stuId === post.authorId;
-  var html = '<div class="bargain-section">' +
-    '<div class="bargain-section-header"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>砍价记录<span class="bargain-count-badge">' + bargains.length + '</span></div><div class="bargain-list">';
+
+  var statusCfg = {
+    pending:   { label: '待回复',   icon: '⏳', cls: 'brv3-status--pending' },
+    countered: { label: '已还价',   icon: '🔄', cls: 'brv3-status--countered' },
+    accepted:  { label: '已接受',   icon: '✅', cls: 'brv3-status--accepted' },
+    rejected:  { label: '已拒绝',   icon: '❌', cls: 'brv3-status--rejected' },
+    withdrawn: { label: '已撤回',   icon: '↩️', cls: 'brv3-status--withdrawn' }
+  };
+
+  var html = '<div class="brv3-wrap">' +
+    '<div class="brv3-head">' +
+      '<div class="brv3-head-left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>砍价记录</div>' +
+      '<span class="brv3-count">' + bargains.length + ' 条</span>' +
+    '</div>' +
+    '<div class="brv3-list">';
+
   bargains.forEach(function(b) {
-    var statusLabels = { pending: '等待卖家回复', countered: '卖家已还价', accepted: '已接受', rejected: '已拒绝', withdrawn: '已撤回', accept_counter: '已接受还价', reject_counter: '已拒绝还价' };
-    var statusIcons = { pending: '⏳', countered: '🔄', accepted: '✅', rejected: '❌', withdrawn: '↩️', accept_counter: '✅', reject_counter: '❌' };
+    var cfg = statusCfg[b.status] || statusCfg.pending;
     var isBuyer = user.stuId === b.fromUserId;
     var relatedUserId = isOwner ? b.fromUserId : post.authorId;
     var relatedUser = DB.getUsers()[relatedUserId];
     var buyerName = isOwner ? (relatedUser?.name || '买家') : '我';
-    html += '<div class="bargain-card ' + b.status + '">';
-    html += '<div class="bargain-card-top"><div class="bargain-buyer">' +
-      '<div class="bargain-buyer-avatar" style="background:' + (relatedUser?.avatarBg || '#E5E7EB') + ';color:' + (relatedUser?.avatarColor || '#6B7280') + '">' + (relatedUser?.avatarText || '?') + '</div>' +
-      '<div class="bargain-buyer-info"><span class="bargain-buyer-name">' + buyerName + '</span>' +
-      '<span class="bargain-status-badge ' + b.status + '">' + (statusIcons[b.status] || '📌') + ' ' + (statusLabels[b.status] || b.status) + '</span></div></div>' +
-      '<div class="bargain-price-tag"><span class="bargain-price-amount">¥' + b.offerPrice + '</span>' +
-      (post.price ? '<span class="bargain-original">原价 ¥' + post.price + '</span>' : '') + '</div></div>';
-    if (b.message) html += '<div class="bargain-card-message">"' + escHtml(b.message) + '"</div>';
-    if (b.counterMessage) html += '<div class="bargain-card-message counter">💬 卖家还价理由：' + escHtml(b.counterMessage) + '</div>';
-    html += '<div class="bargain-timeline"><div class="timeline-label">时间线</div>';
-    (b.history || []).forEach(function(h) {
-      var actionLabels = { offer: '出价', accept: '接受', reject: '拒绝', counter: '还价', accept_counter: '接受还价', reject_counter: '拒绝还价', withdraw: '撤回' };
-      var actionIcons = { offer: '💰', accept: '✅', reject: '❌', counter: '🔄', accept_counter: '✅', reject_counter: '❌', withdraw: '↩️' };
-      html += '<div class="timeline-item ' + h.action + '"><span class="timeline-icon">' + (actionIcons[h.action] || '📌') + '</span><span class="timeline-text">' + (actionLabels[h.action] || h.action) + (h.price ? ' ¥' + h.price : '') + '</span><span class="timeline-time">' + timeAgo(h.time) + '</span></div>';
-    });
-    html += '</div>';    html += '<div class="bargain-card-actions">';
-    if (isOwner && b.status === 'pending') {
-      html += '<button class="btn-bargain-action accept" onclick="event.stopPropagation();handleBargainAccept(\'' + b.id + '\',\'' + post.id + '\')">✅ 接受</button>';
-      html += '<button class="btn-bargain-action counter" onclick="event.stopPropagation();showCounterForm(\'' + b.id + '\')">🔄 还价</button>';
-      html += '<button class="btn-bargain-action reject" onclick="event.stopPropagation();handleBargainReject(\'' + b.id + '\',\'' + post.id + '\')">❌ 拒绝</button>';
-      html += '<button class="btn-bargain-action chat" onclick="event.stopPropagation();openChatWith(\'' + b.fromUserId + '\')">💬 私聊</button>';
-    }
-    if (isOwner && b.status === 'countered') {
-      html += '<button class="btn-bargain-action reject" onclick="event.stopPropagation();handleBargainReject(\'' + b.id + '\',\'' + post.id + '\')">❌ 拒绝</button>';
-      html += '<button class="btn-bargain-action chat" onclick="event.stopPropagation();openChatWith(\'' + b.fromUserId + '\')">💬 私聊</button>';
-    }
-    if (isBuyer && b.status === 'countered') {
-      html += '<button class="btn-bargain-action accept" onclick="event.stopPropagation();handleCounterAccept(\'' + b.id + '\',\'' + post.id + '\')">✅ 接受还价 ¥' + b.counterPrice + '</button>';
-      html += '<button class="btn-bargain-action reject" onclick="event.stopPropagation();handleCounterReject(\'' + b.id + '\',\'' + post.id + '\')">❌ 拒绝还价</button>';
-    }
-    if (isBuyer && (b.status === 'pending' || b.status === 'countered')) {
-      html += '<button class="btn-bargain-action withdraw" onclick="event.stopPropagation();handleBargainWithdraw(\'' + b.id + '\',\'' + post.id + '\')">↩️ 撤回</button>';
-    }
-    html += '</div>';
-    if (isOwner && b.status === 'pending') {
-      html += '<div class="counter-form" id="counterForm_' + b.id + '" style="display:none">' +
-        '<div class="counter-form-title">💬 回复 ' + buyerName + '</div>' +
-        '<div class="counter-input-row"><span class="counter-prefix">¥</span>' +
-        '<input type="number" class="counter-input" id="counterPrice_' + b.id + '" placeholder="还价金额" min="0" step="0.01"></div>' +
-        '<textarea class="counter-msg" id="counterMsg_' + b.id + '" placeholder="还价理由（可选）" rows="2" maxlength="100"></textarea>' +
-        '<div class="counter-btns">' +
-        '<button class="counter-btn cancel" onclick="document.getElementById(\'counterForm_' + b.id + '\').style.display=\'none\'">取消</button>' +
-        '<button class="counter-btn submit" onclick="handleCounterBargain(\'' + b.id + '\',\'' + post.id + '\')">🔄 提交还价</button></div></div>';
-    }
-    html += '</div>';
+    var showActions = (isOwner && b.status === 'pending') || (isOwner && b.status === 'countered') || (isBuyer && b.status === 'countered') || (isBuyer && (b.status === 'pending' || b.status === 'countered'));
+
+    html += '<div class="brv3-card ' + cfg.cls + '">' +
+
+      // 头部：头像 + 名字 + 状态
+      '<div class="brv3-card-head">' +
+        '<div class="brv3-card-avatar" style="background:' + (relatedUser?.avatarBg || '#E5E7EB') + ';color:' + (relatedUser?.avatarColor || '#6B7280') + '">' + (relatedUser?.avatarText || '?') + '</div>' +
+        '<div class="brv3-card-meta">' +
+          '<div class="brv3-card-name">' + buyerName + '</div>' +
+          '<div class="brv3-card-time">' + timeAgo(b.time) + '</div>' +
+        '</div>' +
+        '<span class="brv3-badge ' + cfg.cls + '">' + cfg.icon + ' ' + cfg.label + '</span>' +
+      '</div>' +
+
+      // 价格区
+      '<div class="brv3-card-prices">' +
+        '<div class="brv3-price-block">' +
+          '<span class="brv3-price-label">出价</span>' +
+          '<span class="brv3-price-val">¥' + b.offerPrice + '</span>' +
+        '</div>' +
+        (b.counterPrice ?
+          '<div class="brv3-price-block brv3-price-block--counter">' +
+            '<span class="brv3-price-label">还价</span>' +
+            '<span class="brv3-price-val">¥' + b.counterPrice + '</span>' +
+          '</div>' : '') +
+        (post.price ?
+          '<div class="brv3-price-block brv3-price-block--original">' +
+            '<span class="brv3-price-label">原价</span>' +
+            '<span class="brv3-price-val">¥' + post.price + '</span>' +
+          '</div>' : '') +
+      '</div>' +
+
+      // 消息区
+      (b.message ? '<div class="brv3-msg">"' + escHtml(b.message) + '"</div>' : '') +
+      (b.counterMessage ? '<div class="brv3-msg brv3-msg--counter">💬 ' + escHtml(b.counterMessage) + '</div>' : '') +
+
+      // 操作按钮
+      (showActions ? '<div class="brv3-actions">' : '') +
+        (isOwner && b.status === 'pending' ?
+          '<button class="brv3-btn brv3-btn--accept" onclick="event.stopPropagation();handleBargainAccept(\'' + b.id + '\',\'' + post.id + '\')">接受</button>' +
+          '<button class="brv3-btn brv3-btn--counter" onclick="event.stopPropagation();showCounterFormV3(\'' + b.id + '\')">还价</button>' +
+          '<button class="brv3-btn brv3-btn--reject" onclick="event.stopPropagation();handleBargainReject(\'' + b.id + '\',\'' + post.id + '\')">拒绝</button>' : '') +
+        (isOwner && b.status === 'countered' ?
+          '<button class="brv3-btn brv3-btn--reject" onclick="event.stopPropagation();handleBargainReject(\'' + b.id + '\',\'' + post.id + '\')">拒绝</button>' +
+          '<button class="brv3-btn brv3-btn--chat" onclick="event.stopPropagation();openChatWith(\'' + b.fromUserId + '\')">私聊</button>' : '') +
+        (isBuyer && b.status === 'countered' ?
+          '<button class="brv3-btn brv3-btn--accept" onclick="event.stopPropagation();handleCounterAccept(\'' + b.id + '\',\'' + post.id + '\')">接受 ¥' + b.counterPrice + '</button>' +
+          '<button class="brv3-btn brv3-btn--reject" onclick="event.stopPropagation();handleCounterReject(\'' + b.id + '\',\'' + post.id + '\')">拒绝</button>' : '') +
+        (isBuyer && (b.status === 'pending' || b.status === 'countered') ?
+          '<button class="brv3-btn brv3-btn--withdraw" onclick="event.stopPropagation();handleBargainWithdraw(\'' + b.id + '\',\'' + post.id + '\')">撤回</button>' : '') +
+      (showActions ? '</div>' : '') +
+
+      // 还价表单（仅卖家对 pending 状态）
+      (isOwner && b.status === 'pending' ?
+        '<div class="brv3-counter-form" id="counterForm_' + b.id + '" style="display:none">' +
+          '<div class="brv3-counter-title">💬 回复 ' + buyerName + '</div>' +
+          '<div class="brv3-counter-row"><span class="brv3-counter-prefix">¥</span>' +
+          '<input type="number" class="brv3-counter-input" id="counterPrice_' + b.id + '" placeholder="还价金额" min="0" step="0.01"></div>' +
+          '<textarea class="brv3-counter-msg" id="counterMsg_' + b.id + '" placeholder="说明还价理由（可选）" rows="2" maxlength="100"></textarea>' +
+          '<div class="brv3-counter-btns">' +
+          '<button class="brv3-counter-cancel" onclick="document.getElementById(\'counterForm_' + b.id + '\').style.display=\'none\'">取消</button>' +
+          '<button class="brv3-counter-submit" onclick="handleCounterBargain(\'' + b.id + '\',\'' + post.id + '\')">提交还价</button></div></div>' : '') +
+
+      '</div>';
   });
+
   html += '</div></div>';
   return html;
+}
+
+function showCounterFormV3(bargainId) {
+  var form = document.getElementById('counterForm_' + bargainId);
+  if (form) {
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    if (form.style.display === 'block') {
+      var input = document.getElementById('counterPrice_' + bargainId);
+      if (input) { setTimeout(function() { input.focus(); }, 150); }
+    }
+  }
 }
 
 function showCounterForm(bargainId) {
@@ -1965,100 +2009,245 @@ function openBargainModal(postId) {
   if (post.authorId === user.stuId) { showToast('不能对自己的商品砍价', 'warn'); return; }
   var postPrice = parseFloat(post.price) || 0;
   var suggestedPrice = postPrice > 0 ? Math.round(postPrice * 0.8) : '';
+  var postPriceDisplay = post.price || '面议';
+  var hasImage = post.images && post.images.length > 0;
 
-  var html = '<div class="bargain-modal-content">' +
-    '<div class="bargain-modal-header">' +
-      '<div class="bargain-modal-icon">🤝</div>' +
-      '<div class="bargain-modal-title">' +
-        '<h3>发起砍价</h3>' +
-        '<p>与卖家协商一个双方都满意的价格</p>' +
+  var html = '' +
+    // ── 顶部栏：商品信息 + 关闭 ──
+    '<div class="bgv3-topbar">' +
+      '<div class="bgv3-topbar-info">' +
+        (hasImage ? '<img class="bgv3-topbar-img" src="' + post.images[0] + '" alt="">' : '<div class="bgv3-topbar-img bgv3-topbar-img-fallback">🛍️</div>') +
+        '<div class="bgv3-topbar-text">' +
+          '<div class="bgv3-topbar-title">' + escHtml(post.title || post.content.slice(0, 30)) + '</div>' +
+          '<div class="bgv3-topbar-sub"><span>' + escHtml(post.authorName) + '</span><span class="bgv3-topbar-dot">·</span><span>' + (post.campus === '青山校区' ? '青山' : '黄家湖') + '</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<button onclick="closeModal()" class="bgv3-close" aria-label="关闭"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>' +
+    '</div>' +
+
+    // ── 标题区 ──
+    '<div class="bgv3-header">' +
+      '<div class="bgv3-header-icon">🤝</div>' +
+      '<h3 class="bgv3-header-title">发起砍价</h3>' +
+      '<p class="bgv3-header-desc">输入你的心理价位，与卖家协商成交</p>' +
+    '</div>' +
+
+    // ── 价格对比双卡片 ──
+    '<div class="bgv3-price-cards">' +
+      '<div class="bgv3-price-card bgv3-price-card--seller">' +
+        '<div class="bgv3-price-card-label">卖家标价</div>' +
+        '<div class="bgv3-price-card-value">¥' + postPriceDisplay + '</div>' +
+        '<div class="bgv3-price-card-sub">当前价格</div>' +
+      '</div>' +
+      '<div class="bgv3-price-divider">' +
+        '<div class="bgv3-price-divider-line"></div>' +
+        '<div class="bgv3-price-divider-icon">→</div>' +
+        '<div class="bgv3-price-divider-line"></div>' +
+      '</div>' +
+      '<div class="bgv3-price-card bgv3-price-card--offer">' +
+        '<div class="bgv3-price-card-label">我的出价</div>' +
+        '<div class="bgv3-price-card-value" id="bargainLivePrice">¥—</div>' +
+        '<div class="bgv3-price-card-sub" id="bargainDiscountText">输入金额后显示折扣</div>' +
       '</div>' +
     '</div>' +
 
-    '<div class="bargain-price-display">' +
-      '<div class="bargain-price-box">' +
-        '<div class="price-label">卖家标价</div>' +
-        '<div class="price-value" style="color:#6B7280">¥' + (post.price || '面议') + '</div>' +
+    // ── 出价输入区 ──
+    '<div class="bgv3-field">' +
+      '<label class="bgv3-label">出价金额 <span class="bgv3-label-hint">(必填)</span></label>' +
+      '<div class="bgv3-input-group">' +
+        '<span class="bgv3-input-prefix">¥</span>' +
+        '<input type="number" id="bargainPrice" class="bgv3-input" placeholder="' + (suggestedPrice || '输入你的心理价位') + '" min="0.01" step="0.01" value="' + suggestedPrice + '"' +
+          ' oninput="updateBargainPreviewV3(' + postPrice + ')"' +
+          ' onkeydown="if(event.key===\'Enter\')submitBargainFromModalV3(\'' + postId + '\')">' +
+        '<div class="bgv3-input-suffix" id="bargainQuickBtns">' +
+          (postPrice > 0 ?
+            '<button type="button" class="bgv3-quick-btn" onclick="setBargainPrice(' + Math.round(postPrice*0.7) + ',' + postPrice + ')">7折</button>' +
+            '<button type="button" class="bgv3-quick-btn" onclick="setBargainPrice(' + Math.round(postPrice*0.8) + ',' + postPrice + ')">8折</button>' +
+            '<button type="button" class="bgv3-quick-btn" onclick="setBargainPrice(' + Math.round(postPrice*0.9) + ',' + postPrice + ')">9折</button>'
+          : '') +
+        '</div>' +
       '</div>' +
-      '<div class="bargain-price-arrow">→</div>' +
-      '<div class="bargain-price-box offer">' +
-        '<div class="price-label">我的出价</div>' +
-        '<div class="price-value" id="bargainLivePrice">¥?</div>' +
+      '<div id="bargainHintWrap" class="bgv3-hint" style="display:none">' +
+        '<div class="bgv3-hint-body" id="bargainHintBody">' +
+          '<svg class="bgv3-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+          '<span class="bgv3-hint-text" id="bargainHintText"></span>' +
+        '</div>' +
       '</div>' +
     '</div>' +
 
-    '<div class="bargain-form-group">' +
-      '<label>' +
-        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>' +
-        ' 你的出价' +
-      '</label>' +
-      '<div class="bargain-input-container">' +
-        '<span class="input-prefix">¥</span>' +
-        '<input type="number" id="bargainPrice" placeholder="输入你的心理价位" min="0.01" step="0.01" value="' + suggestedPrice + '" oninput="updateBargainPreview(' + postPrice + ')">' +
-      '</div>' +
-      '<div class="bargain-discount-hint" id="bargainHint" style="margin-top:8px;font-size:13px;"></div>' +
+    // ── 理由输入区 ──
+    '<div class="bgv3-field">' +
+      '<label class="bgv3-label">砍价理由 <span class="bgv3-label-hint">(选填，好的理由更容易成功)</span></label>' +
+      '<textarea id="bargainMsg" class="bgv3-textarea" placeholder="比如：同款在闲鱼均价更低、商品有轻微瑕疵、我是同校学弟..." maxlength="200"' +
+        ' oninput="document.getElementById(\'bargainCharCount\').textContent=this.value.length+\'/200\'"></textarea>' +
+      '<div class="bgv3-char-count" id="bargainCharCount">0/200</div>' +
     '</div>' +
 
-    '<div class="bargain-form-group">' +
-      '<label>' +
-        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
-        ' 砍价理由（可选）' +
-      '</label>' +
-      '<div class="bargain-textarea-container">' +
-        '<textarea id="bargainMsg" placeholder="说明一下为什么希望这个价格，比如同款二手行情、商品瑕疵等，增加成功率..." maxlength="200" oninput="document.getElementById(\'bargainCharCount\').textContent=this.value.length+\'/200\'"></textarea>' +
-      '</div>' +
-      '<div class="bargain-char-count" id="bargainCharCount">0/200</div>' +
-    '</div>' +
-
-    '<button class="bargain-submit-btn" id="bargainSubmitBtn" onclick="submitBargainFromModal(\'' + postId + '\')">' +
-      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>' +
-      ' 提交砍价' +
+    // ── 提交按钮 ──
+    '<button id="bargainSubmitBtn" class="bgv3-submit" onclick="submitBargainFromModalV3(\'' + postId + '\')" disabled>' +
+      '<svg id="bargainSubmitIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>' +
+      '<span id="bargainSubmitText">提交砍价</span>' +
     '</button>' +
-  '</div>';
+
+    // ── 底部提示 ──
+    '<p class="bgv3-footer-tip">💡 卖家会在 24 小时内回复你的砍价请求</p>';
 
   openModal(html);
-  if (suggestedPrice) updateBargainPreview(postPrice);
-  setTimeout(function() { document.getElementById('bargainPrice')?.focus(); }, 300);
+
+  setTimeout(function() {
+    var box = document.querySelector('#globalModal .modal-box');
+    if (box) {
+      box.style.maxWidth = '500px';
+      box.style.background = '#fff';
+      box.style.overflow = 'visible';
+      box.style.maxHeight = 'none';
+      box.style.padding = '0';
+      box.style.borderRadius = '20px';
+      box.style.position = 'relative';
+    }
+  }, 10);
+
+  if (suggestedPrice) updateBargainPreviewV3(postPrice);
+  setTimeout(function() {
+    var input = document.getElementById('bargainPrice');
+    if (input) input.focus();
+  }, 350);
+}
+
+function setBargainPrice(val, originalPrice) {
+  var input = document.getElementById('bargainPrice');
+  if (!input) return;
+  input.value = val;
+  updateBargainPreviewV3(originalPrice);
+}
+
+function updateBargainPreviewV3(originalPrice) {
+  var priceEl = document.getElementById('bargainPrice');
+  var liveEl = document.getElementById('bargainLivePrice');
+  var discountEl = document.getElementById('bargainDiscountText');
+  var hintWrap = document.getElementById('bargainHintWrap');
+  var hintBody = document.getElementById('bargainHintBody');
+  var hintText = document.getElementById('bargainHintText');
+  var hintIcon = hintBody ? hintBody.querySelector('.bgv3-hint-icon') : null;
+  var submitEl = document.getElementById('bargainSubmitBtn');
+
+  if (!priceEl) return;
+  var offer = parseFloat(priceEl.value);
+  if (isNaN(offer) || offer <= 0) {
+    if (liveEl) liveEl.textContent = '¥—';
+    if (discountEl) discountEl.textContent = '输入金额后显示折扣';
+    if (hintWrap) hintWrap.style.display = 'none';
+    if (submitEl) submitEl.disabled = true;
+    return;
+  }
+  if (liveEl) liveEl.textContent = '¥' + offer;
+  if (submitEl) submitEl.disabled = false;
+
+  if (originalPrice > 0 && offer > 0) {
+    var discount = Math.round((1 - offer / originalPrice) * 100);
+    if (discountEl) discountEl.textContent = '相当于原价 ' + discount + '% off';
+    if (hintWrap) hintWrap.style.display = 'block';
+    if (hintBody && hintText && hintIcon) {
+      hintBody.className = 'bgv3-hint-body';
+      if (offer >= originalPrice) {
+        hintText.textContent = '出价不能高于或等于原价 ¥' + originalPrice;
+        hintBody.classList.add('bgv3-hint-body--error');
+        hintIcon.style.color = '#EF4444';
+        hintText.style.color = '#991B1B';
+        if (submitEl) submitEl.disabled = true;
+      } else if (discount <= 10) {
+        hintText.textContent = '幅度较小（' + discount + '%），容易被接受。附上理由更有把握！';
+        hintBody.classList.add('bgv3-hint-body--good');
+        hintIcon.style.color = '#059669';
+        hintText.style.color = '#065F46';
+      } else if (discount <= 25) {
+        hintText.textContent = '幅度适中（' + discount + '%），建议附上合理理由增加成功率';
+        hintBody.classList.add('bgv3-hint-body--warn');
+        hintIcon.style.color = '#D97706';
+        hintText.style.color = '#92400E';
+      } else {
+        hintText.textContent = '幅度较大（' + discount + '%），卖家可能会拒绝，请慎重出价';
+        hintBody.classList.add('bgv3-hint-body--warn');
+        hintIcon.style.color = '#D97706';
+        hintText.style.color = '#92400E';
+      }
+    }
+  } else {
+    if (hintWrap) hintWrap.style.display = 'none';
+    if (submitEl) submitEl.disabled = false;
+  }
+}
+
+function submitBargainFromModalV3(postId) {
+  var priceEl = document.getElementById('bargainPrice');
+  var msgEl = document.getElementById('bargainMsg');
+  var btn = document.getElementById('bargainSubmitBtn');
+  var btnText = document.getElementById('bargainSubmitText');
+  var btnIcon = document.getElementById('bargainSubmitIcon');
+
+  if (!priceEl || !priceEl.value) { showToast('请输入出价金额', 'warn'); return; }
+  var msg = msgEl ? msgEl.value.trim() : '';
+
+  if (btn) { btn.disabled = true; btn.style.pointerEvents = 'none'; }
+  if (btnText) btnText.textContent = '提交中...';
+  if (btnIcon) btnIcon.innerHTML = '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" fill="none" class="bgv3-spin" style="transform-origin:12px 12px"/>';
+
+  var result = submitBargain(postId, priceEl.value, msg);
+  if (result) {
+    showToast('砍价已提交！等待卖家回复', 'success');
+    closeModal();
+    setTimeout(function() { openPostDetail(postId); }, 350);
+  } else {
+    if (btn) { btn.disabled = false; btn.style.pointerEvents = ''; }
+    if (btnText) btnText.textContent = '提交砍价';
+    if (btnIcon) btnIcon.innerHTML = '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>';
+  }
 }
 
 function updateBargainPreview(originalPrice) {
   var priceEl = document.getElementById('bargainPrice');
   var liveEl = document.getElementById('bargainLivePrice');
-  var hintEl = document.getElementById('bargainHint');
+  var hintWrap = document.getElementById('bargainHintWrap');
+  var hintText = document.getElementById('bargainHintText');
+  var hintBox = hintWrap ? hintWrap.querySelector('.bm-hint-box') : null;
+  var hintIcon = hintWrap ? hintWrap.querySelector('.bm-hint-icon') : null;
   var submitEl = document.getElementById('bargainSubmitBtn');
-  var savingsBar = document.getElementById('bargainSavingsBar');
-  var savingsFill = document.getElementById('bargainSavingsFill');
-  var savingsText = document.getElementById('bargainSavingsText');
   if (!priceEl) return;
   var offer = parseFloat(priceEl.value);
   if (isNaN(offer) || offer <= 0) {
     if (liveEl) liveEl.textContent = '¥?';
-    if (hintEl) { hintEl.textContent = ''; hintEl.className = 'bargain-discount-hint'; }
+    if (hintWrap) hintWrap.classList.remove('visible');
     if (submitEl) submitEl.disabled = true;
-    if (savingsBar) savingsBar.style.display = 'none';
-  return;
+    return;
   }
   if (liveEl) liveEl.textContent = '¥' + offer;
   if (submitEl) submitEl.disabled = false;
   if (originalPrice > 0 && offer > 0) {
     var discount = Math.round((1 - offer / originalPrice) * 100);
-    var saved = (originalPrice - offer).toFixed(2);
-    if (savingsBar) {
-      savingsBar.style.display = 'block';
-      var fillPct = Math.min(100, Math.max(0, discount));
-      if (savingsFill) savingsFill.style.width = fillPct + '%';
-      if (savingsFill) savingsFill.style.background = discount <= 10 ? '#10B981' : discount <= 30 ? '#F59E0B' : '#EF4444';
-      if (savingsText) savingsText.textContent = '节省 ¥' + saved + ' (' + discount + '%)';
-    }
-    if (hintEl) {
-      if (discount <= 10) { hintEl.textContent = '🎯 礼貌砍价，低 ' + discount + '%，卖家大概率接受 ✨'; hintEl.className = 'bargain-discount-hint good'; }
-      else if (discount <= 30) { hintEl.textContent = '👍 合理范围，低 ' + discount + '%，附理由更容易成功'; hintEl.className = 'bargain-discount-hint warn'; }
-      else if (discount <= 50) { hintEl.textContent = '⚠️ 幅度较大，低 ' + discount + '%，建议说明原因'; hintEl.className = 'bargain-discount-hint bad'; }
-      else { hintEl.textContent = '🚫 砍价幅度过大（' + discount + '%），卖家可能拒绝'; hintEl.className = 'bargain-discount-hint bad'; }
-    }
-    if (offer >= originalPrice) {
-      if (hintEl) { hintEl.textContent = '⛔️ 出价不能高于或等于原价'; hintEl.className = 'bargain-discount-hint bad'; }
-      if (submitEl) submitEl.disabled = true;
+    if (hintWrap && hintText && hintBox && hintIcon) {
+      hintWrap.classList.add('visible');
+      if (offer >= originalPrice) {
+        hintText.textContent = '出价不能高于或等于原价，请输入更低的价格';
+        hintBox.className = 'bm-hint-box red';
+        hintIcon.className = 'bm-hint-icon red';
+        hintText.className = 'bm-hint-text red';
+        if (submitEl) submitEl.disabled = true;
+      } else if (discount <= 10) {
+        hintText.textContent = '合理范围：低 ' + discount + '%，附上理由更容易成功';
+        hintBox.className = 'bm-hint-box amber';
+        hintIcon.className = 'bm-hint-icon amber';
+        hintText.className = 'bm-hint-text amber';
+      } else if (discount <= 30) {
+        hintText.textContent = '幅度适中：低 ' + discount + '%，建议详细说明原因增加成功率';
+        hintBox.className = 'bm-hint-box amber';
+        hintIcon.className = 'bm-hint-icon amber';
+        hintText.className = 'bm-hint-text amber';
+      } else {
+        hintText.textContent = '幅度较大：低 ' + discount + '%，卖家可能难以接受，请慎重';
+        hintBox.className = 'bm-hint-box amber';
+        hintIcon.className = 'bm-hint-icon amber';
+        hintText.className = 'bm-hint-text amber';
+      }
     }
   }
 }
@@ -2066,15 +2255,29 @@ function updateBargainPreview(originalPrice) {
 function submitBargainFromModal(postId) {
   var priceEl = document.getElementById('bargainPrice');
   var msgEl = document.getElementById('bargainMsg');
+  var btn = document.getElementById('bargainSubmitBtn');
+  var btnText = document.getElementById('bargainSubmitText');
+  var btnIcon = document.getElementById('bargainSubmitIcon');
+
   if (!priceEl || !priceEl.value) { showToast('请输入出价金额', 'warn'); return; }
   var msg = msgEl ? msgEl.value.trim() : '';
   if (!msg) { showToast('请说几句砍价理由', 'warn'); return; }
+
+  // Loading state
+  if (btn) { btn.disabled = true; btn.style.pointerEvents = 'none'; }
+  if (btnText) btnText.textContent = '提交中...';
+  if (btnIcon) btnIcon.innerHTML = '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" fill="none" class="bm-spin" style="transform-origin:12px 12px"/>';
 
   var result = submitBargain(postId, priceEl.value, msg);
   if (result) {
     showToast('砍价已提交！等待卖家回复', 'success');
     closeModal();
     setTimeout(function() { openPostDetail(postId); }, 350);
+  } else {
+    // Reset on failure
+    if (btn) { btn.disabled = false; btn.style.pointerEvents = ''; }
+    if (btnText) btnText.textContent = '提交砍价';
+    if (btnIcon) btnIcon.innerHTML = '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>';
   }
 }
 
