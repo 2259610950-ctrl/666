@@ -416,16 +416,17 @@
     openSearch();
   };
 
-  // ---- 用户菜单 ----
-  window.toggleUserMenu = function() {
-    var menu = document.getElementById('userMenu');
-    if (menu) menu.classList.toggle('open');
-  };
-
+  // ---- 用户菜单点击 ----
+  var _svcAvatarWrap = document.getElementById('navAvatarWrap');
+  if (_svcAvatarWrap) {
+    _svcAvatarWrap.addEventListener('click', function() {
+      document.getElementById('userMenu').classList.toggle('open');
+    });
+  }
   document.addEventListener('click', function(e) {
     var menu = document.getElementById('userMenu');
-    var avatar = document.getElementById('navAvatar');
-    if (menu && avatar && !avatar.contains(e.target) && !menu.contains(e.target)) {
+    var wrap = document.getElementById('navAvatarWrap');
+    if (menu && wrap && !wrap.contains(e.target) && !menu.contains(e.target)) {
       menu.classList.remove('open');
     }
   });

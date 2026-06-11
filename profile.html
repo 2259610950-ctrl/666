@@ -283,17 +283,21 @@ var currentUser = requireAuth();
 renderNav('profile.html');
 
 // 用户菜单交互
-function toggleUserMenu() {
-  var menu = document.getElementById('userMenu');
-  if (menu) menu.classList.toggle('open');
-}
-document.addEventListener('click', function(e) {
-  var menu = document.getElementById('userMenu');
-  var avatar = document.getElementById('navAvatar');
-  if (menu && avatar && !avatar.contains(e.target) && !menu.contains(e.target)) {
-    menu.classList.remove('open');
+(function() {
+  var wrap = document.getElementById('navAvatarWrap');
+  if (wrap) {
+    wrap.addEventListener('click', function() {
+      document.getElementById('userMenu').classList.toggle('open');
+    });
   }
-});
+  document.addEventListener('click', function(e) {
+    var menu = document.getElementById('userMenu');
+    var avatarWrap = document.getElementById('navAvatarWrap');
+    if (menu && avatarWrap && !avatarWrap.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove('open');
+    }
+  });
+})();
 
 // 更新菜单用户信息
 var menuName = document.getElementById('menuName');
