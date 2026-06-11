@@ -275,28 +275,7 @@ function logout() {
   }
 }
 
-// ---- 校区过滤器 ----
-function getCampusFilter() {
-  return localStorage.getItem('wkust_campusFilter') || 'all';
-}
-function setCampusFilter(campus) {
-  localStorage.setItem('wkust_campusFilter', campus);
-  // 触发自定义事件通知各页面刷新
-  window.dispatchEvent(new CustomEvent('campusChanged', { detail: campus }));
-  updateCampusUI(campus);
-}
-function filterByCampus(posts) {
-  const cf = getCampusFilter();
-  return cf === 'all' ? posts : posts.filter(p => p.campus === cf);
-}
-function updateCampusUI(campus) {
-  const btnAll = document.getElementById('campusBtnAll');
-  const btnQS = document.getElementById('campusBtnQS');
-  const btnHJH = document.getElementById('campusBtnHJH');
-  if (btnAll) btnAll.classList.toggle('active', campus === 'all');
-  if (btnQS) btnQS.classList.toggle('active', campus === '青山校区');
-  if (btnHJH) btnHJH.classList.toggle('active', campus === '黄家湖校区');
-}
+
 
 // ---- 私信系统 ----
 function sendMessage(fromId, toId, text) {
@@ -529,11 +508,6 @@ function renderNav(activeLink) {
     navNameVisible.style.display = '';
     navNameVisible.textContent = user.name;
   }
-  const campusBadge = document.getElementById('navCampusBadge');
-  if (campusBadge) {
-    campusBadge.textContent = user.campus;
-    campusBadge.className = 'brand-tag ' + (user.campus === '青山校区' ? 'qs' : 'hjh');
-  }
   // 统一注入导航链接（解决各页面硬编码不一致的问题）
   const navLinksEl = document.querySelector('.nav-links');
   if (navLinksEl) {
@@ -550,28 +524,8 @@ function renderNav(activeLink) {
       return '<a href="' + l.href + '" class="nav-link' + (activeLink && l.href === activeLink ? ' active' : '') + '">' + l.text + '</a>';
     }).join('');
   }
-  // 动态注入校区切换器
-  injectCampusSwitcher();
   // 动态注入消息 & 通知图标
   injectActionIcons();
-}
-
-// 校区切换器注入
-function injectCampusSwitcher() {
-  const navBrand = document.querySelector('.nav-brand');
-  if (!navBrand || document.getElementById('campusSwitcherWrap')) return;
-  const sw = document.createElement('div');
-  sw.id = 'campusSwitcherWrap';
-  sw.className = 'campus-switcher-wrap';
-  const cf = getCampusFilter();
-  sw.innerHTML = `
-    <button class="campus-switch-btn ${cf === 'all' ? 'active' : ''}" id="campusBtnAll" onclick="setCampusFilter('all')">全部</button>
-    <button class="campus-switch-btn qs ${cf === '青山校区' ? 'active' : ''}" id="campusBtnQS" onclick="setCampusFilter('青山校区')">青山</button>
-    <button class="campus-switch-btn hjh ${cf === '黄家湖校区' ? 'active' : ''}" id="campusBtnHJH" onclick="setCampusFilter('黄家湖校区')">黄家湖</button>`;
-  // 插入到 brand 和 links 之间
-  const navContainer = navBrand.parentNode;
-  const navLinks = document.querySelector('.nav-links');
-  if (navContainer && navLinks) navContainer.insertBefore(sw, navLinks);
 }
 
 // 消息 & 通知图标注入/更新
@@ -740,7 +694,7 @@ function createPost(data) {
     authorAvatar: user.avatarText,
     authorAvatarBg: user.avatarBg,
     authorAvatarColor: user.avatarColor,
-    campus: user.campus,
+    campus: data.campus || user.campus,
     college: user.college,
     major: user.major,
     grade: user.grade,
@@ -2533,17 +2487,6 @@ async function renderNavWeather(campus) {
     + '<span class="nav-weather-desc">' + desc + '</span>'
     + '<span class="nav-weather-feels">体感' + feels + '°</span>';
 }
-// ---- 校区切换 → 天气联动 ----
-window.addEventListener('campusChanged', function(e) {
-  var campus = e.detail;
-  // 如果切到"全部"，用用户默认校区
-  if (campus === 'all') {
-    var user = DB.getCurrentUser();
-    campus = user ? user.campus : '青山校区';
-  }
-  renderWeatherCard(campus);
-  renderNavWeather(campus);
-});
 
 console.log('%c武汉科技大学校园社区 已加载', 'color:#4F46E5;font-size:14px;font-weight:bold;');
 

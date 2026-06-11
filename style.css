@@ -2227,35 +2227,6 @@ html {
 }
 
 /* ===== 校区切换器 ===== */
-.campus-switcher-wrap {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--border-light);
-  border-radius: 10px;
-  padding: 3px;
-  margin: 0 20px;
-  flex-shrink: 0;
-}
-.campus-switch-btn {
-  padding: 5px 12px;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 8px;
-  color: var(--text-secondary);
-  transition: all .2s ease;
-  white-space: nowrap;
-}
-.campus-switch-btn:hover { color: var(--text-primary); background: rgba(255,255,255,.6); }
-.campus-switch-btn.active {
-  background: var(--surface);
-  color: var(--brand);
-  box-shadow: 0 1px 3px rgba(0,0,0,.08);
-  font-weight: 600;
-}
-.campus-switch-btn.qs.active { color: #4F46E5; }
-.campus-switch-btn.hjh.active { color: #059669; }
-
 /* ===== 导航栏消息图标 ===== */
 .nav-msg-btn { position: relative; }
 .badge-dot {
@@ -2562,8 +2533,6 @@ html {
   .msg-bubble-row { max-width: 85%; }
 }
 @media (max-width: 640px) {
-  .campus-switcher-wrap { margin: 0 8px; }
-  .campus-switch-btn { padding: 4px 8px; font-size: 11px; }
 }
 
 /* ================================================================ */

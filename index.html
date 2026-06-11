@@ -37,7 +37,6 @@
     <div class="nav-brand">
       <div class="brand-icon">武</div>
       <span class="brand-name">武科大社区</span>
-      <span class="brand-tag qs" id="navCampusBadge">青山校区</span>
     </div>
     <div class="nav-links">
       <a href="index.html" class="nav-link active">首页</a>
@@ -358,9 +357,6 @@ document.addEventListener('click', e => {
 
 // 更新Hero用户信息
 if (currentUser) {
-  const badge = document.getElementById('navCampusBadge');
-  badge.className = 'brand-tag ' + (currentUser.campus === '青山校区' ? 'qs' : 'hjh');
-  badge.textContent = currentUser.campus;
   document.getElementById('navUserSub').textContent = currentUser.major + ' · ' + currentUser.grade;
   // 快速发布用户信息
   const qpAv = document.getElementById('qpAvatar');
@@ -521,7 +517,7 @@ function openCreatePost() {
   openModal(`
     <div class="create-post-form">
       <h3>发布新帖子</h3>
-      <p class="post-sub-info">发布者：${currentUser?.name || ''} · ${currentUser?.campus || ''} · ${currentUser?.major || ''} ${currentUser?.grade || ''}</p>
+      <p class="post-sub-info">发布者：${currentUser?.name || ''} · ${currentUser?.major || ''} ${currentUser?.grade || ''}</p>
       <div class="post-type-selector">
         <button class="post-type-btn active" data-type="social" data-label="动态" onclick="selectPostType(this)">💬 动态</button>
         <button class="post-type-btn" data-type="academic" data-label="学术" onclick="selectPostType(this)">📚 学术</button>
@@ -529,6 +525,7 @@ function openCreatePost() {
         <button class="post-type-btn" data-type="activity" data-label="活动" onclick="selectPostType(this)">🎯 活动</button>
         <button class="post-type-btn" data-type="career" data-label="内推" onclick="selectPostType(this)">💼 内推</button>
       </div>
+      <div style="margin-bottom:12px"><label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#6B7280"><span style="color:#DC2626">*</span> 所属校区</label><select id="postCampusSelect" class="post-form-input" style="width:100%;cursor:pointer"><option value="">-- 请选择校区 --</option><option value="青山校区">青山校区</option><option value="黄家湖校区">黄家湖校区</option></select></div>
       <input class="post-form-input" id="newPostTitle" placeholder="标题（可选）">
       <textarea class="post-form-textarea" id="newPostContent" placeholder="分享你的想法..." rows="5"></textarea>
       <div id="extraFieldsWrap"></div>
@@ -558,7 +555,9 @@ function submitNewPost() {
   const label = activeBtn ? activeBtn.dataset.label : '动态';
   const title = document.getElementById('newPostTitle').value.trim();
   const content = document.getElementById('newPostContent').value.trim();
+  const campus = (document.getElementById('postCampusSelect')?.value || '').trim();
   if (!content) { showToast('请输入内容', 'warn'); return; }
+  if (!campus) { showToast('请选择所属校区', 'warn'); return; }
   const extra = {};
   if (type === 'market') {
     extra.price = document.getElementById('marketPrice')?.value;
@@ -573,7 +572,7 @@ function submitNewPost() {
     extra.company = document.getElementById('careerCo')?.value;
     extra.position = document.getElementById('careerPos')?.value;
   }
-  createPost({ type, category: label, title, content, ...extra });
+  createPost({ type, category: label, title, content, campus, ...extra });
   closeModal();
   renderFeed();
   renderHotList();

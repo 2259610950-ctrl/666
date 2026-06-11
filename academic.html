@@ -10,7 +10,7 @@
 (function(){try{var beacon=new BeaconAction({appkey:'0WEB06U85YBSLJNL',versionCode:'1.0.0',channelID:'share',delay:1000,sessionDuration:30*60*1000,isOversea:false,needReportRqdEvent:false});beacon.onDirectUserAction('preview_page_view',{'url':location.href,'referrer':document.referrer,'title':document.title,'sandbox_id':'86e8fde96b8f4b9ba775ba6d51502ffc'});}catch(e){}})();
 </script></head>
 <body>
-<nav class="navbar" id="navbar"><div class="nav-container"><div class="nav-brand"><div class="brand-icon">武</div><span class="brand-name">武科大社区</span><span class="brand-tag qs" id="navCampusBadge">青山校区</span></div><div class="nav-links"><a href="index.html" class="nav-link">首页</a><a href="academic.html" class="nav-link active">学术广场</a><a href="market.html" class="nav-link">二手集市</a><a href="services.html" class="nav-link">帮帮</a><a href="social.html" class="nav-link">社交动态</a><a href="career.html" class="nav-link">职业内推</a><a href="activity.html" class="nav-link">活动约伴</a></div><div class="nav-actions"><button class="btn-icon" id="searchBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button><div class="user-menu-wrap"><div class="avatar-wrap" id="navAvatarWrap"><div class="avatar" id="navAvatar" style="cursor:pointer">用</div></div><div class="user-menu" id="userMenu"><div class="user-info-mini"><div class="user-info-name" id="navUserName">加载中</div><div class="user-info-sub" id="navUserSub">武汉科技大学</div></div><div class="user-menu-item" onclick="window.location='profile.html'">个人主页</div><div class="user-menu-divider"></div><div class="user-menu-item danger" onclick="logout()">退出登录</div></div></div></div></nav>
+<nav class="navbar" id="navbar"><div class="nav-container"><div class="nav-brand"><div class="brand-icon">武</div><span class="brand-name">武科大社区</span></div><div class="nav-links"><a href="index.html" class="nav-link">首页</a><a href="academic.html" class="nav-link active">学术广场</a><a href="market.html" class="nav-link">二手集市</a><a href="services.html" class="nav-link">帮帮</a><a href="social.html" class="nav-link">社交动态</a><a href="career.html" class="nav-link">职业内推</a><a href="activity.html" class="nav-link">活动约伴</a></div><div class="nav-actions"><button class="btn-icon" id="searchBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button><div class="user-menu-wrap"><div class="avatar-wrap" id="navAvatarWrap"><div class="avatar" id="navAvatar" style="cursor:pointer">用</div></div><div class="user-menu" id="userMenu"><div class="user-info-mini"><div class="user-info-name" id="navUserName">加载中</div><div class="user-info-sub" id="navUserSub">武汉科技大学</div></div><div class="user-menu-item" onclick="window.location='profile.html'">个人主页</div><div class="user-menu-divider"></div><div class="user-menu-item danger" onclick="logout()">退出登录</div></div></div></div></nav>
 <div class="search-overlay" id="searchOverlay"><div class="search-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="搜索学术帖子..." id="searchInput" autofocus><button onclick="closeSearch()">取消</button></div></div>
 
 <section class="page-hero" style="background:linear-gradient(135deg,#3B82F6 0%,#8B5CF6 100%)">
@@ -148,14 +148,16 @@ function renderAcademicList() {
 function loadMore() { acadCount += 5; renderAcademicList(); }
 
 function openCreatePost(type) {
-  openModal('<div class="create-post-form"><h3>发布学术帖子</h3><p class="post-sub-info">发布者：' + (currentUser?.name||'') + ' · ' + (currentUser?.campus||'') + ' · ' + (currentUser?.major||'') + ' ' + (currentUser?.grade||'') + '</p><input class="post-form-input" id="newPostTitle" placeholder="标题（如：数据结构期末复习资料整理）"><textarea class="post-form-textarea" id="newPostContent" placeholder="详细描述你的问题或分享内容..." rows="6"></textarea><button class="btn-submit-post" onclick="doPost()">发布</button></div>');
+  openModal('<div class="create-post-form"><h3>发布学术帖子</h3><p class="post-sub-info">发布者：' + (currentUser?.name||'') + ' · ' + (currentUser?.major||'') + ' ' + (currentUser?.grade||'') + '</p><div style="margin-bottom:12px"><label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#6B7280"><span style="color:#DC2626">*</span> 所属校区</label><select id="postCampusSelect" class="post-form-input" style="width:100%;cursor:pointer"><option value="">-- 请选择校区 --</option><option value="青山校区">青山校区</option><option value="黄家湖校区">黄家湖校区</option></select></div><input class="post-form-input" id="newPostTitle" placeholder="标题（如：数据结构期末复习资料整理）"><textarea class="post-form-textarea" id="newPostContent" placeholder="详细描述你的问题或分享内容..." rows="6"></textarea><button class="btn-submit-post" onclick="doPost()">发布</button></div>');
 }
 
 function doPost() {
   var t = document.getElementById('newPostTitle').value.trim();
   var c = document.getElementById('newPostContent').value.trim();
+  var campus = (document.getElementById('postCampusSelect')?.value || '').trim();
   if (!c) { showToast('请输入内容', 'warn'); return; }
-  createPost({ type: 'academic', category: '学术', title: t, content: c });
+  if (!campus) { showToast('请选择所属校区', 'warn'); return; }
+  createPost({ type: 'academic', category: '学术', title: t, content: c, campus: campus });
   closeModal(); renderAcademicList();
   showToast('发布成功！', 'success');
 }
