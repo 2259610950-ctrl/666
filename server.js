@@ -472,6 +472,85 @@ app.put('/api/admin/password', adminAuthMiddleware, (req, res) => {
   res.json({ ok: true, message: '密码修改成功，请重新登录' });
 });
 
+// ============================================================
+// 公告/通知管理 API
+// ============================================================
+
+// ---- 公开：获取公告列表（用户端） ----
+app.get('/api/announcements', (req, res) => {
+  const db = readDB();
+  const announcements = (db.announcements || []).filter(a => a.status !== 'hidden');
+  // 置顶的排前面
+  announcements.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || new Date(b.createdAt || b.time) - new Date(a.createdAt || a.time));
+  res.json({ announcements: announcements.slice(0, 20) });
+});
+
+// ---- 管理端：获取全部公告 ----
+app.get('/api/admin/announcements', adminAuthMiddleware, (req, res) => {
+  const db = readDB();
+  const announcements = (db.announcements || []).sort((a, b) =>
+    new Date(b.createdAt || b.time) - new Date(a.createdAt || a.time)
+  );
+  res.json({ announcements, total: announcements.length });
+});
+
+// ---- 管理端：创建公告 ----
+app.post('/api/admin/announcements', adminAuthMiddleware, (req, res) => {
+  const { title, content, category, pinned } = req.body;
+  if (!title || !title.trim()) return res.status(400).json({ error: '公告标题不能为空' });
+  if (!content || !content.trim()) return res.status(400).json({ error: '公告内容不能为空' });
+  const db = readDB();
+  if (!db.announcements) db.announcements = [];
+  const announcement = {
+    id: 'ann_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+    title: title.trim(),
+    content: content.trim(),
+    category: category || 'general',
+    pinned: !!pinned,
+    status: 'active',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  db.announcements.unshift(announcement);
+  db._updatedAt = new Date().toISOString();
+  writeDB(db);
+  logAccess(req.ip || 'unknown', 'POST', '/api/admin/announcements', 201, 'ADMIN');
+  res.json({ ok: true, announcement });
+});
+
+// ---- 管理端：更新公告 ----
+app.put('/api/admin/announcements/:id', adminAuthMiddleware, (req, res) => {
+  const { title, content, category, pinned, status } = req.body;
+  const db = readDB();
+  const announcements = db.announcements || [];
+  const idx = announcements.findIndex(a => a.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: '公告不存在' });
+  const ann = announcements[idx];
+  if (title !== undefined) ann.title = title.trim();
+  if (content !== undefined) ann.content = content.trim();
+  if (category !== undefined) ann.category = category;
+  if (pinned !== undefined) ann.pinned = !!pinned;
+  if (status !== undefined) ann.status = status;
+  ann.updatedAt = new Date().toISOString();
+  db.announcements[idx] = ann;
+  db._updatedAt = new Date().toISOString();
+  writeDB(db);
+  res.json({ ok: true, announcement: ann });
+});
+
+// ---- 管理端：删除公告 ----
+app.delete('/api/admin/announcements/:id', adminAuthMiddleware, (req, res) => {
+  const db = readDB();
+  const announcements = db.announcements || [];
+  const idx = announcements.findIndex(a => a.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: '公告不存在' });
+  const removed = announcements.splice(idx, 1)[0];
+  db.announcements = announcements;
+  db._updatedAt = new Date().toISOString();
+  writeDB(db);
+  res.json({ ok: true, removed: { id: removed.id, title: removed.title } });
+});
+
 // ---- 服务器运行信息 ----
 app.get('/api/admin/system', adminAuthMiddleware, (req, res) => {
   const db = readDB();

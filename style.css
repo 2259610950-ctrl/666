@@ -224,6 +224,48 @@ textarea, input { font-family: inherit; }
   background: white; border-radius: 12px;
 }
 
+/* ===== 内容管理 / 公告栏 ===== */
+.content-manage-item { transition: box-shadow .2s ease, transform .15s ease; }
+.content-manage-item:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+#announcementBarList div[onclick] { transition: background .15s ease; border-radius: 6px; margin: 0 -8px; padding-left: 8px !important; padding-right: 8px !important; }
+#announcementBarList div[onclick]:hover { background: #F9FAFB; }
+
+/* 公告项卡片（旧版兼容，admin.html 内联使用） */
+.announce-item {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.announce-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.announce-item-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.announce-item-time {
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.announce-item-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.announce-item-actions {
+  display: flex;
+  gap: 8px;
+}
+
 
 /* ===== Hero ===== */
 .hero {
