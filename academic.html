@@ -117,13 +117,18 @@ function renderAcademicList() {
   listEl.innerHTML = toShow.map(function(p) {
     var isLiked = currentUser && (p.likedBy||[]).includes(currentUser.stuId);
     var hasImg = p.images && p.images.length > 0;
+    var titleText = (p.title || '').trim();
+    var contentText = (p.content || '').trim();
+    // 防御：标题为空时用内容前50字替代；内容也空时显示默认文案
+    var displayTitle = titleText || contentText.slice(0, 50) || '（无标题帖子）';
+    var displayContent = contentText || '该帖子暂无详细内容';
     var tagsHtml = (p.tags||[]).map(function(t) { return '<span class="ac-tag">#' + escHtml(t) + '</span>'; }).join('');
     return '<div class="academic-card">' +
       '<div class="ac-header"><div class="ac-subject" style="background:' + getSubjectColor(p.college) + '">?</div><div class="ac-meta">' +
-        '<p class="ac-title" onclick="openPostDetail(\'' + p.id + '\')">' + escHtml(p.title || p.content.slice(0,50)) + '</p>' +
+        '<p class="ac-title" onclick="openPostDetail(\'' + p.id + '\')">' + escHtml(displayTitle) + '</p>' +
         '<div class="ac-info"><span class="ac-course">' + (p.college||'综合') + '</span><span class="ac-poster">' + (p.authorName||'匿名') + ' · ' + (p.grade||'') + ' · ' + (p.campus||'') + ' · ' + timeAgo(p.time||p.createdAt) + '</span></div></div></div>' +
       (hasImg ? '<div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding:4px 0">' + p.images.map(function(i){return '<img src="' + i + '" style="width:120px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0" alt="">';}).join('') + '</div>' : '') +
-      '<div class="ac-body" onclick="openPostDetail(\'' + p.id + '\')" style="cursor:pointer">' + escHtml(p.content.slice(0,180)) + (p.content.length>180?'...':'') + '</div>' +
+      '<div class="ac-body" onclick="openPostDetail(\'' + p.id + '\')" style="cursor:pointer">' + escHtml(displayContent.slice(0,200)) + (displayContent.length>200?'...':'') + '</div>' +
       '<div class="ac-footer">' + tagsHtml + '<div class="ac-stats">' +
         '<button class="action-btn like-btn-ac ' + (isLiked?'liked':'') + '" data-pid="' + p.id + '">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="' + (isLiked?'currentColor':'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="like-count-' + p.id + '">' + (p.likes||0) + '</span></button>' +
