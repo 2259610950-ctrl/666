@@ -234,8 +234,8 @@
   <!-- 登录屏幕 -->
   <div class="login-screen" id="loginScreen" style="display:none">
     <div class="login-card">
-      <h1>UniCampus 管理后台</h1>
-      <p>武汉科技大学校园社区管理系统</p>
+      <h1>武汉科技大学</h1>
+      <p>校园社区管理后台</p>
       <input type="password" id="loginPassword" placeholder="请输入管理员密码" autocomplete="off">
       <button onclick="doLogin()">登录</button>
       <div class="login-error" id="loginError"></div>
@@ -247,27 +247,23 @@
     <!-- 侧边栏 -->
     <div class="sidebar">
       <div class="sidebar-brand">
-        <h2>UniCampus</h2>
-        <span>管理后台 v1.0</span>
+        <h2>武科大社区</h2>
+        <span>管理后台 v2.0</span>
       </div>
       <div class="sidebar-nav">
-        <a class="active" data-page="dashboard" onclick="switchPage('dashboard')">
-          <span class="nav-icon">?</span> 仪表盘
+        <a class="active" data-page="dashboard" onclick="switchPage('dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> 仪表盘
         </a>
-        <a data-page="users" onclick="switchPage('users')">
-          <span class="nav-icon">?</span> 用户管理
+        <a data-page="users" onclick="switchPage('users')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> 用户管理
         </a>
-        <a data-page="posts" onclick="switchPage('posts')">
-          <span class="nav-icon">?</span> 帖子管理
+        <a data-page="posts" onclick="switchPage('posts')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 帖子管理
         </a>
-        <a data-page="system" onclick="switchPage('system')">
-          <span class="nav-icon">??</span> 系统信息
+        <a data-page="announcements" onclick="switchPage('announcements')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> 公告通知
         </a>
-        <a data-page="logs" onclick="switchPage('logs')">
-          <span class="nav-icon">?</span> 访问日志
+        <a data-page="system" onclick="switchPage('system')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9h.09A1.65 1.65 0 0 0 21 12H20"/></svg> 系统信息
         </a>
-        <a data-page="security" onclick="switchPage('security')">
-          <span class="nav-icon">??</span> 安全设置
+        <a data-page="logs" onclick="switchPage('logs')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 访问日志
+        </a>
+        <a data-page="security" onclick="switchPage('security')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 安全设置
         </a>
       </div>
       <div class="sidebar-footer">
@@ -281,6 +277,13 @@
       <div class="page-section active" id="page-dashboard">
         <div class="page-header">
           <h1>数据概览 <span class="auto-refresh-badge"><span class="dot"></span>自动刷新</span></h1>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="btn btn-outline btn-sm" onclick="exportData()">导出数据</button>
+            <button class="btn btn-brand btn-sm" onclick="loadDashboard()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              刷新
+            </button>
+          </div>
           <p>校园社区实时运行数据</p>
         </div>
         <div class="stats-grid" id="statsGrid"></div>
@@ -319,7 +322,10 @@
       <div class="page-section" id="page-posts">
         <div class="page-header">
           <h1>帖子管理</h1>
-          <p>查看和管理社区帖子</p>
+          <p>查看和管理社区帖子（共 <strong id="postCount">0</strong> 条）</p>
+        </div>
+        <div class="search-bar-top">
+          <input type="text" id="postSearch" placeholder="搜索帖子标题或作者..." oninput="filterPosts()">
         </div>
         <table class="data-table" id="postsTable">
           <thead>
@@ -338,6 +344,23 @@
           <p>服务器运行状态与配置</p>
         </div>
         <div class="info-grid" id="systemInfo"></div>
+      </div>
+
+      <!-- 公告通知 -->
+      <div class="page-section" id="page-announcements">
+        <div class="page-header">
+          <h1>公告通知</h1>
+          <p>发布和管理系统公告</p>
+        </div>
+        <button class="btn btn-brand" style="margin-bottom:16px" onclick="showAnnounceEditor()">+ 发布新公告</button>
+        <div id="announceEditor" style="display:none;margin-bottom:20px">
+          <div style="background:var(--surface);border:1px solid var(--border-light);border-radius:12px;padding:20px;margin-bottom:16px">
+            <div style="margin-bottom:12px"><label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text-secondary)">公告标题</label><input type="text" id="announceTitle" placeholder="输入公告标题" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none"></div>
+            <div style="margin-bottom:12px"><label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text-secondary)">公告内容</label><textarea id="announceContent" rows="5" placeholder="输入公告内容..." style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;resize:vertical;outline:none;font-family:inherit"></textarea></div>
+            <div style="display:flex;gap:8px"><button class="btn btn-brand btn-sm" onclick="saveAnnouncement()">发布公告</button><button class="btn btn-outline btn-sm" onclick="hideAnnounceEditor()">取消</button></div>
+          </div>
+        </div>
+        <div id="announcementsList"></div>
       </div>
 
       <!-- 访问日志 -->
@@ -503,6 +526,13 @@
       else if (page === 'posts') loadPosts();
       else if (page === 'system') loadSystem();
       else if (page === 'logs') loadLogs();
+      else if (page === 'announcements') loadAnnouncements();
+      // 更新顶栏标题
+      const titles = { dashboard: '仪表盘', users: '用户管理', posts: '帖子管理', announcements: '公告通知', system: '系统信息', logs: '访问日志', security: '安全设置' };
+      const tb = document.getElementById('topBarTitle');
+      if (tb) tb.textContent = titles[page] || '';
+      // 移动端关闭侧边栏
+      closeSidebar();
     }
 
     // ===== 仪表盘 =====
@@ -548,6 +578,7 @@
         if (!res) return;
         const d = await res.json();
         allUsers = d.users || [];
+        document.getElementById('userCount').textContent = allUsers.length;
         renderUsers(allUsers);
       } catch (e) { console.error(e); }
     }
@@ -576,7 +607,13 @@
         const res = await adminAPI('/posts');
         if (!res) return;
         const d = await res.json();
-        const posts = d.posts || [];
+        allPosts = d.posts || [];
+        document.getElementById('postCount').textContent = allPosts.length;
+        renderPosts(allPosts);
+      } catch (e) { console.error(e); }
+    }
+    function renderPosts(posts) {
+      try {
         const body = document.getElementById('postsBody');
         if (!posts.length) { body.innerHTML = '<tr><td colspan="8" class="empty-state">暂无帖子</td></tr>'; return; }
         const typeMap = { social: '社交', market: '二手', academic: '学术', career: '职业', activity: '活动' };
@@ -670,8 +707,8 @@
       const nw = document.getElementById('newPwd').value;
       const cf = document.getElementById('confirmPwd').value;
       const msg = document.getElementById('pwdMsg');
-      if (nw !== cf) { msg.textContent = '两次密码不一致'; msg.style.color = 'var(--danger)'; return; }
-      if (nw.length < 6) { msg.textContent = '新密码至少6位'; msg.style.color = 'var(--danger)'; return; }
+      if (nw !== cf) { showToast('两次密码不一致', 'error'); return; }
+      if (nw.length < 6) { showToast('新密码至少6位', 'error'); return; }
       try {
         const res = await adminAPI('/password', {
           method: 'PUT',
@@ -679,15 +716,92 @@
         });
         const d = await res.json();
         if (res.ok) {
-          msg.textContent = '密码修改成功，请重新登录';
-          msg.style.color = 'var(--success)';
+          showToast('密码修改成功，请重新登录', 'success');
           setTimeout(doLogout, 1500);
         } else {
-          msg.textContent = d.error || '修改失败';
-          msg.style.color = 'var(--danger)';
+          showToast(d.error || '修改失败', 'error');
         }
-      } catch (e) { msg.textContent = '网络错误'; msg.style.color = 'var(--danger)'; }
+      } catch (e) { showToast('网络错误', 'error'); }
     }
+
+    // ===== Toast 提示 =====
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const t = document.createElement('div');
+      t.className = 'toast toast-' + type;
+      t.innerHTML = '<span>' + msg + '</span>';
+      container.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(30px)'; setTimeout(() => t.remove(), 300); }, 3000);
+    }
+
+    // ===== 移动端侧边栏 =====
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar')?.classList.remove('open');
+      document.getElementById('sidebarOverlay')?.classList.remove('active');
+    }
+
+    // ===== 公告管理 =====
+    let announcements = [];
+    function loadAnnouncements() {
+      try {
+        const raw = localStorage.getItem('wkust_announcements');
+        announcements = raw ? JSON.parse(raw) : [
+          { id: 1, title: '欢迎使用武汉科技大学校园社区', content: '欢迎各位同学加入武汉科技大学校园社区，请遵守社区规范，文明交流。', time: new Date().toISOString().split('T')[0] },
+          { id: 2, title: '关于账号注册的说明', content: '注册时请使用真实学号和姓名，每个学号只能注册一个账号。', time: new Date().toISOString().split('T')[0] }
+        ];
+        renderAnnouncements();
+      } catch(e) { announcements = []; renderAnnouncements(); }
+    }
+    function renderAnnouncements() {
+      const el = document.getElementById('announcementsList');
+      if (!announcements.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">?</div><p>暂无公告</p></div>'; return; }
+      el.innerHTML = announcements.map(a => '<div class="announce-item"><div class="announce-item-header"><span class="announce-item-title">' + escHtml(a.title) + '</span><span class="announce-item-time">' + a.time + '</span></div><div class="announce-item-body">' + escHtml(a.content) + '</div><div class="announce-item-actions"><button class="btn btn-danger btn-sm" onclick="deleteAnnouncement(' + a.id + ')">删除</button></div></div>').join('');
+    }
+    function showAnnounceEditor() { document.getElementById('announceEditor').style.display = 'block'; }
+    function hideAnnounceEditor() { document.getElementById('announceEditor').style.display = 'none'; document.getElementById('announceTitle').value = ''; document.getElementById('announceContent').value = ''; }
+    function saveAnnouncement() {
+      const title = document.getElementById('announceTitle').value.trim();
+      const content = document.getElementById('announceContent').value.trim();
+      if (!title || !content) { showToast('请填写标题和内容', 'warning'); return; }
+      announcements.unshift({ id: Date.now(), title, content, time: new Date().toLocaleDateString('zh-CN') });
+      localStorage.setItem('wkust_announcements', JSON.stringify(announcements));
+      hideAnnounceEditor();
+      renderAnnouncements();
+      showToast('公告发布成功', 'success');
+    }
+    function deleteAnnouncement(id) {
+      pendingAction = () => { announcements = announcements.filter(a => a.id !== id); localStorage.setItem('wkust_announcements', JSON.stringify(announcements)); renderAnnouncements(); showToast('已删除', 'info'); };
+      showConfirm('删除公告', '确定要删除这条公告吗？该操作不可恢复。');
+    }
+
+    // ===== 导出数据 =====
+    async function exportData() {
+      try {
+        const res = await adminAPI('/export');
+        if (!res) return;
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'wkust-backup-' + new Date().toISOString().slice(0,10) + '.json';
+        a.click(); URL.revokeObjectURL(url);
+        showToast('数据导出成功', 'success');
+      } catch(e) { showToast('导出失败：' + e.message, 'error'); }
+    }
+
+    // ===== 帖子搜索过滤 =====
+    let allPosts = [];
+    function filterPosts() {
+      const q = document.getElementById('postSearch').value.toLowerCase();
+      renderPosts(allPosts.filter(p => (p.title||'').toLowerCase().includes(q) || (p.authorName||p.authorId||'').toLowerCase().includes(q)));
+    }
+
+    // ===== HTML转义 =====
+    function escHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
     // ===== 初始化 =====
     (async function init() {
