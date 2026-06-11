@@ -508,7 +508,7 @@ app.post('/api/auth/register', (req, res) => {
     const { stuId, name, password, campus, college, major, grade } = req.body;
 
     if (!stuId || !name || !password) {
-      return res.status(400).json({ error: '学号、姓名和密码不能为空' });
+      return res.status(400).json({ error: '学号、昵称和密码不能为空' });
     }
 
     const db = readDB();

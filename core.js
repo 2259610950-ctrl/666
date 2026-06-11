@@ -524,6 +524,11 @@ function renderNav(activeLink) {
   }
   const navName = document.getElementById('navUserName');
   if (navName) navName.textContent = user.name;
+  const navNameVisible = document.getElementById('navUserNameVisible');
+  if (navNameVisible) {
+    navNameVisible.style.display = '';
+    navNameVisible.textContent = user.name;
+  }
   const campusBadge = document.getElementById('navCampusBadge');
   if (campusBadge) {
     campusBadge.textContent = user.campus;
@@ -569,45 +574,61 @@ function injectCampusSwitcher() {
   if (navContainer && navLinks) navContainer.insertBefore(sw, navLinks);
 }
 
-// 消息 & 通知图标注入
+// 消息 & 通知图标注入/更新
 function injectActionIcons() {
   const navActions = document.querySelector('.nav-actions');
-  if (!navActions || document.getElementById('navMsgIcon')) return;
+  if (!navActions) return;
   const user = DB.getCurrentUser();
   if (!user) return;
 
-  // 私信图标
-  const msgBtn = document.createElement('button');
-  msgBtn.id = 'navMsgIcon';
-  msgBtn.className = 'btn-icon nav-msg-btn';
-  msgBtn.title = '私信';
-  msgBtn.onclick = function() { window.location.href = 'chat.html'; };
-  const unread = getTotalUnread(user.stuId);
-  msgBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${unread > 0 ? `<span class="badge-dot msg-badge" id="msgBadge">${unread > 99 ? '99+' : unread}</span>` : ''}`;
+  // 搜索按钮 & user-menu-wrap
+  const searchBtn = document.getElementById('searchBtn');
+  const userMenuWrap = navActions.querySelector('.user-menu-wrap');
 
-  // 交易通知图标（砍价+购买请求）
+  // 确保 nav-actions 有 flex 布局
+  navActions.style.display = 'flex';
+  navActions.style.alignItems = 'center';
+  navActions.style.gap = '4px';
+
+  // 调整 DOM 顺序：图标 → 用户区 → 搜索
+  if (userMenuWrap && searchBtn) {
+    navActions.insertBefore(userMenuWrap, searchBtn);
+  }
+
+  // --- 私信图标 ---
+  let msgBtn = document.getElementById('navMsgIcon');
+  const unread = getTotalUnread(user.stuId);
+  const msgHtml = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${unread > 0 ? `<span class="badge-dot msg-badge" id="msgBadge">${unread > 99 ? '99+' : unread}</span>` : ''}`;
+  if (!msgBtn) {
+    msgBtn = document.createElement('button');
+    msgBtn.id = 'navMsgIcon';
+    msgBtn.className = 'btn-icon nav-msg-btn';
+    msgBtn.title = '私信';
+    msgBtn.onclick = function() { window.location.href = 'chat.html'; };
+    if (userMenuWrap) navActions.insertBefore(msgBtn, userMenuWrap);
+    else if (searchBtn) navActions.insertBefore(msgBtn, searchBtn);
+    else navActions.appendChild(msgBtn);
+  }
+  msgBtn.innerHTML = msgHtml;
+
+  // --- 交易通知图标 ---
+  let tradeBtn = document.getElementById('navTradeIcon');
   const bargainCount = getBargainCountForSeller(user.stuId);
   const purchaseCount = getPendingPurchaseCountForSeller(user.stuId);
   const totalTradeNotif = bargainCount + purchaseCount;
-  const tradeBtn = document.createElement('button');
-  tradeBtn.id = 'navTradeIcon';
-  tradeBtn.className = 'btn-icon nav-msg-btn';
-  tradeBtn.title = '交易通知';
-  tradeBtn.style.position = 'relative';
-  tradeBtn.onclick = function() { window.location.href = 'market.html'; };
-  tradeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>${totalTradeNotif > 0 ? `<span class="badge-dot" style="background:#F59E0B;position:absolute;top:-2px;right:-2px;font-size:10px;min-width:16px;height:16px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 4px">${totalTradeNotif}</span>` : ''}`;
-
-  // 搜索按钮
-  const searchBtn = document.getElementById('searchBtn');
-
-  // 插入到搜索按钮前
-  if (searchBtn) {
-    navActions.insertBefore(tradeBtn, searchBtn);
-    navActions.insertBefore(msgBtn, searchBtn);
-  } else {
-    navActions.appendChild(tradeBtn);
-    navActions.appendChild(msgBtn);
+  const tradeHtml = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>${totalTradeNotif > 0 ? `<span class="badge-dot" style="background:#F59E0B;position:absolute;top:-2px;right:-2px;font-size:10px;min-width:16px;height:16px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 4px">${totalTradeNotif}</span>` : ''}`;
+  if (!tradeBtn) {
+    tradeBtn = document.createElement('button');
+    tradeBtn.id = 'navTradeIcon';
+    tradeBtn.className = 'btn-icon nav-msg-btn';
+    tradeBtn.title = '交易通知';
+    tradeBtn.style.position = 'relative';
+    tradeBtn.onclick = function() { window.location.href = 'market.html'; };
+    if (userMenuWrap) navActions.insertBefore(tradeBtn, userMenuWrap);
+    else if (searchBtn) navActions.insertBefore(tradeBtn, searchBtn);
+    else navActions.appendChild(tradeBtn);
   }
+  tradeBtn.innerHTML = tradeHtml;
 }
 
 // ---- 服务分类定义 ----
@@ -800,16 +821,83 @@ function openSearch() {
 }
 function closeSearch() {
   document.getElementById('searchOverlay')?.classList.remove('active');
+  const inp = document.getElementById('searchInput');
+  if (inp) inp.value = '';
+  const results = document.getElementById('searchResults');
+  const hot = document.getElementById('searchHot');
+  if (results) { results.innerHTML = ''; results.classList.remove('show'); }
+  if (hot) hot.style.display = '';
 }
 function fillSearch(el) {
   const input = document.getElementById('searchInput');
-  if (input) { input.value = el.textContent; input.focus(); }
+  if (input) { input.value = el.textContent; input.focus(); doPostSearch(); }
 }
-document.getElementById('searchBtn')?.addEventListener('click', openSearch);
-document.getElementById('searchOverlay')?.addEventListener('click', function(e) {
-  if (e.target === this) closeSearch();
+
+function doPostSearch() {
+  const input = document.getElementById('searchInput');
+  const resultsEl = document.getElementById('searchResults');
+  const hotEl = document.getElementById('searchHot');
+  if (!input || !resultsEl) return;
+  const q = input.value.trim();
+  if (!q) {
+    resultsEl.innerHTML = '';
+    resultsEl.classList.remove('show');
+    if (hotEl) hotEl.style.display = '';
+    return;
+  }
+  if (hotEl) hotEl.style.display = 'none';
+  const posts = DB.getPosts();
+  const qLower = q.toLowerCase();
+  const matched = posts.filter(p =>
+    (p.title && p.title.toLowerCase().includes(qLower)) ||
+    (p.content && p.content.toLowerCase().includes(qLower)) ||
+    (p.authorName && p.authorName.toLowerCase().includes(qLower))
+  ).slice(0, 10);
+  if (matched.length === 0) {
+    resultsEl.innerHTML = '<div class="search-no-result">没有找到相关帖子，换个关键词试试吧</div>';
+    resultsEl.classList.add('show');
+    return;
+  }
+  resultsEl.innerHTML = matched.map(p => {
+    const badgeColors = { academic: '#4F46E5', market: '#059669', activity: '#D97706', career: '#DC2626', social: '#7C3AED' };
+    const badgeColor = badgeColors[p.type] || '#6B7280';
+    const badgeBg = badgeColor + '18';
+    // 高亮匹配文字
+    function esc(s) { return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+    function highlight(text) {
+      if (!text) return '';
+      return esc(text).replace(new RegExp(esc(q), 'gi'), m => '<em>' + m + '</em>');
+    }
+    const title = p.title ? highlight(p.title) : highlight(p.content.slice(0, 40));
+    return '<div class="search-result-item" onclick="openPostDetail(\'' + p.id + '\');closeSearch();">' +
+      '<div class="search-result-avatar" style="background:' + esc(p.authorAvatarBg) + ';color:' + esc(p.authorAvatarColor) + '">' + esc(p.authorAvatar) + '</div>' +
+      '<div class="search-result-body">' +
+        '<div class="search-result-title">' + title + '</div>' +
+        '<div class="search-result-meta">' + esc(p.authorName) + ' · ' + esc(p.campus) + (p.price ? ' · ¥' + p.price : '') + '</div>' +
+      '</div>' +
+      '<span class="search-result-badge" style="background:' + badgeBg + ';color:' + badgeColor + '">' + esc(p.category) + '</span>' +
+    '</div>';
+  }).join('');
+  resultsEl.classList.add('show');
+}
+
+// 搜索输入监听（实时搜索）、按钮绑定、快捷键 — 等 DOM 就绪后统一执行
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() { doPostSearch(); });
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') doPostSearch();
+    });
+  }
+  document.getElementById('searchBtn')?.addEventListener('click', openSearch);
+  document.getElementById('searchOverlay')?.addEventListener('click', function(e) {
+    if (e.target === this) closeSearch();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeSearch(); closeModal(); }
+  });
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSearch(); closeModal(); } });
 
 // ---- 导航滚动 ----
 window.addEventListener('scroll', () => {
@@ -1876,37 +1964,58 @@ function openBargainModal(postId) {
   if (!user) { showToast('请先登录', 'error'); return; }
   if (post.authorId === user.stuId) { showToast('不能对自己的商品砍价', 'warn'); return; }
   var postPrice = parseFloat(post.price) || 0;
-  var suggestedPrice = postPrice > 0 ? Math.round(postPrice * 0.7) : '';
-  var html = '<div class="bargain-form">' +
-    '<div class="bargain-header">' +
-      '<div class="bargain-header-icon">💰</div>' +
-      '<div class="bargain-header-text"><h3>砍价出价</h3><p>向卖家提出你的心理价位</p></div>' +
-    '</div>' +
-    '<div class="bargain-price-compare">' +
-      '<div class="bargain-price-item original"><div class="price-label">卖家标价</div><div class="price-value">¥' + (post.price || '面议') + '</div></div>' +
-      '<div class="bargain-price-arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>' +
-      '<div class="bargain-price-item offer"><div class="price-label">我的出价</div><div class="price-value offer-price" id="bargainLivePrice">¥?</div></div>' +
-    '</div>' +
-    '<div class="bargain-savings-bar" id="bargainSavingsBar" style="display:none">' +
-      '<div class="savings-track"><div class="savings-fill" id="bargainSavingsFill" style="width:0%"></div></div>' +
-      '<div class="savings-text" id="bargainSavingsText">节省 ¥0 (0%)</div>' +
-    '</div>' +
-    '<div class="bargain-input-group">' +
-      '<label class="bargain-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> 你的出价</label>' +
-      '<div class="bargain-input-wrap"><span class="bargain-input-prefix">¥</span>' +
-      '<input type="number" class="bargain-price-input" id="bargainPrice" placeholder="输入你的心理价位" min="0.01" step="0.01" value="' + suggestedPrice + '" oninput="updateBargainPreview(' + postPrice + ')">' +
+  var suggestedPrice = postPrice > 0 ? Math.round(postPrice * 0.8) : '';
+
+  var html = '<div class="bargain-modal-content">' +
+    '<div class="bargain-modal-header">' +
+      '<div class="bargain-modal-icon">🤝</div>' +
+      '<div class="bargain-modal-title">' +
+        '<h3>发起砍价</h3>' +
+        '<p>与卖家协商一个双方都满意的价格</p>' +
       '</div>' +
-      '<div class="bargain-discount-hint" id="bargainHint"></div>' +
     '</div>' +
-    '<div class="bargain-input-group">' +
-      '<label class="bargain-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 砍价理由</label>' +
-      '<textarea class="bargain-message-input" id="bargainMsg" placeholder="说几句为什么这个价格合理，如同款二手均价、有轻微瑕疵等..." rows="3" maxlength="200" oninput="document.getElementById(\'bargainCharCount\').textContent=this.value.length+\'/200\'"></textarea>' +
+
+    '<div class="bargain-price-display">' +
+      '<div class="bargain-price-box">' +
+        '<div class="price-label">卖家标价</div>' +
+        '<div class="price-value" style="color:#6B7280">¥' + (post.price || '面议') + '</div>' +
+      '</div>' +
+      '<div class="bargain-price-arrow">→</div>' +
+      '<div class="bargain-price-box offer">' +
+        '<div class="price-label">我的出价</div>' +
+        '<div class="price-value" id="bargainLivePrice">¥?</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="bargain-form-group">' +
+      '<label>' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>' +
+        ' 你的出价' +
+      '</label>' +
+      '<div class="bargain-input-container">' +
+        '<span class="input-prefix">¥</span>' +
+        '<input type="number" id="bargainPrice" placeholder="输入你的心理价位" min="0.01" step="0.01" value="' + suggestedPrice + '" oninput="updateBargainPreview(' + postPrice + ')">' +
+      '</div>' +
+      '<div class="bargain-discount-hint" id="bargainHint" style="margin-top:8px;font-size:13px;"></div>' +
+    '</div>' +
+
+    '<div class="bargain-form-group">' +
+      '<label>' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+        ' 砍价理由（可选）' +
+      '</label>' +
+      '<div class="bargain-textarea-container">' +
+        '<textarea id="bargainMsg" placeholder="说明一下为什么希望这个价格，比如同款二手行情、商品瑕疵等，增加成功率..." maxlength="200" oninput="document.getElementById(\'bargainCharCount\').textContent=this.value.length+\'/200\'"></textarea>' +
+      '</div>' +
       '<div class="bargain-char-count" id="bargainCharCount">0/200</div>' +
     '</div>' +
-    '<button class="btn-bargain-submit" id="bargainSubmitBtn" onclick="submitBargainFromModal(\'' + postId + '\')">' +
-      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> 提交砍价' +
+
+    '<button class="bargain-submit-btn" id="bargainSubmitBtn" onclick="submitBargainFromModal(\'' + postId + '\')">' +
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>' +
+      ' 提交砍价' +
     '</button>' +
   '</div>';
+
   openModal(html);
   if (suggestedPrice) updateBargainPreview(postPrice);
   setTimeout(function() { document.getElementById('bargainPrice')?.focus(); }, 300);

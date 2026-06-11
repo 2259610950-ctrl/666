@@ -1,3 +1,14 @@
+# WorkBuddy internal directories
+.workbuddy/
+.codebuddy/
+
+# Node modules
 node_modules/
-data/
+
+# Logs
 *.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -104,6 +104,18 @@ textarea, input { font-family: inherit; }
   position: relative;
 }
 .btn-icon:hover { background: var(--border-light); color: var(--text-primary); }
+/* 导航栏可见用户名 */
+.nav-user-greeting {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.nav-user-greeting:hover { opacity: 1; }
 .notif-dot {
   position: absolute; top: 6px; right: 6px;
   width: 7px; height: 7px;
@@ -164,6 +176,54 @@ textarea, input { font-family: inherit; }
   transition: all var(--transition);
 }
 .hot-tags span:hover { background: var(--brand-light); color: var(--brand); border-color: var(--brand); }
+
+/* 搜索结果 */
+.search-results {
+  width: 600px;
+  max-width: 90vw;
+  margin-top: 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: none;
+}
+.search-results.show { display: block; }
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: white;
+  border-bottom: 1px solid #F3F4F6;
+}
+.search-result-item:last-child { border-bottom: none; border-radius: 0 0 12px 12px; overflow: hidden; }
+.search-result-item:hover { background: #F9FAFB; }
+.search-result-item:first-child { border-radius: 12px 12px 0 0; }
+.search-result-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+}
+.search-result-body { flex: 1; min-width: 0; }
+.search-result-title {
+  font-size: 14px; font-weight: 500; color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.search-result-title em { color: var(--brand); font-style: normal; background: #EEF2FF; padding: 0 2px; border-radius: 3px; }
+.search-result-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-result-badge {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.search-no-result {
+  width: 600px; max-width: 90vw;
+  text-align: center; padding: 24px;
+  color: var(--text-muted); font-size: 14px;
+  background: white; border-radius: 12px;
+}
+
 
 /* ===== Hero ===== */
 .hero {
@@ -605,6 +665,8 @@ textarea, input { font-family: inherit; }
 }
 .filter-tag:hover { border-color: var(--brand); color: var(--brand); }
 .filter-tag.active { background: var(--brand); color: white; border-color: var(--brand); font-weight: 600; }
+.filter-tag.qs.active { background: #4F46E5; border-color: #4F46E5; }
+.filter-tag.hjh.active { background: #059669; border-color: #059669; }
 
 .academic-card {
   background: var(--surface); border-radius: var(--radius-lg);
@@ -1400,7 +1462,7 @@ textarea, input { font-family: inherit; }
 .auth-tip a { color: #4F46E5; font-weight: 500; }
 
 /* ===== 用户菜单 ===== */
-.user-menu-wrap { position: relative; }
+.user-menu-wrap { position: relative; flex-shrink: 0; }
 .user-menu {
   position: absolute; top: calc(100% + 8px); right: 0;
   background: white; border-radius: 12px; padding: 8px 0;
@@ -3207,78 +3269,78 @@ html {
   gap: 6px;
 }
 .bargain-item {
-  padding: 12px 14px;
-  background: #F9FAFB;
-  border-radius: 10px;
-  margin-bottom: 8px;
+  padding: 16px 18px;
+  background: #FFFFFF;
+  border-radius: 14px;
+  margin-bottom: 12px;
   border: 1px solid #E5E7EB;
-  transition: border-color .2s ease;
+  transition: border-color .2s ease, box-shadow .2s ease;
 }
-.bargain-item:hover { border-color: #D1D5DB; }
+.bargain-item:hover { border-color: #D1D5DB; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .bargain-item-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 .bargain-item-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   flex-shrink: 0;
 }
 .bargain-item-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #374151;
   flex: 1;
 }
 .bargain-item-time {
-  font-size: 11px;
+  font-size: 12px;
   color: #9CA3AF;
 }
 .bargain-item-body {
-  padding-left: 36px;
+  padding-left: 52px;
 }
 .bargain-item-prices {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+  gap: 12px;
+  margin-bottom: 8px;
   flex-wrap: wrap;
 }
 .bargain-item-offer {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: #F59E0B;
 }
 .bargain-item-arrow {
   color: #9CA3AF;
-  font-size: 14px;
+  font-size: 16px;
 }
 .bargain-item-counter {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
-  color: #059669;
+  color: #374151;
 }
 .bargain-item-message {
-  font-size: 12px;
+  font-size: 13px;
   color: #6B7280;
-  line-height: 1.5;
+  line-height: 1.6;
   margin-bottom: 8px;
 }
 .bargain-status-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 .bargain-status-badge.pending {
@@ -3303,15 +3365,15 @@ html {
 }
 .bargain-item-actions {
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 12px;
   flex-wrap: wrap;
 }
 .btn-bargain-action {
-  padding: 6px 14px;
+  padding: 9px 20px;
   border: none;
-  border-radius: 8px;
-  font-size: 12px;
+  border-radius: 10px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all .15s ease;
@@ -3506,22 +3568,23 @@ html {
 .bargain-tab-bar {
   display: flex;
   gap: 0;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   background: #F3F4F6;
-  border-radius: 10px;
-  padding: 3px;
+  border-radius: 12px;
+  padding: 4px;
 }
 .bargain-tab {
   flex: 1;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: transparent;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #6B7280;
   cursor: pointer;
   transition: all .2s ease;
+  text-align: center;
 }
 .bargain-tab.active {
   background: white;
@@ -4623,3 +4686,296 @@ a:active {
 .aside-card + .aside-card { margin-top: 16px; }.aside-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }.aside-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }.aside-btn { width:100%; padding:12px; background:var(--brand); color:white; border:none; border-radius:10px; font-size:14px; font-weight:600; margin-bottom:8px; cursor:pointer; transition:all 0.2s ease; }.aside-btn:hover { background:#4338CA; transform:translateY(-1px); box-shadow:0 4px 12px rgba(79,70,229,0.3); }.aside-btn:active { transform:translateY(0); }.aside-hint { font-size:12px; color:var(--text-muted); text-align:center; }.topic-tag { padding:5px 12px; border-radius:20px; font-size:12px; cursor:pointer; transition:all 0.2s ease; display:inline-block; }.topic-tag:hover { transform:translateY(-1px); filter:brightness(0.95); box-shadow:0 2px 8px rgba(0,0,0,0.08); }.load-more-btn { transition: all 0.2s ease; }.load-more-btn:hover { background: var(--bg); color: var(--brand); border-color: var(--brand); transform: translateY(-1px); }
 
 .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ===== 首页快捷入口 ===== */
+.quick-actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 16px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(8px);
+}
+.quick-action-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.quick-action-btn svg {
+  transition: transform 0.3s ease;
+}
+.quick-action-btn:hover svg {
+  transform: scale(1.1);
+}
+.quick-action-btn span {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ===== 砍价页面优化布局 ===== */
+.bargain-modal-content {
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.bargain-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 24px 20px;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EEF2FF 100%);
+  border-radius: 16px 16px 0 0;
+  margin: -24px -24px 20px;
+}
+.bargain-modal-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+  flex-shrink: 0;
+}
+.bargain-modal-title h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1F2937;
+  margin: 0 0 4px;
+}
+.bargain-modal-title p {
+  font-size: 13px;
+  color: #6B7280;
+  margin: 0;
+}
+.bargain-price-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  background: #F9FAFB;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+.bargain-price-box {
+  text-align: center;
+  flex: 1;
+}
+.bargain-price-box .price-label {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.bargain-price-box .price-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1F2937;
+}
+.bargain-price-box.offer .price-value {
+  color: #6366F1;
+}
+.bargain-price-arrow {
+  width: 36px;
+  height: 36px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  flex-shrink: 0;
+}
+.bargain-form-group {
+  margin-bottom: 16px;
+}
+.bargain-form-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.bargain-input-container {
+  position: relative;
+}
+.bargain-input-container .input-prefix {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 700;
+  color: #9CA3AF;
+}
+.bargain-input-container input {
+  width: 100%;
+  padding: 14px 14px 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+.bargain-input-container input:focus {
+  border-color: #6366F1;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+}
+.bargain-textarea-container textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+.bargain-textarea-container textarea:focus {
+  border-color: #6366F1;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+}
+.bargain-char-count {
+  text-align: right;
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-top: 6px;
+}
+.bargain-submit-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+.bargain-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+}
+.bargain-submit-btn:active {
+  transform: translateY(0);
+}
+.bargain-history-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #E5E7EB;
+}
+.bargain-history-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 16px;
+}
+.bargain-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bargain-history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+.bargain-history-item:hover {
+  border-color: #E5E7EB;
+  background: white;
+}
+.bargain-history-item .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.bargain-history-item .item-content {
+  flex: 1;
+  min-width: 0;
+}
+.bargain-history-item .item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.bargain-history-item .user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1F2937;
+}
+.bargain-history-item .item-time {
+  font-size: 12px;
+  color: #9CA3AF;
+}
+.bargain-history-item .item-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: #6366F1;
+  margin-bottom: 4px;
+}
+.bargain-history-item .item-message {
+  font-size: 13px;
+  color: #6B7280;
+  line-height: 1.5;
+}
+.bargain-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.bargain-status-tag.pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+.bargain-status-tag.accepted {
+  background: #D1FAE5;
+  color: #065F46;
+}
+.bargain-status-tag.rejected {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+.bargain-status-tag.countered {
+  background: #DBEAFE;
+  color: #1E40AF;
+}

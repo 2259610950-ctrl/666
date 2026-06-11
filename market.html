@@ -534,8 +534,8 @@ function openMyBargains() {
     }).join('');
   }
 
-  const html = '<div style="max-height:70vh;overflow-y:auto">' +
-    '<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:#1F2937">🤝 我的砍价</h3>' +
+  const html = '<div style="max-height:70vh;overflow-y:auto;padding:8px 4px 0">' +
+    '<h3 style="font-size:20px;font-weight:700;margin-bottom:20px;color:#1F2937">🤝 我的砍价</h3>' +
     '<div class="bargain-tab-bar">' +
       '<button class="bargain-tab active" id="tabReceived" onclick="switchBargainTab(\'received\')">收到的砍价 (' + sellerBargains.length + ')</button>' +
       '<button class="bargain-tab" id="tabSent" onclick="switchBargainTab(\'sent\')">我发起的 (' + buyerBargains.length + ')</button>' +

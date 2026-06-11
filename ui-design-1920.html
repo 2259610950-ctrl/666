@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>武科大社区 - 首页UI设计</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #F8F9FB;
+      color: #1F2937;
+    }
+    :root {
+      --primary: #4F46E5;
+      --primary-light: #7C3AED;
+      --accent: #F59E0B;
+      --accent-red: #EF4444;
+      --bg: #F8F9FB;
+      --surface: #FFFFFF;
+      --border: #E5E7EB;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+    }
+  </style>
+</head>
+<body style="min-width: 1920px;">
+
+<!-- 顶部导航栏 -->
+<nav style="height: 64px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; position: sticky; top: 0; z-index: 100;">
+  <!-- Logo区域 -->
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px;">武</div>
+    <span style="font-size: 18px; font-weight: 600; color: #1F2937;">武科大社区</span>
+  </div>
+  
+  <!-- 主导航 -->
+  <div style="display: flex; align-items: center; gap: 40px;">
+    <a href="#" style="font-size: 15px; color: #4F46E5; font-weight: 500; text-decoration: none; position: relative;">首页<div style="position: absolute; bottom: -22px; left: 0; right: 0; height: 2px; background: #4F46E5; border-radius: 1px;"></div></a>
+    <a href="#" style="font-size: 15px; color: #6B7280; text-decoration: none; transition: color 0.2s;">学术广场</a>
+    <a href="#" style="font-size: 15px; color: #6B7280; text-decoration: none;">二手集市</a>
+    <a href="#" style="font-size: 15px; color: #6B7280; text-decoration: none;">帮帮</a>
+    <a href="#" style="font-size: 15px; color: #6B7280; text-decoration: none;">社交动态</a>
+    <a href="#" style="font-size: 15px; color: #6B7280; text-decoration: none;">职业内推</a>
+    <a href="#" style="font-size: 15px; color: #6B7280; text-decoration: none;">活动约伴</a>
+  </div>
+  
+  <!-- 右侧工具栏 -->
+  <div style="display: flex; align-items: center; gap: 20px;">
+    <button style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    </button>
+    <button style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+    </button>
+    <button style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span style="position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #EF4444; border-radius: 50%; border: 2px solid white;"></span>
+    </button>
+    <div style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px 4px 4px; border-radius: 24px;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%); display: flex; align-items: center; justify-content: center; color: #4F46E5; font-weight: 600; font-size: 14px;">张</div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+</nav>
+
+<!-- 英雄区 Banner -->
+<section id="hero-section"></section>
+
+<!-- 主内容区 -->
+<div id="main-content"></div>
+
+<!-- 悬浮发布按钮 -->
+<div id="fab-button"></div>
+
+</body>
+</html>

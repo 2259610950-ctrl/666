@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>武科大社区 - 首页UI设计稿</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --brand-primary: #4F46E5;
+      --brand-secondary: #7C3AED;
+      --accent-orange: #F59E0B;
+      --accent-orange-dark: #EF4444;
+      --bg-page: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+      --border-light: #E5E7EB;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-width: 1920px;
+    }
+    
+    /* 顶部导航栏 */
+    .navbar {
+      height: 64px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    .brand-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+    
+    .nav-link {
+      font-size: 15px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      position: relative;
+      padding: 22px 0;
+      transition: color 0.2s;
+    }
+    
+    .nav-link:hover {
+      color: var(--brand-primary);
+    }
+    
+    .nav-link.active {
+      color: var(--brand-primary);
+      font-weight: 500;
+    }
+    
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--brand-primary);
+      border-radius: 1px;
+    }
+    
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .nav-icon-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      position: relative;
+    }
+    
+    .nav-icon-btn:hover {
+      background: #F3F4F6;
+    }
+    
+    .nav-icon-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--text-secondary);
+    }
+    
+    .badge-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background: #EF4444;
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 8px 4px 4px;
+      border-radius: 24px;
+      transition: background 0.2s;
+    }
+    
+    .user-menu:hover {
+      background: #F3F4F6;
+    }
+    
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand-primary);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    /* 英雄区 */
+    .hero {
+      height: 360px;
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #8B5CF6 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 0 48px;
+    }
+    
+    .hero-bg-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.1;
+    }
+    
+    .hero-bg-decoration .circle {
+      position: absolute;
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+    
+    .hero-bg-decoration .circle-1 {
+      top: 40px;
+      right: 120px;
+      width: 200px;
+      height: 200px;
+    }
+    
+    .hero-bg-decoration .circle-2 {
+      bottom: 60px;
+      right: 200px;
+      width: 120px;
+      height: 120px;
+    }
+    
+    .hero-bg-decoration .circle-3 {
+      top: 80px;
+      right: 300px;
+      width: 60px;
+      height: 60px;
+      background: white;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+    }
+    
+    .hero-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+    
+    .hero-subtitle {
+      font-size: 18px;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    
+    .hero-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 16px 24px;
+      min-width: 120px;
+    }
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .btn-publish {
+      background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 28px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn-publish:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(245, 158, 11, 0.5);
+    }
+    
+    .hero-illustration {
+      position: absolute;
+      right: 80px;
+      bottom: 0;
+      width: 400px;
+      height: 320px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .hero-illustration span {
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+    }
+    
+    /* 主内容区 */
+    .main-container {
+      display: flex;
+      gap: 24px;
+      padding: 32px 48px;
+      max-width: 1824px;
+      margin: 0 auto;
+    }
+    
+    /* 左侧主栏 */
+    .main-column {
+      flex: 0 0 70%;
+    }
+    
+    /* 发布框 */
+    .publish-box {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-light);
+    }
+    
+    .publish-input-wrap {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    .avatar-blue {
+      background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+      color: var(--brand-primary);
+    }
+    
+    .publish-input {
+      flex: 1;
+      background: #F3F4F6;
+      border-radius: 24px;
+      padding: 12px 20px;
+      color: var(--text-muted);
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .publish-input:hover {
+      background: #E5E7EB;
+    }
+    
+    .publish-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #F3F4F6;
+    }
+    
+    .publish-tools {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .tool-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    
+    .tool-btn:hover {
+      color: var(--brand-primary);
+    }
+    
+    .tool-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .btn-primary {
+      background: var(--brand-primary);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+    
+    /* 标签栏 */
+    .filter-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border-light);
+      background: white;
+      color: var(--text-secondary);
+    }
+    
+    .tab-btn:hover {
+      border-color: var(--brand-primary);
+      color: var(--brand-primary);
+    }
+    
+    .tab-btn.active {
+      background: var(--brand-primary);
+      color: white;
+      border-color: var(--brand-primary);
+    }
+    
+    .tab-btn.outline-active {
+      background: white;
+      color: var(--brand-primary);
+      border-color: var(--brand-primary);
+      font-weight: 500;
+    }
+    
+    .tab-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border-light);
+      margin: 0 4px;
+    }
+    
+    /* 动态流 */
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    .feed-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s;
+    }
+    
+    .feed-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .feed-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .feed-meta {
+      flex: 1;
+    }
+    
+    .feed-author {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .feed-time {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    
+    .campus-tag {
+      background: #EEF2FF;
+      color: var(--brand-primary);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .campus-tag.purple {
+      background: #F5F3FF;
+      color: var(--brand-secondary);
+    }
+    
+    .feed-content {
+      font-size: 15px;
+      color: #374151;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    
+    .feed-images {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .feed-image {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+      border-radius: var(--radius-md);
+      object-fit: cover;
+    }
+    
+    .feed-image.large {
+      width: 200px;
+      height: 200px;
+    }
+    
+    .feed-actions {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding-top: 16px;
+      border-top: 1px solid #F3F4F6;
+    }
+    
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    
+    .action-btn:hover {
+      color: var(--brand-primary);
+    }
+    
+    .action-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    /* 右侧边栏 */
+    .sidebar {
+      flex: 0 0 30%;
+    }
+    
+    .sidebar-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-light);
+    }
+    
+    /* 天气模块 */
+    .weather-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    
+    .weather-main {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .weather-city {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    
+    .weather-temp {
+      font-size: 42px;
+      font-weight: 300;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    
+    .weather-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+    
+    .weather-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .weather-icon::after {
+      content: '☀';
+      font-size: 32px;
+    }
+    
+    .weather-details {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #F3F4F6;
+    }
+    
+    .weather-detail-item {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .weather-detail-item span {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    
+    /* 快捷功能区 */
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .quick-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 12px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      transition: transform 0.2s;
+    }
+    
+    .quick-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .quick-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .quick-btn.green {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    }
+    
+    .quick-btn.purple {
+      background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    }
+    
+    .quick-btn.orange {
+      background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+    }
+    
+    /* 校园公告 */
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .notice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .notice-item {
+      padding: 12px;
+      background: #F9FAFB;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .notice-item:hover {
+      background: #F3F4F6;
+    }
+    
+    .notice-text {
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+    
+    .notice-time {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    /* 热门话题 */
+    .topic-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .topic-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      transition: background 0.2s;
+    }
+    
+    .topic-item:hover {
+      background: #F9FAFB;
+    }
+    
+    .topic-rank {
+      width: 24px;
+      height: 24px;
+      background: #F3F4F6;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    
+    .topic-rank.top {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      color: #92400E;
+    }
+    
+    .topic-info {
+      flex: 1;
+    }
+    
+    .topic-name {
+      font-size: 14px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    
+    .topic-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    
+    .topic-hot {
+      font-size: 12px;
+      color: #EF4444;
+      font-weight: 500;
+    }
+    
+    /* 悬浮按钮 */
+    .fab {
+      position: fixed;
+      bottom: 32px;
+      right: 48px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+      border-radius: 50%;
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .fab:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 24px rgba(79, 70, 229, 0.5);
+    }
+    
+    .fab svg {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="logo">武</div>
+      <span class="brand-name">武科大社区</span>
+    </div>
+    
+    <div class="nav-center">
+      <a href="#" class="nav-link active">首页</a>
+      <a href="#" class="nav-link">学术广场</a>
+      <a href="#" class="nav-link">二手集市</a>
+      <a href="#" class="nav-link">帮帮</a>
+      <a href="#" class="nav-link">社交动态</a>
+      <a href="#" class="nav-link">职业内推</a>
+      <a href="#" class="nav-link">活动约伴</a>
+    </div>
+    
+    <div class="nav-right">
+      <button class="nav-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <button class="nav-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+      </button>
+      <button class="nav-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="badge-dot"></span>
+      </button>
+      <div class="user-menu">
+        <div class="user-avatar">张</div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 英雄区 Banner -->
+  <section class="hero">
+    <div class="hero-bg-decoration">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+    </div>
+    
+    <div class="hero-content">
+      <h1 class="hero-title">连接每一位科大人</h1>
+      <p class="hero-subtitle">学术讨论 · 二手交易 · 活动约伴 · 职业内推</p>
+      
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-value">1,284</div>
+          <div class="stat-label">今日活跃</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">86</div>
+          <div class="stat-label">今日新帖</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">12.5K</div>
+          <div class="stat-label">总注册用户</div>
+        </div>
+      </div>
+      
+      <button class="btn-publish">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+        发布动态
+      </button>
+    </div>
+    
+    <div class="hero-illustration">
+      <span>校园插画区域</span>
+    </div>
+  </section>
+
+  <!-- 主内容区 -->
+  <div class="main-container">
+    
+    <!-- 左侧主栏 (70%) -->
+    <div class="main-column">
+      
+      <!-- 发布框 -->
+      <div class="publish-box">
+        <div class="publish-input-wrap">
+          <div class="avatar avatar-blue">张</div>
+          <div class="publish-input">分享你的校园生活...</div>
+        </div>
+        <div class="publish-actions">
+          <div class="publish-tools">
+            <button class="tool-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              图片
+            </button>
+            <button class="tool-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              话题
+            </button>
+            <button class="tool-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+              更多
+            </button>
+          </div>
+          <button class="btn-primary">发布</button>
+        </div>
+      </div>
+      
+      <!-- 标签栏 -->
+      <div class="filter-tabs">
+        <button class="tab-btn active">全部校区</button>
+        <button class="tab-btn">青山校区</button>
+        <button class="tab-btn">黄家湖校区</button>
+        <div class="tab-divider"></div>
+        <button class="tab-btn outline-active">全部动态</button>
+        <button class="tab-btn">学术</button>
+        <button class="tab-btn">二手</button>
+        <button class="tab-btn">活动</button>
+        <button class="tab-btn">内推</button>
+      </div>
+      
+      <!-- 动态流 -->
+      <div class="feed-list">
+        
+        <!-- 动态卡片1 -->
+        <div class="feed-card">
+          <div class="feed-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #E6F1FB 0%, #B5D4F4 100%); color: #185FA5;">李</div>
+            <div class="feed-meta">
+              <div class="feed-author">李思远</div>
+              <div class="feed-time">2小时前 · 计算机学院</div>
+            </div>
+            <span class="campus-tag">青山校区</span>
+          </div>
+          <p class="feed-content">明天下午去菜鸟驿站取快递，可以顺便帮同学们带。小件3元，大件5元。黄家湖校区内送到宿舍楼下，需要代取的发取件码给我即可。</p>
+          <div class="feed-images">
+            <div class="feed-image"></div>
+            <div class="feed-image"></div>
+            <div class="feed-image"></div>
+          </div>
+          <div class="feed-actions">
+            <button class="action-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0

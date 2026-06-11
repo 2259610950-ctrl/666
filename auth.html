@@ -89,10 +89,10 @@
       <form id="registerForm" class="auth-form hidden" onsubmit="handleRegister(event)">
         <div class="form-row">
           <div class="form-group">
-            <label>真实姓名</label>
+            <label>昵称</label>
             <div class="input-wrap">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <input type="text" id="regName" placeholder="真实姓名" required maxlength="10">
+              <input type="text" id="regName" placeholder="给自己取个好听的昵称" required maxlength="12">
             </div>
           </div>
           <div class="form-group">
@@ -346,6 +346,8 @@ async function handleRegister(e) {
   const errEl = document.getElementById('registerError');
 
   const name = document.getElementById('regName').value.trim();
+  if (!name || name.length < 2) { errEl.textContent = '昵称至少需要2个字符'; return; }
+  if (name.length > 12) { errEl.textContent = '昵称最长12个字符'; return; }
   const stuId = document.getElementById('regStuId').value.trim();
   const campus = document.querySelector('input[name="campus"]:checked')?.value;
   const college = document.getElementById('regCollege').value;

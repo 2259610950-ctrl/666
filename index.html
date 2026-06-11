@@ -258,6 +258,10 @@
 
       <!-- 侧边栏 -->
       <aside class="feed-aside">
+        <!-- 校区天气 -->
+        <div class="aside-card weather-card" id="weatherCard">
+          <div class="mi-weather-loading"><div class="mi-weather-spinner"></div><span>正在获取天气…</span></div>
+        </div>
 
         <!-- 快速发布 -->
         <div class="aside-card quick-post">
@@ -292,13 +296,6 @@
           <div class="suggest-list" id="suggestList">
             <!-- 动态渲染 -->
           </div>
-        </div>
-
-        
-        <!-- 最近私信 -->
-        <div class="aside-card" id="recentChats">
-          <p class="aside-title">最近私信</p>
-          <div id="recentChatList" style="font-size:13px;color:#9CA3AF;text-align:center;padding:8px 0">加载中...</div>
         </div>
 
         <!-- 近期活动 -->
@@ -547,9 +544,7 @@ function selectPostType(btn) {
   btn.classList.add('active');
   const type = btn.dataset.type;
   const extra = document.getElementById('extraFieldsWrap');
-  if (type === 'academic') {
-    extra.innerHTML = '<div class="extra-fields"><div class="file-upload-section"><label class="file-upload-label">📎 附件资料（选填）</label><div class="file-upload-zone" id="academicUploadZone" onclick="document.getElementById(\'academicFileInput\').click()"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><p>点击上传 PDF、Word、图片</p><span class="file-upload-hint">支持 .pdf .doc .docx .jpg .png（单个不超过 10MB）</span></div><input type="file" id="academicFileInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="display:none" onchange="handleAcademicFiles(this)"><div class="file-preview-list" id="academicFilePreview"></div></div></div>';
-  } else if (type === 'market') {  if (type === 'market') {
+  if (type === 'market') {
     extra.innerHTML = '<div class="extra-fields"><div class="post-form-row"><div><label>价格（¥）</label><input class="post-form-input" id="marketPrice" placeholder="出售价格" type="number"></div><div><label>原价（¥）</label><input class="post-form-input" id="marketOrig" placeholder="原始价格" type="number"></div><div><label>成色</label><input class="post-form-input" id="marketCond" placeholder="如：9成新"></div></div></div>';
   } else if (type === 'activity') {
     extra.innerHTML = '<div class="extra-fields"><div><label>活动地点</label><input class="post-form-input" id="actLoc" placeholder="如：青山校区篮球场"></div><div><label>活动时间</label><input class="post-form-input" id="actTime" placeholder="如：周六 14:00"></div><div class="post-form-row"><div><label>已有人数</label><input class="post-form-input" id="actCur" placeholder="已有" type="number" value="1"></div><div><label>最多人数</label><input class="post-form-input" id="actMax" placeholder="上限" type="number" value="10"></div></div></div>';
@@ -558,41 +553,6 @@ function selectPostType(btn) {
   } else {
     extra.innerHTML = '';
   }
-}
-
-var uploadedAcademicFiles = [];
-function handleAcademicFiles(input) {
-  var files = input.files;
-  if (!files.length) return;
-  var preview = document.getElementById('academicFilePreview');
-  var zone = document.getElementById('academicUploadZone');
-  if (zone) zone.style.display = files.length > 0 ? 'none' : '';
-  Array.from(files).forEach(function(file) {
-    if (file.size > 10 * 1024 * 1024) { showToast(file.name + ' 超过10MB限制', 'warn'); return; }
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var data = { name: file.name, size: file.size, type: file.type, data: e.target.result };
-      uploadedAcademicFiles.push(data);
-      var icon = file.type.startsWith('image/') ? '🖼️' : file.type.includes('pdf') ? '📄' : '📝';
-      var sizeKb = (file.size / 1024).toFixed(1);
-      preview.innerHTML += '<div class="file-preview-item"><span class="file-icon">' + icon + '</span><span class="file-name">' + file.name + '</span><span class="file-size">' + sizeKb + 'KB</span><button class="file-remove-btn" onclick="removeAcademicFile(' + (uploadedAcademicFiles.length - 1) + ')">✕</button></div>';
-    };
-    reader.readAsDataURL(file);
-  });
-  input.value = '';
-}
-function removeAcademicFile(idx) {
-  uploadedAcademicFiles.splice(idx, 1);
-  var preview = document.getElementById('academicFilePreview');
-  if (preview) {
-    preview.innerHTML = uploadedAcademicFiles.map(function(f,i) {
-      var icon = f.type.startsWith('image/') ? '🖼️' : f.type.includes('pdf') ? '📄' : '📝';
-      var sizeKb = (f.size / 1024).toFixed(1);
-      return '<div class="file-preview-item"><span class="file-icon">' + icon + '</span><span class="file-name">' + f.name + '</span><span class="file-size">' + sizeKb + 'KB</span><button class="file-remove-btn" onclick="removeAcademicFile(' + i + ')">✕</button></div>';
-    }).join('');
-  }
-  var zone = document.getElementById('academicUploadZone');
-  if (zone) zone.style.display = '';
 }
 
 function submitNewPost() {
@@ -616,13 +576,7 @@ function submitNewPost() {
     extra.company = document.getElementById('careerCo')?.value;
     extra.position = document.getElementById('careerPos')?.value;
   }
-    var postData = { type, category: label, title, content, ...extra };
-  if (type === 'academic' && uploadedAcademicFiles.length > 0) {
-    postData.files = uploadedAcademicFiles.slice();
-    uploadedAcademicFiles = [];
-  }
-  createPost(postData);
-
+  createPost({ type, category: label, title, content, ...extra });
   closeModal();
   renderFeed();
   renderHotList();
@@ -635,34 +589,9 @@ renderHotList();
 renderSuggestList();
 initFilterTags();
 
-
-  // 最近私信渲染
-  function renderRecentChats() {
-    var el = document.getElementById("recentChatList");
-    if (!el || !currentUser) return;
-    var convs = getConversationsForUser(currentUser.stuId);
-    if (!convs || convs.length === 0) {
-      el.innerHTML = '<a href="chat.html" style="color:var(--text-muted);text-decoration:none;font-size:13px">尚未开始对话，去私信页</a>';
-      return;
-    }
-    el.innerHTML = convs.slice(0, 3).map(function(c) {
-      var lastMsg = c.lastMessage || (c.lastMsg ? (c.lastMsg.length > 20 ? c.lastMsg.slice(0, 20) + '...' : c.lastMsg) : '');
-      var unread = c.unread || 0;
-      return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #F3F4F6;cursor:pointer" onclick="window.location=\'chat.html\'">'
-        + '<div style="width:28px;height:28px;border-radius:50%;background:' + c.partnerAvatarBg + ';color:' + c.partnerAvatarColor + ';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">' + c.partnerAvatar + '</div>'
-        + '<div style="flex:1;min-width:0">'
-        + '<div style="display:flex;justify-content:space-between;align-items:center">'
-        + '<span style="font-size:13px;font-weight:500;color:#1F2937">' + c.partnerName + '</span>'
-        + (unread > 0 ? '<span style="background:#EF4444;color:white;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600">' + unread + '</span>' : '')
-        + '</div>'
-        + '<span style="font-size:11px;color:#9CA3AF;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + lastMsg + '</span>'
-        + '</div></div>';
-    }).join('') + '<div style="text-align:center;padding:6px 0"><a href="chat.html" style="font-size:12px;color:var(--brand);text-decoration:none">查看全部私信 →</a></div>';
-  }
-  renderRecentChats();
-
-  // 天气渲染
+// 天气渲染
 var _userCampus = currentUser ? currentUser.campus : '青山校区';
+renderWeatherCard(_userCampus);
 renderNavWeather(_userCampus);
 </script>
 </body>
