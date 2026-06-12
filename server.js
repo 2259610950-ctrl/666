@@ -847,7 +847,12 @@ app.get('/api/init-status', authMiddleware, (req, res) => {
 // ============================================================
 app.use(express.static(__dirname, {
   index: 'index.html',
-  extensions: ['html']
+  extensions: ['html'],
+  maxAge: 0,
+  setHeaders: function(res) {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.set('Pragma', 'no-cache');
+  }
 }));
 
 // 所有未匹配的路由返回 index.html (SPA fallback)
