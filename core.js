@@ -526,6 +526,70 @@ function renderNav(activeLink) {
   }
   // 动态注入消息 & 通知图标
   injectActionIcons();
+  // 注入手机端汉堡菜单
+  injectMobileMenu(activeLink);
+}
+
+// ---- 手机端汉堡菜单 ----
+function injectMobileMenu(activeLink) {
+  if (document.getElementById('mobileMenuBtn')) return;
+  const nav = document.getElementById('navbar');
+  if (!nav) return;
+
+  // 创建汉堡按钮
+  var btn = document.createElement('button');
+  btn.id = 'mobileMenuBtn';
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+  btn.style.cssText = 'display:none;width:36px;height:36px;border:none;background:none;cursor:pointer;color:#374151;padding:4px;border-radius:8px;flex-shrink:0;';
+  btn.onclick = function() { toggleMobileMenu(); };
+
+  var navActions = nav.querySelector('.nav-actions');
+  if (navActions) navActions.insertBefore(btn, navActions.firstChild);
+
+  // 创建移动端菜单面板
+  var links = [
+    { href: 'index.html', text: '🏠 首页' },
+    { href: 'academic.html', text: '📚 学术广场' },
+    { href: 'market.html', text: '🛍️ 二手集市' },
+    { href: 'services.html', text: '🤝 帮帮' },
+    { href: 'social.html', text: '👥 社交动态' },
+    { href: 'career.html', text: '💼 职业内推' },
+    { href: 'activity.html', text: '🎯 活动约伴' }
+  ];
+
+  var panel = document.createElement('div');
+  panel.id = 'mobileMenuPanel';
+  panel.innerHTML = '<div class="mobile-menu-mask" onclick="toggleMobileMenu()"></div>' +
+    '<div class="mobile-menu-sheet">' +
+      '<div class="mobile-menu-header"><span style="font-size:16px;font-weight:700">武科大社区</span><button onclick="toggleMobileMenu()" style="background:none;border:none;font-size:20px;color:#6B7280;cursor:pointer">✕</button></div>' +
+      links.map(function(l) {
+        var isActive = activeLink && l.href === activeLink;
+        return '<a href="' + l.href + '" class="mobile-menu-item' + (isActive ? ' active' : '') + '">' + l.text + '</a>';
+      }).join('') +
+      '<div class="mobile-menu-divider"></div>' +
+      '<a href="profile.html" class="mobile-menu-item">👤 个人主页</a>' +
+      '<div class="mobile-menu-item danger" onclick="logout()">🚪 退出登录</div>' +
+    '</div>';
+  document.body.appendChild(panel);
+
+  // 响应式显示/隐藏汉堡按钮
+  var mq = window.matchMedia('(max-width: 640px)');
+  function handleMQ(e) { btn.style.display = e.matches ? 'flex' : 'none'; }
+  mq.addListener(handleMQ);
+  handleMQ(mq);
+}
+
+function toggleMobileMenu() {
+  var panel = document.getElementById('mobileMenuPanel');
+  if (!panel) return;
+  var isOpen = panel.classList.contains('open');
+  if (isOpen) {
+    panel.classList.remove('open');
+    document.body.style.overflow = '';
+  } else {
+    panel.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
 }
 
 // 消息 & 通知图标注入/更新

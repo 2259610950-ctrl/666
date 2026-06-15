@@ -75,8 +75,9 @@
   <div class="search-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="搜索动态..." id="searchInput" autofocus><button onclick="closeSearch()">取消</button></div>
 </div>
 
-<section class="page-hero" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)">
-  <div class="page-hero-inner">
+<section class="page-hero" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);position:relative;overflow:hidden">
+  <div style="position:absolute;top:-40%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);border-radius:50%;pointer-events:none"></div>
+  <div class="page-hero-inner" style="position:relative;z-index:1">
     <h1>👥 社交动态</h1>
     <p>分享校园生活 · 发现好友 · 两校区连线互动</p>
     <div class="page-hero-actions">
@@ -89,13 +90,13 @@
   <div class="two-col">
     <div class="feed-main">
       <!-- 发布框 -->
-      <div class="aside-card" style="margin-bottom:16px">
+      <div class="aside-card" style="margin-bottom:16px;border-radius:16px">
         <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0" id="socialPostAvatar"></div>
+          <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.06)" id="socialPostAvatar"></div>
           <div style="flex:1">
-            <textarea id="socialTextarea" placeholder="分享你的校园生活..." rows="3" style="width:100%;border:1.5px solid #E5E7EB;border-radius:10px;padding:10px 12px;font-size:14px;resize:none;outline:none;font-family:inherit"></textarea>
-            <div style="display:flex;justify-content:flex-end;margin-top:8px">
-              <button style="background:#4F46E5;color:white;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:500" onclick="postSocial()">发布</button>
+            <textarea id="socialTextarea" placeholder="分享你的校园生活..." rows="3" style="width:100%;border:1.5px solid #E5E7EB;border-radius:12px;padding:12px 14px;font-size:14px;resize:none;outline:none;font-family:inherit;transition:border-color .2s,box-shadow .2s" onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.08)'" onblur="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:10px">
+              <button style="background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;padding:8px 24px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 8px rgba(79,70,229,.2)" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'" onclick="postSocial()">发布</button>
             </div>
           </div>
         </div>

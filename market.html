@@ -7,6 +7,34 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={corePlugins:{preflight:false}}</script>
+<style>
+.market-page { animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cardIn { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.market-item { animation: cardIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+.market-item:nth-child(1) { animation-delay: 0s; }
+.market-item:nth-child(2) { animation-delay: 0.04s; }
+.market-item:nth-child(3) { animation-delay: 0.08s; }
+.market-item:nth-child(4) { animation-delay: 0.12s; }
+.market-item:nth-child(5) { animation-delay: 0.16s; }
+.market-item:nth-child(6) { animation-delay: 0.20s; }
+.market-item:nth-child(7) { animation-delay: 0.24s; }
+.market-item:nth-child(8) { animation-delay: 0.28s; }
+.market-item:nth-child(9) { animation-delay: 0.32s; }
+
+.post-type-btn.active { background: #4F46E5 !important; color: white !important; border-color: #4F46E5 !important; box-shadow: 0 2px 8px rgba(79,70,229,.2); }
+.post-type-btn:hover { border-color: #4F46E5; color: #4F46E5; }
+
+.filter-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-tag { white-space: nowrap; flex-shrink: 0; }
+
+input[type="range"] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #EF4444; cursor: pointer; box-shadow: 0 2px 8px rgba(239,68,68,.3); border: 3px solid white; transition: transform 0.15s ease; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type="range"]::-webkit-slider-thumb:active { transform: scale(0.95); }
+input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #EF4444; cursor: pointer; box-shadow: 0 2px 8px rgba(239,68,68,.3); border: 3px solid white; }
+</style>
 <script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
 <script>
 (function(){
@@ -29,7 +57,7 @@
   }catch(e){}
 })();
 </script></head>
-<body>
+<body class="market-page">
 <nav class="navbar" id="navbar">
   <div class="nav-container">
     <div class="nav-brand"><div class="brand-icon">武</div><span class="brand-name">武科大社区</span></div>
@@ -52,8 +80,9 @@
   <div class="search-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="搜索二手商品..." id="searchInput" autofocus><button onclick="closeSearch()">取消</button></div>
 </div>
 
-<section class="page-hero" style="background:linear-gradient(135deg,#059669 0%,#047857 100%)">
-  <div class="page-hero-inner">
+<section class="page-hero" style="background:linear-gradient(135deg,#059669 0%,#10B981 50%,#34D399 100%);position:relative;overflow:hidden">
+  <div style="position:absolute;top:-50%;right:-15%;width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);border-radius:50%;pointer-events:none"></div>
+  <div class="page-hero-inner" style="position:relative;z-index:1">
     <h1>🛍️ 二手集市</h1>
     <p>校内安全交易 · 教材书籍 · 数码设备 · 生活物品置换 · 拍照上传真实可靠</p>
     <div class="page-hero-actions">
@@ -317,6 +346,40 @@ function sortMarket(val) {
 
 function loadMoreMarket() { mktCount += 9; renderMarket(currentFilter); }
 
+// ===== 滑块联动 =====
+function updatePriceSlider(slider, inputId, displayId) {
+  var val = parseInt(slider.value) || 0;
+  var input = document.getElementById(inputId);
+  var display = document.getElementById(displayId);
+  if (input) input.value = val;
+  if (display) display.textContent = '¥' + val;
+  // 更新滑块背景渐变
+  var pct = ((val - slider.min) / (slider.max - slider.min)) * 100;
+  slider.style.background = 'linear-gradient(90deg, #EF4444 ' + pct + '%, #E5E7EB ' + pct + '%)';
+}
+
+function syncSliderFromInput(inputId, sliderId, displayId) {
+  var input = document.getElementById(inputId);
+  var slider = document.getElementById(sliderId);
+  var display = document.getElementById(displayId);
+  if (!input || !slider) return;
+  var val = Math.max(0, Math.min(parseInt(slider.max) || 5000, parseInt(input.value) || 0));
+  slider.value = val;
+  if (display) display.textContent = '¥' + val;
+  var pct = ((val - slider.min) / (slider.max - slider.min)) * 100;
+  slider.style.background = 'linear-gradient(90deg, #EF4444 ' + pct + '%, #E5E7EB ' + pct + '%)';
+}
+
+function initPriceSlider() {
+  var slider = document.getElementById('mPriceSlider');
+  var input = document.getElementById('mPrice');
+  if (!slider || !input) return;
+  // 初始化滑块背景
+  updatePriceSlider(slider, 'mPrice', 'mPriceDisplay');
+  // 输入框变化同步到滑块
+  input.addEventListener('input', function() { syncSliderFromInput('mPrice', 'mPriceSlider', 'mPriceDisplay'); });
+}
+
 // ===== 图片上传逻辑 =====
 function initImageUpload() {
   uploadedImages = [];
@@ -381,42 +444,117 @@ function removeImage(i) {
 function openSellModal() {
   uploadedImages = [];
   openModal(`
-    <div class="create-post-form">
-      <h3>📸 发布二手出售</h3>
-      <p class="post-sub-info">发布者：${currentUser?.name} · ${currentUser?.campus}</p>
-      <input class="post-form-input" id="mTitle" placeholder="商品名称（如：高等数学同济版第七版）" maxlength="60">
-      <div class="extra-fields">
+    <div style="padding:0;max-width:580px">
+      <div style="padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between">
         <div>
-          <label>商品分类</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
-            <span class="post-type-btn active" onclick="selectMktCat('book',this)">📚 教材书籍</span>
-            <span class="post-type-btn" onclick="selectMktCat('digital',this)">💻 数码设备</span>
-            <span class="post-type-btn" onclick="selectMktCat('sport',this)">⚽ 运动器材</span>
-            <span class="post-type-btn" onclick="selectMktCat('life',this)">🏠 生活用品</span>
-            <span class="post-type-btn" onclick="selectMktCat('other',this)">📦 其他</span>
+          <h3 style="font-size:20px;font-weight:700;color:#1F2937;margin:0">📸 发布二手出售</h3>
+          <p style="font-size:13px;color:#9CA3AF;margin:4px 0 0">${currentUser?.name} · ${currentUser?.campus}</p>
+        </div>
+        <button onclick="closeModal()" style="width:32px;height:32px;border-radius:50%;background:#F3F4F6;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div style="padding:20px 28px 28px;max-height:70vh;overflow-y:auto">
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px">商品名称</label>
+          <input id="mTitle" placeholder="如：高等数学同济版第七版" maxlength="60"
+            style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none;transition:border-color .2s;box-sizing:border-box"
+            onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.08)'"
+            onblur="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'">
+        </div>
+
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px">商品分类</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="post-type-btn active" onclick="selectMktCat('book',this)" style="padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid #E5E7EB;cursor:pointer;transition:all .2s;background:white">📚 教材书籍</span>
+            <span class="post-type-btn" onclick="selectMktCat('digital',this)" style="padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid #E5E7EB;cursor:pointer;transition:all .2s;background:white">💻 数码设备</span>
+            <span class="post-type-btn" onclick="selectMktCat('sport',this)" style="padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid #E5E7EB;cursor:pointer;transition:all .2s;background:white">⚽ 运动器材</span>
+            <span class="post-type-btn" onclick="selectMktCat('life',this)" style="padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid #E5E7EB;cursor:pointer;transition:all .2s;background:white">🏠 生活用品</span>
+            <span class="post-type-btn" onclick="selectMktCat('other',this)" style="padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid #E5E7EB;cursor:pointer;transition:all .2s;background:white">📦 其他</span>
           </div>
         </div>
-      </div>
 
-      <!-- 图片上传 -->
-      <div class="image-previews" id="imagePreviews"></div>
-      <div class="image-upload-zone" id="uploadZone">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <div class="image-upload-hint">点击或拖拽上传商品图片<br><span id="uploadHint">支持 JPG/PNG/WebP，单张不超过 8MB，最多 6 张</span></div>
-      </div>
-      <input type="file" id="imageInput" accept="image/*" multiple hidden>
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px">商品图片</label>
+          <div class="image-previews" id="imagePreviews" style="margin-bottom:8px"></div>
+          <div class="image-upload-zone" id="uploadZone" style="border-radius:12px;padding:20px;text-align:center;cursor:pointer;border:2px dashed #D1D5DB;background:#FAFBFC;transition:all .2s">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <div style="font-size:13px;color:#6B7280;margin-top:6px">点击或拖拽上传商品图片<br><span id="uploadHint" style="font-size:12px;color:#9CA3AF">支持 JPG/PNG/WebP，单张不超过 8MB，最多 6 张</span></div>
+          </div>
+          <input type="file" id="imageInput" accept="image/*" multiple hidden>
+        </div>
 
-      <textarea class="post-form-textarea" id="mContent" placeholder="详细描述：成色、使用情况、交易方式..." rows="4" maxlength="500"></textarea>
-      <div class="post-form-row">
-        <input class="post-form-input" id="mPrice" placeholder="出售价格（¥）" type="number" min="0" step="0.01">
-        <input class="post-form-input" id="mOrig" placeholder="原价（¥）" type="number" min="0" step="0.01">
-        <input class="post-form-input" id="mCond" placeholder="成色（如：9成新）" maxlength="10">
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px">详细描述</label>
+          <textarea id="mContent" placeholder="描述商品的成色、使用情况、交易方式等..." rows="3" maxlength="500"
+            style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none;resize:none;transition:border-color .2s;box-sizing:border-box;font-family:inherit"
+            onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.08)'"
+            onblur="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'"></textarea>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:10px">💰 定价</label>
+          <div style="background:#F9FAFB;border-radius:14px;padding:18px;border:1px solid #E5E7EB">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span style="font-size:12px;color:#6B7280">出售价格</span>
+              <div style="display:flex;align-items:center;gap:4px">
+                <span style="font-size:20px;font-weight:800;color:#EF4444" id="mPriceDisplay">¥0</span>
+                <input type="number" id="mPrice" min="0" max="99999" step="1" value="0"
+                  style="width:80px;padding:4px 8px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;color:#EF4444;text-align:right;outline:none;background:white">
+              </div>
+            </div>
+            <input type="range" id="mPriceSlider" min="0" max="5000" step="10" value="0"
+              style="width:100%;height:6px;border-radius:3px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,#EF4444 0%,#E5E7EB 0%);cursor:pointer"
+              oninput="updatePriceSlider(this,'mPrice','mPriceDisplay')">
+            <div style="display:flex;justify-content:space-between;margin-top:8px">
+              <span style="font-size:11px;color:#9CA3AF">¥0</span>
+              <span style="font-size:11px;color:#9CA3AF">¥5000</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:10px">📦 原价 & 成色</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label style="display:block;font-size:12px;color:#6B7280;margin-bottom:4px">原价（选填）</label>
+              <div style="position:relative">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9CA3AF;font-size:14px">¥</span>
+                <input id="mOrig" placeholder="0" type="number" min="0" step="1"
+                  style="width:100%;padding:10px 12px 10px 28px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;color:#6B7280;outline:none;transition:border-color .2s;box-sizing:border-box"
+                  onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.08)'"
+                  onblur="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'">
+              </div>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;color:#6B7280;margin-bottom:4px">成色</label>
+              <select id="mCond" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;color:#374151;outline:none;background:white;cursor:pointer;transition:border-color .2s;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center"
+                onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.08)'"
+                onblur="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'">
+                <option value="">请选择</option>
+                <option value="全新">全新</option>
+                <option value="99新">99新</option>
+                <option value="95新">95新</option>
+                <option value="9成新">9成新</option>
+                <option value="8成新">8成新</option>
+                <option value="7成新">7成新</option>
+                <option value="有瑕疵">有瑕疵</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="doSell()" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#059669,#047857);color:white;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 14px rgba(5,150,105,.25)"
+          onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(5,150,105,.35)'"
+          onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 14px rgba(5,150,105,.25)'">
+          📤 发布出售
+        </button>
       </div>
-      <button class="btn-submit-post" onclick="doSell()">📤 发布出售</button>
     </div>`);
 
   initImageUpload();
-  // auto-focus title
+  initPriceSlider();
   setTimeout(() => document.getElementById('mTitle')?.focus(), 300);
 }
 
@@ -454,12 +592,37 @@ function doSell() {
 // ===== 求购模态框 =====
 function openWantModal() {
   openModal(`
-    <div class="create-post-form">
-      <h3>📥 发布求购信息</h3>
-      <p class="post-sub-info">发布者：${currentUser?.name} · ${currentUser?.campus}</p>
-      <input class="post-form-input" id="wTitle" placeholder="求购物品名称" maxlength="60">
-      <textarea class="post-form-textarea" id="wContent" placeholder="详细说明需求、可接受价格范围..." rows="4" maxlength="500"></textarea>
-      <button class="btn-submit-post" style="background:#F59E0B" onclick="doWant()">📥 发布求购</button>
+    <div style="padding:0;max-width:520px">
+      <div style="padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <h3 style="font-size:20px;font-weight:700;color:#1F2937;margin:0">📥 发布求购信息</h3>
+          <p style="font-size:13px;color:#9CA3AF;margin:4px 0 0">${currentUser?.name} · ${currentUser?.campus}</p>
+        </div>
+        <button onclick="closeModal()" style="width:32px;height:32px;border-radius:50%;background:#F3F4F6;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="padding:20px 28px 28px">
+        <div style="margin-bottom:16px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px">求购物品</label>
+          <input id="wTitle" placeholder="如：高等数学同济版第七版" maxlength="60"
+            style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none;transition:border-color .2s;box-sizing:border-box"
+            onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.08)'"
+            onblur="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'">
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px">需求描述</label>
+          <textarea id="wContent" placeholder="详细说明需求、可接受价格范围..." rows="3" maxlength="500"
+            style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none;resize:none;transition:border-color .2s;box-sizing:border-box;font-family:inherit"
+            onfocus="this.style.borderColor='#4F46E5';this.style.boxShadow='0 0 0 3px rgba(79,70,229,.08)'"
+            onblur="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'"></textarea>
+        </div>
+        <button onclick="doWant()" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#F59E0B,#D97706);color:white;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 14px rgba(245,158,11,.25)"
+          onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(245,158,11,.35)'"
+          onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 14px rgba(245,158,11,.25)'">
+          📥 发布求购
+        </button>
+      </div>
     </div>`);
   setTimeout(() => document.getElementById('wTitle')?.focus(), 300);
 }
