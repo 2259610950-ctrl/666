@@ -445,9 +445,10 @@ textarea, input { font-family: inherit; }
   padding: 20px;
   border: 1px solid var(--border);
   margin-bottom: 14px;
-  transition: all 0.3s var(--ease-spring);
+  transition: all 0.25s var(--ease-out-expo);
+  will-change: transform;
 }
-.post-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.05); transform: translateY(-1px); }
+.post-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.05); transform: translateY(-1px) translateZ(0); }
 .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 .post-avatar {
   width: 40px; height: 40px; border-radius: 50%;
@@ -576,7 +577,8 @@ textarea, input { font-family: inherit; }
   border-radius: 16px;
   padding: 20px;
   border: 1px solid var(--border);
-  transition: box-shadow 0.3s ease;
+  transition: all 0.25s var(--ease-out-expo);
+  will-change: transform;
 }
 .aside-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.04); }
 .aside-title {
@@ -681,9 +683,10 @@ textarea, input { font-family: inherit; }
   background: linear-gradient(135deg, var(--brand), #7C3AED); color: white;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 20px rgba(79,70,229,.3);
-  transition: all 0.3s var(--ease-spring); z-index: 90;
+  transition: all 0.25s var(--ease-out-expo); z-index: 90;
+  will-change: transform;
 }
-.fab:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 10px 30px rgba(79,70,229,.4); background: linear-gradient(135deg, #4338CA, #6D28D9); }
+.fab:hover { transform: translateY(-3px) scale(1.05) translateZ(0); box-shadow: 0 10px 30px rgba(79,70,229,.4); background: linear-gradient(135deg, #4338CA, #6D28D9); }
 
 /* ===== 通用页面头 ===== */
 .page-hero {
@@ -723,9 +726,10 @@ textarea, input { font-family: inherit; }
 .academic-card {
   background: var(--surface); border-radius: 16px;
   padding: 20px 22px; border: 1px solid var(--border);
-  margin-bottom: 14px; transition: all 0.3s var(--ease-spring);
+  margin-bottom: 14px; transition: all 0.25s var(--ease-out-expo);
+  will-change: transform;
 }
-.academic-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,.06); transform: translateY(-2px); border-color: var(--brand-light); }
+.academic-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,.06); transform: translateY(-2px) translateZ(0); border-color: var(--brand-light); }
 .ac-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
 .ac-subject {
   width: 44px; height: 44px; border-radius: 12px;
@@ -763,12 +767,13 @@ textarea, input { font-family: inherit; }
   border-radius: var(--radius-xl);
   border: 1px solid var(--border);
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s var(--ease-out-expo);
   cursor: pointer;
   position: relative;
+  will-change: transform;
 }
 .market-item:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) translateZ(0);
   box-shadow: 0 12px 40px rgba(0,0,0,0.12);
   border-color: transparent;
 }
@@ -1281,9 +1286,10 @@ textarea, input { font-family: inherit; }
 .career-item {
   background: var(--surface); border-radius: 16px;
   padding: 22px; border: 1px solid var(--border);
-  transition: all 0.3s var(--ease-spring);
+  transition: all 0.25s var(--ease-out-expo);
+  will-change: transform;
 }
-.career-item:hover { box-shadow: 0 8px 24px rgba(0,0,0,.06); transform: translateY(-2px); border-color: transparent; }
+.career-item:hover { box-shadow: 0 8px 24px rgba(0,0,0,.06); transform: translateY(-2px) translateZ(0); border-color: transparent; }
 .ci-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
 .ci-logo {
   width: 50px; height: 50px; border-radius: 14px;
@@ -1328,9 +1334,10 @@ textarea, input { font-family: inherit; }
 .activity-item {
   background: var(--surface); border-radius: 16px;
   border: 1px solid var(--border); overflow: hidden;
-  transition: all 0.3s var(--ease-spring); cursor: pointer;
+  transition: all 0.25s var(--ease-out-expo); cursor: pointer;
+  will-change: transform;
 }
-.activity-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.activity-item:hover { transform: translateY(-3px) translateZ(0); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
 .ai-header {
   padding: 20px 20px 16px;
   position: relative;
@@ -1625,82 +1632,108 @@ textarea, input { font-family: inherit; }
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-silk: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* GPU 加速提示 — 所有动画元素 */
+.animated, .academic-card, .market-item, .career-item, .activity-item,
+.post-card, .module-card, .aside-card, .modal-box, .fab,
+.filter-tag, .tab-btn, .action-btn, .topic-tag,
+.btn-primary, .btn-outline, .btn-auth-submit,
+.navbar, .profile-cover, .page-hero {
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* 页面进入动画 */
 @keyframes pageIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(16px) translateZ(0); }
+  to { opacity: 1; transform: translateY(0) translateZ(0); }
 }
 .page-enter {
-  animation: pageIn 0.6s var(--ease-out-expo) both;
+  animation: pageIn 0.5s var(--ease-out-expo) both;
 }
 
 /* 交错淡入 - 用于卡片列表 */
 @keyframes staggerIn {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(20px) translateZ(0); }
+  to { opacity: 1; transform: translateY(0) translateZ(0); }
 }
 .stagger-item {
   opacity: 0;
-  animation: staggerIn 0.55s var(--ease-spring) forwards;
+  animation: staggerIn 0.5s var(--ease-out-expo) forwards;
 }
 .stagger-item:nth-child(1) { animation-delay: 0ms; }
-.stagger-item:nth-child(2) { animation-delay: 60ms; }
-.stagger-item:nth-child(3) { animation-delay: 120ms; }
-.stagger-item:nth-child(4) { animation-delay: 180ms; }
-.stagger-item:nth-child(5) { animation-delay: 240ms; }
-.stagger-item:nth-child(6) { animation-delay: 300ms; }
-.stagger-item:nth-child(7) { animation-delay: 360ms; }
-.stagger-item:nth-child(8) { animation-delay: 420ms; }
-.stagger-item:nth-child(9) { animation-delay: 480ms; }
-.stagger-item:nth-child(10) { animation-delay: 540ms; }
-.stagger-item:nth-child(11) { animation-delay: 600ms; }
-.stagger-item:nth-child(12) { animation-delay: 660ms; }
+.stagger-item:nth-child(2) { animation-delay: 50ms; }
+.stagger-item:nth-child(3) { animation-delay: 100ms; }
+.stagger-item:nth-child(4) { animation-delay: 150ms; }
+.stagger-item:nth-child(5) { animation-delay: 200ms; }
+.stagger-item:nth-child(6) { animation-delay: 250ms; }
+.stagger-item:nth-child(7) { animation-delay: 300ms; }
+.stagger-item:nth-child(8) { animation-delay: 350ms; }
+.stagger-item:nth-child(9) { animation-delay: 400ms; }
+.stagger-item:nth-child(10) { animation-delay: 450ms; }
+.stagger-item:nth-child(11) { animation-delay: 500ms; }
+.stagger-item:nth-child(12) { animation-delay: 550ms; }
 
 /* 弹入动画 */
 @keyframes popIn {
-  0% { opacity: 0; transform: scale(0.85); }
-  60% { transform: scale(1.04); }
-  100% { opacity: 1; transform: scale(1); }
+  0% { opacity: 0; transform: scale(0.9) translateZ(0); }
+  60% { transform: scale(1.03) translateZ(0); }
+  100% { opacity: 1; transform: scale(1) translateZ(0); }
 }
 .pop-in {
-  animation: popIn 0.45s var(--ease-spring) both;
+  animation: popIn 0.4s var(--ease-out-expo) both;
 }
 
 /* 模态框弹簧动画 */
-.modal-overlay { transition: opacity 0.25s var(--ease-smooth); }
+.modal-overlay { transition: opacity 0.2s var(--ease-smooth); }
 .modal-box {
-  transform: scale(0.88) translateY(16px);
-  transition: transform 0.35s var(--ease-spring), opacity 0.25s var(--ease-smooth);
+  transform: scale(0.92) translateY(12px) translateZ(0);
+  transition: transform 0.3s var(--ease-out-expo), opacity 0.2s var(--ease-smooth);
   opacity: 0;
 }
 .modal-overlay.modal-open .modal-box,
 .modal-overlay.active .modal-box {
-  transform: scale(1) translateY(0);
+  transform: scale(1) translateY(0) translateZ(0);
   opacity: 1;
 }
 
 /* 悬停抬起效果 - Apple风格 */
 .hover-lift {
-  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease-smooth);
+  transition: transform 0.25s var(--ease-out-expo), box-shadow 0.25s var(--ease-smooth);
 }
 .hover-lift:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) translateZ(0);
   box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06);
 }
+
+/* 滚动触发动画 */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px) translateZ(0);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0) translateZ(0);
+}
+.scroll-reveal.delay-1 { transition-delay: 0.1s; }
+.scroll-reveal.delay-2 { transition-delay: 0.2s; }
+.scroll-reveal.delay-3 { transition-delay: 0.3s; }
 
 /* ===== 全局按钮动画系统 ===== */
 
 /* --- 1. 通用按钮点击缩放反弹 --- */
 @keyframes btnPress {
-  0% { transform: scale(1); }
-  35% { transform: scale(0.92); }
-  65% { transform: scale(1.03); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1) translateZ(0); }
+  35% { transform: scale(0.94) translateZ(0); }
+  65% { transform: scale(1.02) translateZ(0); }
+  100% { transform: scale(1) translateZ(0); }
 }
 button:active:not(:disabled) {
-  animation: btnPress 0.32s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: btnPress 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 /* 带有 transform 的按钮（hover 时 translateY）需要用 filter 替代 */
 button:active:not(:disabled).btn-primary,
@@ -1896,12 +1929,12 @@ button, .btn-primary, .btn-outline, .btn-icon, .btn-status-action,
 .social-post-card, .academic-card, .career-card, .aside-card,
 .edit-input, .edit-textarea, .bargain-price-input, .bargain-message-input,
 .purchase-message-input, .counter-form .counter-input, .counter-form .counter-msg {
-  transition: transform 0.2s cubic-bezier(0.36, 0.07, 0.19, 0.97),
-              box-shadow 0.2s ease,
-              background 0.2s ease,
-              border-color 0.2s ease,
-              opacity 0.2s ease,
-              filter 0.2s ease;
+  transition: transform 0.2s var(--ease-out-expo),
+              box-shadow 0.2s var(--ease-smooth),
+              background 0.2s var(--ease-smooth),
+              border-color 0.2s var(--ease-smooth),
+              opacity 0.2s var(--ease-smooth),
+              filter 0.2s var(--ease-smooth);
 }
 
 /* --- 12. 禁用按钮无动画 --- */
@@ -1948,17 +1981,17 @@ button:disabled, button:disabled:active {
 
 /* Toast弹簧动画 */
 .toast-msg {
-  transition: all 0.4s var(--ease-spring) !important;
+  transition: all 0.3s var(--ease-out-expo) !important;
 }
 
 /* 图片预览悬停效果 */
 .market-img img, .detail-image img {
-  transition: transform 0.5s var(--ease-out-expo);
+  transition: transform 0.4s var(--ease-out-expo);
 }
 
 /* 按钮弹性过渡 */
 button, .btn, .action-btn, .filter-tag, .nav-link {
-  transition: all 0.2s var(--ease-spring) !important;
+  transition: all 0.2s var(--ease-out-expo) !important;
 }
 
 /* 输入框聚焦动画 */
@@ -1993,20 +2026,21 @@ input:focus, textarea:focus, select:focus {
 
 /* 首页功能模块卡片悬浮 */
 .module-card {
-  transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-smooth), border-color 0.25s var(--ease-smooth);
+  transition: transform 0.25s var(--ease-out-expo), box-shadow 0.25s var(--ease-smooth), border-color 0.2s var(--ease-smooth);
+  will-change: transform;
 }
 .module-card:hover {
-  transform: translateY(-6px) scale(1.02);
+  transform: translateY(-6px) scale(1.02) translateZ(0);
   box-shadow: 0 16px 48px rgba(79,70,229,0.12), 0 4px 16px rgba(0,0,0,0.06);
   border-color: var(--brand);
 }
 
 /* 动态卡片悬浮 - 微抬升 */
 .feed-item, .career-item, .activity-item {
-  transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-smooth), border-color 0.2s var(--ease-smooth);
+  transition: transform 0.2s var(--ease-out-expo), box-shadow 0.2s var(--ease-smooth), border-color 0.15s var(--ease-smooth);
 }
 .feed-item:hover, .career-item:hover, .activity-item:hover {
-  transform: translateY(-3px);
+  transform: translateY(-3px) translateZ(0);
   box-shadow: 0 8px 30px rgba(0,0,0,0.08);
   border-color: var(--brand-mid);
 }
@@ -2032,6 +2066,7 @@ input:focus, textarea:focus, select:focus {
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* 标签页切换 */
