@@ -224,7 +224,7 @@ function renderSocialFeed() {
   if (!toShow.length) { listEl.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF">暂无动态</div>'; return; }
   listEl.innerHTML = toShow.map(post => {
     const isLiked = currentUser && (post.likedBy || []).includes(currentUser.stuId);
-    return `<div class="post-card">
+    return `<div class="post-card" onclick="openPostDetail('${post.id}')" style="cursor:pointer">
       <div class="post-header">
         <div class="post-avatar" style="background:${post.authorAvatarBg};color:${post.authorAvatarColor}">${post.authorAvatar}</div>
         <div class="post-meta">
@@ -234,7 +234,7 @@ function renderSocialFeed() {
           <span class="post-time">${timeAgo(post.time)}</span>
         </div>
       </div>
-      <div class="post-body" onclick="openPostDetail('${post.id}')" style="cursor:pointer">
+      <div class="post-body">
         ${post.title ? `<p class="post-title">${escHtml(post.title)}</p>` : ''}
         <p>${escHtml(post.content.slice(0, 150))}${post.content.length > 150 ? '...' : ''}</p>
       </div>

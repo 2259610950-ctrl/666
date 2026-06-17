@@ -421,7 +421,7 @@ function renderFeed() {
 function renderPostCard(post) {
   const isLiked = currentUser && (post.likedBy || []).includes(currentUser.stuId);
   return `
-    <div class="post-card" id="post-${post.id}">
+    <div class="post-card" id="post-${post.id}" onclick="openPostDetail('${post.id}')" style="cursor:pointer">
       <div class="post-header">
         <div class="post-avatar" style="background:${post.authorAvatarBg};color:${post.authorAvatarColor}">${post.authorAvatar}</div>
         <div class="post-meta">
@@ -431,7 +431,7 @@ function renderPostCard(post) {
           <span class="post-time">${timeAgo(post.time)}</span>
         </div>
       </div>
-      <div class="post-body" onclick="openPostDetail('${post.id}')" style="cursor:pointer">
+      <div class="post-body">
         ${post.title ? `<p class="post-title">${escHtml(post.title)}</p>` : ''}
         <p>${escHtml(post.content.slice(0, 120))}${post.content.length > 120 ? '...' : ''}</p>
       </div>

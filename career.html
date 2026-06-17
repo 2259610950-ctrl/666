@@ -141,7 +141,7 @@ function renderCareerList() {
   const toShow = posts.slice(0, careerCount);
   listEl.innerHTML = toShow.map(p => {
     const isLiked = currentUser && (p.likedBy || []).includes(currentUser.stuId);
-    return `<div class="career-item">
+    return `<div class="career-item" onclick="openPostDetail('${p.id}')" style="cursor:pointer">
       <div class="ci-header">
         <div class="ci-logo" style="background:linear-gradient(135deg,#667eea,#764ba2)">${p.company ? p.company.charAt(0) : '职'}</div>
         <div class="ci-main">
