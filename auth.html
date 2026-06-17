@@ -321,15 +321,38 @@ body {
     width: 420px; flex: none;
     border-radius: 0; padding: 0 40px;
     margin-top: 0; box-shadow: none;
-    display: flex; align-items: center;
-    overflow: visible;
+    display: flex; flex-direction: column; justify-content: center;
+    overflow: visible; background: white;
   }
-  .auth-tabs { position: static; margin: 0 -40px; padding: 0 40px; border-radius: 0; background: white; }
-  .auth-form { padding: 32px 0; gap: 18px; }
+  .auth-tabs {
+    position: static; margin: 0; padding: 0;
+    border-radius: 0; background: white;
+    border-bottom: 2px solid #F3F4F6;
+    display: flex;
+  }
+  .auth-tab {
+    flex: 1; padding: 14px 0; font-size: 16px;
+    font-weight: 600; color: #9CA3AF;
+    border: none; background: none; cursor: pointer;
+    position: relative; text-align: center;
+    transition: color 0.25s ease;
+  }
+  .auth-tab.active { color: #4F46E5; }
+  .auth-tab::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+    height: 3px; background: #4F46E5; border-radius: 2px;
+    transform: scaleX(0); transition: transform 0.3s cubic-bezier(.22,1,.36,1);
+  }
+  .auth-tab.active::after { transform: scaleX(1); }
+  .auth-form { padding: 28px 0; gap: 18px; }
   .input-wrap input { height: auto; padding: 12px 16px 12px 44px; font-size: 14px; }
+  .input-wrap { background: white; border: 1.5px solid #E5E7EB; }
+  .remember-me { min-height: auto; padding: 4px 0; gap: 8px; }
+  .remember-me .checkbox-custom { width: 18px; height: 18px; flex-shrink: 0; }
   .campus-selector { flex-direction: row; gap: 12px; }
   .campus-card { height: auto; padding: 16px; flex-direction: column; text-align: center; gap: 6px; }
   .form-row .grade-group { flex: 0 0 110px; }
+  .btn-submit { height: auto; padding: 13px 0; }
 }
 
 /* ===== 无动画偏好 ===== */
