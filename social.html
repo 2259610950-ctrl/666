@@ -216,7 +216,7 @@ function switchSocialTab(btn, campus) {
 }
 
 function renderSocialFeed() {
-  let posts = DB.getPosts();
+  let posts = DB.getPosts().filter(p => p.type === 'social');
   if (socialCampus === 'qs') posts = posts.filter(p => p.campus === '青山校区');
   else if (socialCampus === 'hjh') posts = posts.filter(p => p.campus === '黄家湖校区');
   const toShow = posts.slice(0, socialCount);

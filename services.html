@@ -174,8 +174,8 @@
   if (!user) { return; }
   renderNav('services.html');
 
-  var menuName = document.getElementById('menuName');
-  var menuSub = document.getElementById('menuSub');
+  var menuName = document.getElementById('navUserName');
+  var menuSub = document.getElementById('navUserSub');
   if (menuName) menuName.textContent = user.name;
   if (menuSub) menuSub.textContent = (user.college || '') + ' · ' + (user.grade || '');
 

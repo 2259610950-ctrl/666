@@ -91,7 +91,7 @@
       <div class="aside-card" style="margin-bottom:16px">
         <p class="aside-title">热门企业</p>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0"><span style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">武</span> 武汢集团</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0"><span style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">武</span> 武钢集团</div>
           <div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0"><span style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#e60012,#c1001e);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">华</span> 华为技术</div>
           <div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0"><span style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0078d4,#106ebe);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">字</span> 字节跳动</div>
           <div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0"><span style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#00b96b,#00a85a);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">腾</span> 腾讯科技</div>
@@ -130,7 +130,11 @@ function switchCareerTab(btn, tab) {
 }
 
 function renderCareerList() {
-  const posts = DB.getPosts().filter(p => p.type === 'career');
+  var posts = DB.getPosts().filter(p => p.type === 'career');
+  // Tab 筛选
+  if (careerTab === 'intern') posts = posts.filter(p => (p.category || '').includes('实习') || (p.title || '').includes('实习'));
+  else if (careerTab === 'campus') posts = posts.filter(p => (p.category || '').includes('校招') || (p.title || '').includes('校招'));
+  else if (careerTab === 'resume') posts = posts.filter(p => (p.category || '').includes('简历') || (p.title || '').includes('简历'));
   document.getElementById('totalReferral').textContent = posts.length;
   const listEl = document.getElementById('careerList');
   if (!posts.length) { listEl.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF">暂无内推信息，来发布第一条！</div>'; return; }
@@ -181,12 +185,27 @@ function applyReferral(postId) {
     <h3>申请内推</h3>
     <p class="post-sub-info">申请人：${currentUser?.name} · ${currentUser?.major} ${currentUser?.grade}</p>
     <textarea class="post-form-textarea" id="applyNote" placeholder="附言（可介绍自己的背景、优势）..." rows="4"></textarea>
-    <button class="btn-submit-post" onclick="submitApply()">确认申请</button>
+    <button class="btn-submit-post" onclick="submitApply('${postId}')">确认申请</button>
   </div>`);
 }
 
-function submitApply() {
-  closeModal(); showToast('内推申请已发送，请等待对方回复 ✅', 'success');
+function submitApply(postId) {
+  var note = (document.getElementById('applyNote')?.value || '').trim();
+  var applications = JSON.parse(localStorage.getItem('wkust_applications') || '[]');
+  applications.push({
+    id: 'app_' + Date.now(),
+    postId: postId,
+    applicantId: currentUser.stuId,
+    applicantName: currentUser.name,
+    applicantMajor: currentUser.major,
+    applicantGrade: currentUser.grade,
+    note: note,
+    status: 'pending',
+    time: new Date().toISOString()
+  });
+  localStorage.setItem('wkust_applications', JSON.stringify(applications));
+  closeModal();
+  showToast('内推申请已发送，请等待对方回复 ✅', 'success');
 }
 
 function openCareerModal() {

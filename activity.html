@@ -135,12 +135,13 @@ document.addEventListener('click', e => { if (!document.getElementById('navAvata
 
 let actCount = 9;
 let actCampus = 'all';
+let actType = 'all';
 const typeColors = { photo: 'type-photo', sport: 'type-sport', study: 'type-study', game: 'type-game', travel: 'type-travel', activity: 'type-sport' };
 const typeLabels = { photo: '📷 约拍', sport: '⚽ 运动', study: '📚 学习', game: '🎮 娱乐', travel: '✈️ 旅行', activity: '🎯 活动' };
 
 function switchActTab(btn, tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active'); actCount = 9; renderActivityGrid();
+  btn.classList.add('active'); actType = tab; actCount = 9; renderActivityGrid();
 }
 function filterCampus(campus, el) {
   document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
@@ -151,6 +152,7 @@ function renderActivityGrid() {
   let posts = DB.getPosts().filter(p => p.type === 'activity');
   if (actCampus === 'qs') posts = posts.filter(p => p.campus === '青山校区');
   else if (actCampus === 'hjh') posts = posts.filter(p => p.campus === '黄家湖校区');
+  if (actType !== 'all') posts = posts.filter(p => p.activitySubtype === actType);
   document.getElementById('totalAct').textContent = posts.length;
   document.getElementById('openAct').textContent = posts.filter(p => (parseInt(p.currentPeople) || 1) < (parseInt(p.maxPeople) || 10)).length;
   const grid = document.getElementById('activityGrid');
@@ -187,6 +189,16 @@ function loadMoreAct() { actCount += 9; renderActivityGrid(); }
 
 function joinActivity(btn, postId) {
   if (btn.textContent === '已报名' || btn.textContent === '已满员') return;
+  // 持久化到 DB
+  var posts = DB.getPosts();
+  var idx = posts.findIndex(p => p.id === postId);
+  if (idx !== -1) {
+    if (!posts[idx].joinedBy) posts[idx].joinedBy = [];
+    if (posts[idx].joinedBy.includes(currentUser.stuId)) { showToast('你已报名过此活动', 'warn'); return; }
+    posts[idx].joinedBy.push(currentUser.stuId);
+    posts[idx].currentPeople = (parseInt(posts[idx].currentPeople) || 1) + 1;
+    DB.set('posts', posts);
+  }
   btn.textContent = '已报名'; btn.style.background = '#D1FAE5'; btn.style.color = '#065F46'; btn.style.borderColor = '#6EE7B7';
   showToast('报名成功！活动前一天会收到提醒 🎉', 'success');
 }
