@@ -5657,12 +5657,12 @@ a:active {
 }
 #mobileMenuPanel.open .mobile-menu-mask { opacity: 1; }
 .mobile-menu-sheet {
-  position: absolute; top: 0; right: 0;
-  width: 280px; max-width: 85vw; height: 100%;
-  background: white; box-shadow: -4px 0 24px rgba(0,0,0,.15);
+  position: absolute; top: 0; left: 0;
+  width: 260px; max-width: 72vw; height: 100%;
+  background: white; box-shadow: 4px 0 24px rgba(0,0,0,.15);
   display: flex; flex-direction: column;
   padding: 0;
-  transform: translateX(100%) translateZ(0);
+  transform: translateX(-100%) translateZ(0);
   transition: transform 0.25s var(--ease-out-expo);
   will-change: transform;
 }
