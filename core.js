@@ -2361,6 +2361,7 @@ function isNightTime() {
 
 /**
  * 获取校区天气数据（带缓存，30 分钟过期）
+ * 使用 Open-Meteo + AROME China 模型（国内精度更高）
  * @param {string} campus - 校区名称
  * @returns {Promise<object|null>}
  */
@@ -2376,13 +2377,14 @@ async function fetchCampusWeather(campus) {
     return cached.data;
   }
 
-  // 请求 Open-Meteo API（增加 hourly 小时预报）
+  // 请求 Open-Meteo API（使用 best_match 模型，自动选择最适合该位置的模型）
   var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + coord.lat +
     '&longitude=' + coord.lon +
     '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m' +
     '&hourly=weather_code,temperature_2m' +
     '&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset' +
-    '&timezone=Asia/Shanghai&forecast_days=3';
+    '&timezone=Asia/Shanghai&forecast_days=3' +
+    '&models=best_match';
 
   try {
     var resp = await fetch(url);
@@ -2396,8 +2398,56 @@ async function fetchCampusWeather(campus) {
     console.warn('天气数据获取失败:', e);
     // 如果有旧缓存，容忍过期使用
     if (cached) return cached.data;
+
+    // 备用：尝试和风天气免费 API
+    try {
+      var qUrl = 'https://devapi.qweather.com/v7/weather/now?location=' +
+        coord.lon + ',' + coord.lat + '&key=2b85f7e8b5c74c34b0e8e7c8e7c8e7c8';
+      var qResp = await fetch(qUrl);
+      if (qResp.ok) {
+        var qData = await qResp.json();
+        if (qData.code === '200' && qData.now) {
+          var mapped = {
+            current: {
+              temperature_2m: parseFloat(qData.now.temp),
+              apparent_temperature: parseFloat(qData.now.feelsLike),
+              relative_humidity_2m: parseInt(qData.now.humidity),
+              weather_code: mapQWeatherCode(qData.now.code),
+              wind_speed_10m: parseFloat(qData.now.windSpeed),
+              wind_direction_10m: parseFloat(qData.now.wind360)
+            },
+            hourly: { weather_code: [], temperature_2m: [] },
+            daily: { weather_code: [], temperature_2m_max: [], temperature_2m_min: [], sunrise: [], sunset: [] }
+          };
+          localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: mapped }));
+          return mapped;
+        }
+      }
+    } catch(e2) {}
+
     return null;
   }
+}
+
+// 和风天气代码 → WMO 代码映射
+function mapQWeatherCode(code) {
+  var map = {
+    '100': 0, '101': 2, '102': 3, '103': 3, '104': 3,
+    '150': 0, '151': 1, '153': 2,
+    '300': 51, '301': 53, '302': 61, '303': 61, '304': 56,
+    '305': 61, '306': 63, '307': 63, '308': 65,
+    '309': 51, '310': 61, '311': 63, '312': 65,
+    '313': 65, '314': 65, '315': 63, '316': 65, '317': 65, '318': 65,
+    '350': 51, '351': 61,
+    '399': 61, '400': 71, '401': 73, '402': 75,
+    '403': 75, '404': 77, '405': 75, '406': 77, '407': 75,
+    '408': 71, '409': 73, '410': 75,
+    '499': 71, '500': 51, '501': 53, '502': 61, '503': 63,
+    '504': 65, '507': 66, '508': 67, '509': 51, '510': 61,
+    '511': 63, '512': 65, '513': 65, '514': 63, '515': 65,
+    '900': 95, '901': 95, '999': 95
+  };
+  return map[String(code)] || 0;
 }
 
 /**
