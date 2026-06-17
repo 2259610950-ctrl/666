@@ -544,6 +544,8 @@ function renderNav(activeLink) {
   injectActionIcons();
   // 注入手机端汉堡菜单
   injectMobileMenu(activeLink);
+  // 注入底部导航栏
+  injectBottomTabBar(activeLink);
 }
 
 // ---- 手机端汉堡菜单 ----
@@ -609,6 +611,56 @@ function toggleMobileMenu() {
     panel.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
+}
+
+// ---- 移动端底部导航栏 ----
+function injectBottomTabBar(activeLink) {
+  if (document.getElementById('bottomTabBar')) return;
+  var user = DB.getCurrentUser();
+
+  var tabs = [
+    { href: 'index.html', text: '首页', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' },
+    { href: 'social.html', text: '动态', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' },
+    { href: '__publish__', text: '发布', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>', publish: true },
+    { href: 'chat.html', text: '消息', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' },
+    { href: user ? 'profile.html' : 'auth.html', text: '我的', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' }
+  ];
+
+  var bar = document.createElement('div');
+  bar.id = 'bottomTabBar';
+  bar.className = 'bottom-tab-bar';
+  bar.innerHTML = '<div class="tab-items">' + tabs.map(function(t) {
+    var isActive = activeLink && t.href === activeLink;
+    if (t.publish) {
+      return '<a class="tab-item" href="#" onclick="handleTabPublish(event)"><div class="tab-publish">' + t.icon + '</div><span style="margin-top:4px">' + t.text + '</span></a>';
+    }
+    return '<a href="' + t.href + '" class="tab-item' + (isActive ? ' active' : '') + '">' + t.icon + '<span>' + t.text + '</span></a>';
+  }).join('') + '</div>';
+  document.body.appendChild(bar);
+
+  // 返回顶部按钮
+  var backBtn = document.createElement('button');
+  backBtn.className = 'back-to-top';
+  backBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>';
+  backBtn.onclick = function() { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  document.body.appendChild(backBtn);
+
+  // 滚动显示/隐藏返回顶部
+  window.addEventListener('scroll', function() {
+    backBtn.classList.toggle('show', window.scrollY > window.innerHeight);
+  }, { passive: true });
+}
+
+function handleTabPublish(e) {
+  e.preventDefault();
+  if (!requireLogin('发布内容')) return;
+  // 根据当前页面决定发布类型
+  var path = window.location.pathname;
+  if (path.includes('academic')) openCreatePost('academic');
+  else if (path.includes('market')) openSellModal();
+  else if (path.includes('activity')) openActivityModal();
+  else if (path.includes('career')) openCareerModal();
+  else openCreatePost('social');
 }
 
 // 消息 & 通知图标注入/更新
