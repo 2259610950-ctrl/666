@@ -265,6 +265,7 @@ function renderSocialFeed() {
 function loadMoreSocial() { socialCount += 8; renderSocialFeed(); }
 
 function postSocial() {
+  if (!requireLogin('发布动态')) return;
   const ta = document.getElementById('socialTextarea');
   if (!ta.value.trim()) { showToast('请输入内容', 'warn'); return; }
   createPost({ type: 'social', category: '动态', title: '', content: ta.value.trim() });
@@ -272,6 +273,7 @@ function postSocial() {
 }
 
 function openPostModal() {
+  if (!requireLogin('发布动态')) return;
   openModal(`<div class="create-post-form">
     <h3>发布动态</h3>
     <p class="post-sub-info">发布者：${currentUser?.name} · ${currentUser?.campus}</p>

@@ -859,7 +859,10 @@ function showAuthToast(msg, cb, isError) {
 function saveRemember(stuId, pwd) {
   var remember = document.getElementById('rememberMe');
   if (remember && remember.checked) {
-    localStorage.setItem('wkust_remember', JSON.stringify({ stuId: stuId, pwd: pwd }));
+    localStorage.setItem('wkust_remember', JSON.stringify({
+      stuId: stuId, pwd: pwd,
+      expire: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7天有效期
+    }));
   } else {
     localStorage.removeItem('wkust_remember');
   }
@@ -868,6 +871,11 @@ function loadRemember() {
   try {
     var saved = JSON.parse(localStorage.getItem('wkust_remember') || 'null');
     if (saved && saved.stuId) {
+      // 检查是否过期
+      if (saved.expire && Date.now() > saved.expire) {
+        localStorage.removeItem('wkust_remember');
+        return;
+      }
       document.getElementById('loginId').value = saved.stuId;
       if (saved.pwd) document.getElementById('loginPwd').value = saved.pwd;
       document.getElementById('rememberMe').checked = true;

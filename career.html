@@ -209,6 +209,7 @@ function submitApply(postId) {
 }
 
 function openCareerModal() {
+  if (!requireLogin('发布内推')) return;
   openModal(`<div class="create-post-form">
     <h3>发布内推信息</h3>
     <p class="post-sub-info">发布者：${currentUser?.name} · ${currentUser?.campus}</p>
@@ -231,6 +232,7 @@ function doCareer() {
 }
 
 function openResumeModal() {
+  if (!requireLogin('简历互改')) return;
   openModal(`<div class="create-post-form">
     <h3>简历互改</h3>
     <p class="post-sub-info">发布者：${currentUser?.name} · ${currentUser?.major}</p>

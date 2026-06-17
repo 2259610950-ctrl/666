@@ -514,6 +514,7 @@ document.querySelectorAll('.qp-type').forEach(btn => {
 
 // 快速发布
 function quickPost() {
+  if (!requireLogin('发布帖子')) return;
   const ta = document.getElementById('qpTextarea');
   const activeType = document.querySelector('.qp-type.active');
   const type = activeType ? activeType.dataset.type : 'social';
@@ -525,6 +526,7 @@ function quickPost() {
 
 // 完整发帖弹窗
 function openCreatePost() {
+  if (!requireLogin('发布帖子')) return;
   openModal(`
     <div class="create-post-form">
       <h3>发布新帖子</h3>

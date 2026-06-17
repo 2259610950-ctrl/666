@@ -204,6 +204,7 @@ function joinActivity(btn, postId) {
 }
 
 function openActivityModal() {
+  if (!requireLogin('发起活动')) return;
   openModal(`<div class="create-post-form">
     <h3>发起活动</h3>
     <p class="post-sub-info">发起人：${currentUser?.name} · ${currentUser?.campus}</p>

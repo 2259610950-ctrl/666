@@ -243,29 +243,32 @@ const DB = {
   getConversations() { return this.get('conversations') || []; }
 };
 
-// ---- 认证守卫 ----
+// ---- 认证守卫（游客模式） ----
 function requireAuth() {
   const user = DB.getCurrentUser();
-  if (!user) {
-    window.location.href = 'auth.html';
-    return null;
-  }
   // 后台静默同步（不阻塞页面渲染）
-  if (CloudSync.enabled && CloudSync.getToken()) {
+  if (user && CloudSync.enabled && CloudSync.getToken()) {
     CloudSync.pullAll().then(function(ok) {
-      if (ok) {
-        // 数据已更新，刷新需要数据的组件
-        window.dispatchEvent(new CustomEvent('dataSynced'));
-      }
+      if (ok) window.dispatchEvent(new CustomEvent('dataSynced'));
     });
   }
   return user;
 }
 
+// 需要登录的操作提示并跳转
+function requireLogin(action) {
+  var user = DB.getCurrentUser();
+  if (user) return true;
+  var msg = action ? ('「' + action + '」需要登录后使用') : '该功能需要登录后使用';
+  showAuthToast(msg + '，即将跳转到登录页…', function() {
+    window.location.href = 'auth.html';
+  }, true);
+  return false;
+}
+
 // ---- 登出 ----
 function logout() {
   if (confirm('确定要退出登录吗？')) {
-    // 退出前先推送数据到服务器
     CloudSync.pushAll().then(function() {
       CloudSync.request('POST', '/api/auth/logout');
       CloudSync.setToken('');
@@ -494,7 +497,20 @@ function cropAvatar(imageDataUrl, cropX, cropY, cropSize, outputSize) {
 // ---- 导航栏渲染 ----
 function renderNav(activeLink) {
   const user = DB.getCurrentUser();
-  if (!user) return;
+  const navActions = document.querySelector('.nav-actions');
+
+  if (!user) {
+    // 游客模式：显示登录/注册按钮
+    if (navActions) {
+      var userMenuWrap = navActions.querySelector('.user-menu-wrap');
+      if (userMenuWrap) {
+        userMenuWrap.innerHTML = '<a href="auth.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 20px;background:#4F46E5;color:white;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s ease;white-space:nowrap" onmouseover="this.style.background=\'#4338CA\'" onmouseout="this.style.background=\'#4F46E5\'">登录 / 注册</a>';
+      }
+    }
+    injectMobileMenu(activeLink);
+    return;
+  }
+
   const navAvatar = document.getElementById('navAvatar');
   if (navAvatar) {
     navAvatar.style.background = user.avatarBg;
@@ -726,6 +742,19 @@ function showToast(msg, type) {
     t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(10px)';
     setTimeout(() => t.remove(), 300);
   }, 2500);
+}
+
+// 认证提示 Toast（带回调）
+function showAuthToast(msg, cb, isError) {
+  var t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(20px);background:' + (isError ? '#EF4444' : '#4F46E5') + ';color:#fff;padding:12px 28px;border-radius:30px;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);opacity:0;transition:all .35s cubic-bezier(.22,1,.36,1);white-space:nowrap;pointer-events:none;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(function() { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+  setTimeout(function() {
+    t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(10px)';
+    setTimeout(function() { t.remove(); if (cb) cb(); }, 350);
+  }, 1800);
 }
 
 // ---- 模态框 ----

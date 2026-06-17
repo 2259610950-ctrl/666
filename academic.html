@@ -195,6 +195,7 @@ function renderAcademicList() {
 function loadMore() { acadCount += 5; renderAcademicList(); }
 
 function openCreatePost(type) {
+  if (!requireLogin('发布学术帖子')) return;
   openModal('<div class="create-post-form"><h3>发布学术帖子</h3><p class="post-sub-info">发布者：' + (currentUser?.name||'') + ' · ' + (currentUser?.major||'') + ' ' + (currentUser?.grade||'') + '</p><div style="margin-bottom:12px"><label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#6B7280"><span style="color:#DC2626">*</span> 所属校区</label><select id="postCampusSelect" class="post-form-input" style="width:100%;cursor:pointer"><option value="">-- 请选择校区 --</option><option value="青山校区">青山校区</option><option value="黄家湖校区">黄家湖校区</option></select></div><input class="post-form-input" id="newPostTitle" placeholder="标题（如：数据结构期末复习资料整理）"><textarea class="post-form-textarea" id="newPostContent" placeholder="详细描述你的问题或分享内容..." rows="6"></textarea><button class="btn-submit-post" onclick="doPost()">发布</button></div>');
 }
 

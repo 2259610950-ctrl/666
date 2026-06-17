@@ -412,6 +412,7 @@ function removeImage(i) {
 
 // ===== 发布出售模态框 =====
 function openSellModal() {
+  if (!requireLogin('发布出售')) return;
   uploadedImages = [];
   openModal(`
     <div style="padding:0;max-width:580px">
@@ -561,6 +562,7 @@ function doSell() {
 
 // ===== 求购模态框 =====
 function openWantModal() {
+  if (!requireLogin('发布求购')) return;
   openModal(`
     <div style="padding:0;max-width:520px">
       <div style="padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between">
