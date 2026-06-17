@@ -531,6 +531,8 @@ function renderNav(activeLink) {
 }
 
 // ---- 手机端汉堡菜单 ----
+var _mobileMenuPanel = null;
+
 function injectMobileMenu(activeLink) {
   if (document.getElementById('mobileMenuBtn')) return;
   const nav = document.getElementById('navbar');
@@ -571,6 +573,7 @@ function injectMobileMenu(activeLink) {
       '<div class="mobile-menu-item danger" onclick="logout()">🚪 退出登录</div>' +
     '</div>';
   document.body.appendChild(panel);
+  _mobileMenuPanel = panel;
 
   // 响应式显示/隐藏汉堡按钮
   var mq = window.matchMedia('(max-width: 640px)');
@@ -580,7 +583,7 @@ function injectMobileMenu(activeLink) {
 }
 
 function toggleMobileMenu() {
-  var panel = document.getElementById('mobileMenuPanel');
+  var panel = _mobileMenuPanel || document.getElementById('mobileMenuPanel');
   if (!panel) return;
   var isOpen = panel.classList.contains('open');
   if (isOpen) {

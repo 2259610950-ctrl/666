@@ -5641,24 +5641,30 @@ a:active {
 /* ===== 手机端菜单面板 ===== */
 #mobileMenuBtn { display: none; }
 #mobileMenuPanel {
-  display: none; position: fixed; inset: 0; z-index: 500;
+  position: fixed; inset: 0; z-index: 500;
+  visibility: hidden; pointer-events: none;
+  will-change: contents;
 }
-#mobileMenuPanel.open { display: block; }
+#mobileMenuPanel.open { visibility: visible; pointer-events: auto; }
 .mobile-menu-mask {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,.4); backdrop-filter: blur(4px);
-  animation: fadeIn 0.2s ease;
+  background: rgba(0,0,0,.35);
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-out-expo);
+  will-change: opacity;
 }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+#mobileMenuPanel.open .mobile-menu-mask { opacity: 1; }
 .mobile-menu-sheet {
   position: absolute; top: 0; right: 0;
   width: 280px; max-width: 85vw; height: 100%;
   background: white; box-shadow: -4px 0 24px rgba(0,0,0,.15);
   display: flex; flex-direction: column;
   padding: 0;
-  animation: slideInRight 0.3s cubic-bezier(0.22,1,0.36,1);
+  transform: translateX(100%) translateZ(0);
+  transition: transform 0.25s var(--ease-out-expo);
+  will-change: transform;
 }
-@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+#mobileMenuPanel.open .mobile-menu-sheet { transform: translateX(0) translateZ(0); }
 .mobile-menu-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 20px 20px 16px;
