@@ -23,16 +23,19 @@
   --transition: 0.2s ease;
 }
 
-html { scroll-behavior: smooth; scroll-padding-top: 60px; -webkit-overflow-scrolling: touch; }
+html { scroll-behavior: smooth; scroll-padding-top: 60px; -webkit-overflow-scrolling: touch; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
   background: var(--bg);
   color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
   animation: bodyFadeIn 0.4s ease-out;
   padding-bottom: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 @media (max-width: 768px) {
   body { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
@@ -42,6 +45,22 @@ body {
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 textarea, input { font-family: inherit; }
+
+/* 图片清晰度优化 */
+img { image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; }
+img[src] { image-rendering: auto; }
+
+/* SVG 渲染优化 */
+svg { shape-rendering: geometricPrecision; }
+
+/* 滚动条美化（桌面端） */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+
+/* 选中文字颜色 */
+::selection { background: rgba(79,70,229,.15); color: #1F2937; }
 
 /* ===== 导航栏 ===== */
 .navbar {
@@ -684,8 +703,8 @@ textarea, input { font-family: inherit; }
 
 /* ===== FAB ===== */
 .fab {
-  position: fixed; bottom: 28px; right: 28px;
-  width: 52px; height: 52px; border-radius: 16px;
+  position: fixed; bottom: 28px; right: 20px;
+  width: 52px; height: 52px; border-radius: 50%;
   background: linear-gradient(135deg, var(--brand), #7C3AED); color: white;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 20px rgba(79,70,229,.3);
@@ -693,6 +712,9 @@ textarea, input { font-family: inherit; }
   will-change: transform;
 }
 .fab:hover { transform: translateY(-3px) scale(1.05) translateZ(0); box-shadow: 0 10px 30px rgba(79,70,229,.4); background: linear-gradient(135deg, #4338CA, #6D28D9); }
+@media (max-width: 768px) {
+  .fab { display: none; }
+}
 
 /* ===== 通用页面头 ===== */
 .page-hero {
@@ -5562,7 +5584,7 @@ a:active {
   .footer-brand { font-size: 13px; }
 
   /* FAB */
-  .fab { bottom: 20px; right: 20px; width: 48px; height: 48px; border-radius: 14px; }
+  .fab { bottom: 20px; right: 20px; width: 48px; height: 48px; border-radius: 50%; }
 
   /* 模态框 */
   .modal-overlay { padding: 12px; }
@@ -5723,7 +5745,6 @@ a:active {
 
 @media (max-width: 768px) {
   .bottom-tab-bar { display: block; }
-  .fab { bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 
 /* ===== 移动端全局卡片规范 ===== */
