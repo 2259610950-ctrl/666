@@ -1002,6 +1002,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 滚动触发动画
   initScrollReveal();
+  // 图片懒加载
+  initLazyLoad();
 });
 
 // ---- 滚动触发动画 ----
@@ -1022,6 +1024,33 @@ function initScrollReveal() {
   document.querySelectorAll('.scroll-reveal').forEach(function(el) {
     observer.observe(el);
   });
+}
+
+// ---- 图片懒加载 ----
+function initLazyLoad() {
+  var images = document.querySelectorAll('img[data-src]');
+  if (!images.length) return;
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var img = entry.target;
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+          img.style.opacity = '1';
+          observer.unobserve(img);
+        }
+      });
+    }, { rootMargin: '200px 0px' });
+    images.forEach(function(img) {
+      img.style.opacity = '0';
+      img.style.transition = 'opacity 0.3s ease';
+      observer.observe(img);
+    });
+  } else {
+    images.forEach(function(img) { img.src = img.dataset.src; img.removeAttribute('data-src'); });
+  }
 }
 
 // ---- 导航滚动 ----
