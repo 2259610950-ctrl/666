@@ -13,8 +13,7 @@
 
   /* 左侧品牌区 */
   .auth-left { flex: 1; background: #4338CA; padding: 48px 40px; color: white; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
-  .auth-left::before { content: ''; position: absolute; top: -40%; right: -20%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%); border-radius: 50%; }
-  .auth-left::after { content: ''; position: absolute; bottom: -30%; left: -10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%); border-radius: 50%; }
+  .auth-left::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg,transparent,transparent 40px,rgba(255,255,255,.015) 40px,rgba(255,255,255,.015) 80px); pointer-events: none; }
   .auth-brand { position: relative; z-index: 1; }
   .brand-icon-lg { width: 56px; height: 56px; background: white; color: #4F46E5; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; margin-bottom: 24px; }
   .auth-brand h1 { font-size: 28px; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
